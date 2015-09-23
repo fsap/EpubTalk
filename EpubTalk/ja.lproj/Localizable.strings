@@ -1,0 +1,38 @@
+/* 
+  Localizable.strings
+  tdtalk2dev
+
+  Created by Fujiwara on 2015/07/31.
+  Copyright (c) 2015年 fsap. All rights reserved.
+*/
+
+"dialog_title_error" = "エラー";
+"dialog_title_notice" = "確認";
+
+"dialog_msg_delete" = "削除してもよろしいですか？";
+
+"dialog_ok" = "OK";
+"dialog_cancel" = "Cancel";
+
+"button_title_cancel_loading" = "中止";
+"button_title_canceling" = "中止しています...";
+"button_title_help" = "ヘルプ";
+
+"link_help" = "http://www.nbs.co.jp/ios/daisytalk/use.htm";
+
+"error_msg_101" = "ファイルの取得に失敗しました";
+"error_msg_102" = "ファイルがありません";
+"error_msg_103" = "サポートしていない形式のファイルです";
+"error_msg_104" = "ファイルの読み込みに失敗しました";
+"error_msg_105" = "既に取り込み済みのファイルです";
+"error_msg_106" = "ファイルの保存に失敗しました";
+"error_msg_107" = "ファイルの削除に失敗しました";
+"error_msg_108" = "メタ情報ファイルが見つかりません";
+"error_msg_109" = "メタ情報の解析に失敗しました";
+
+"msg_import_success" = "ファイルの取り込みが完了しました";
+"msg_loading" = "図書データの読み込み中";
+
+"row_action_delete" = "削除";
+
+"page_title_book_list" = "本棚";

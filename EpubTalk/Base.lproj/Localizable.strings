@@ -1,0 +1,38 @@
+/* 
+  Localizable.strings
+  tdtalk2dev
+
+  Created by Fujiwara on 2015/07/31.
+  Copyright (c) 2015年 fsap. All rights reserved.
+*/
+
+"dialog_title_error" = "Error";
+"dialog_title_notice" = "Confirm";
+
+"dialog_msg_delete" = "Delete book?";
+
+"dialog_ok" = "OK";
+"dialog_cancel" = "Cancel";
+
+"button_title_cancel_loading" = "Cancel";
+"button_title_canceling" = "Canceling...";
+"button_title_help" = "Help";
+
+"link_help" = "http://www.nbs.co.jp/ios/english/daisytalk/use.htm";
+
+"error_msg_101" = "Failed to get file.";
+"error_msg_102" = "File not found.";
+"error_msg_103" = "Unsupported file.";
+"error_msg_104" = "Failed to load file";
+"error_msg_105" = "Already imported.";
+"error_msg_106" = "Failed to save file.";
+"error_msg_107" = "Failed to delete file.";
+"error_msg_108" = "Meta data not found.";
+"error_msg_109" = "Filed to analyze meta data.";
+
+"msg_import_success" = "Import completed.";
+"msg_loading" = "Loading the book data...";
+
+"row_action_delete" = "Delete";
+
+"page_title_book_list" = "Book List";

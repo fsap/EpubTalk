@@ -4,6 +4,48 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>exe</string>
+				<string>zip</string>
+				<string>epub</string>
+			</array>
+			<key>CFBundleTypeIconFiles</key>
+			<array/>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/epub+zip</string>
+				<string>application/zip</string>
+				<string>application/x-zip</string>
+				<string>application/x-zip-compressed</string>
+				<string>application/x-msdownload</string>
+				<string>application/octet-stream</string>
+				<string>application/x-exe</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>EPUB Talk</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>ZIP</string>
+				<string>EXE</string>
+				<string>EPUB</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<array>
+				<string>Viewer</string>
+			</array>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.pkware.zip-archive</string>
+				<string>org.gnu.gnu-zip-archive</string>
+				<string>com.microsoft.windows-executable</string>
+				<string>org.idpf.epub-container</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,11 +57,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>0.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>0.1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -42,6 +84,22 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string>EPUB file format</string>
+			<key>UTTypeIdentifier</key>
+			<string>jp.fsap.EpubTalk</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>epub</string>
+				<key>public.mime-type</key>
+				<string>epub+zip</string>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>

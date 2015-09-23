@@ -13,13 +13,38 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var loadingFlg: Bool = false
+    var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        LogM("lifecycle:launch")
         // Override point for customization after application launch.
+        if launchOptions != nil {
+            var options = launchOptions!
+            var url = options[UIApplicationLaunchOptionsURLKey] as! NSURL;
+            Log(NSString(format: "url:%@", url.absoluteString!))
+            
+            if !self.startImportBook(url.absoluteString!) {
+                return false
+            }
+        }
+        
         return true
     }
 
+    // バックグラウンドにいる場合はこちらがキックされる
+    func application(application: UIApplication, handleOpenURL url: NSURL) -> Bool {
+        Log(NSString(format: "lifecycle:handle_open_url:%@", url.lastPathComponent!))
+        // Override point for customization after application launch.
+        
+        if !self.startImportBook(url.absoluteString!) {
+            return false
+        }
+        
+        return true
+    }
+    
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
@@ -107,5 +132,51 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    private func startImportBook(url: String)->Bool {
+        if self.loadingFlg {
+            return false
+        }
+        
+        var bookService = TTBookService.sharedInstance
+        bookService.delegate?.importStarted()
+        var ret = bookService.validate(url.lastPathComponent)
+        
+        // エラーメッセージ
+        switch ret {
+        case TTErrorCode.Normal:
+            break
+        default:
+            self.loadingFlg = false
+            alertController.show(
+                window?.rootViewController!,
+                title:NSLocalizedString("dialog_title_error", comment: ""),
+                message:TTError.getErrorMessage(ret), actionOk: {() -> Void in})
+            return false
+        }
+        
+        
+        self.loadingFlg = true
+        let queue = dispatch_queue_create("import_book", nil)
+        dispatch_async(queue, { () -> Void in
+            // インポート
+            bookService.importDaisy(url.lastPathComponent, didSuccess: { () -> Void in
+                // 完了
+                self.loadingFlg = false
+                
+                }) { (errorCode) -> Void in
+                    // エラーダイアログ
+                    self.loadingFlg = false
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        self.alertController.show(
+                            self.window?.rootViewController!,
+                            title:NSLocalizedString("dialog_title_error", comment: ""),
+                            message:TTError.getErrorMessage(errorCode),
+                            actionOk: {() -> Void in})
+                    })
+            }
+        })
+        
+        return true
+    }
 }
 
