@@ -105,6 +105,9 @@ class TTBookService {
             return
         }
         Log(NSString(format: "tmp_dir:%@", self.fileManager.fileManager.contentsOfDirectoryAtPath(tmpDir, error: nil)!))
+        // テスト用メッセージ
+        self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.SuccessToUnzipEpubFile, didSuccess: didSuccess, didFailure: didFailure)
+        return
         
         if !keepLoading {
             deInitImport([importFilePath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
