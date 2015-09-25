@@ -29,6 +29,7 @@
 "error_msg_107" = "Failed to delete file.";
 "error_msg_108" = "Meta data not found.";
 "error_msg_109" = "Filed to analyze meta data.";
+"error_msg_110" = "Success to expand epub file.";    // ToDo:仮メッセージ
 
 "msg_import_success" = "Import completed.";
 "msg_loading" = "Loading the book data...";
