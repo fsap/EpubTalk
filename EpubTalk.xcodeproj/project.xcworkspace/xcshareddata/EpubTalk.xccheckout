@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>69E002F4-75F2-4144-BCEB-10A50BC5E67B</string>
+	<key>IDESourceControlProjectName</key>
+	<string>EpubTalk</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>244C654DA2A566E14F66F6C8D95E930B097BA06A</key>
+		<string>https://github.com/fsap/EpubTalk.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>EpubTalk.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>244C654DA2A566E14F66F6C8D95E930B097BA06A</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/fsap/EpubTalk.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>244C654DA2A566E14F66F6C8D95E930B097BA06A</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>244C654DA2A566E14F66F6C8D95E930B097BA06A</string>
+			<key>IDESourceControlWCCName</key>
+			<string>EpubTalk</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		820F3EC11BB2E3780019B139 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EC01BB2E3780019B139 /* AppDelegate.swift */; };
-		820F3EC41BB2E3780019B139 /* EpubTalk.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EC21BB2E3780019B139 /* EpubTalk.xcdatamodeld */; };
 		820F3EC61BB2E3780019B139 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EC51BB2E3780019B139 /* ViewController.swift */; };
 		820F3EC91BB2E3780019B139 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 820F3EC71BB2E3780019B139 /* Main.storyboard */; };
 		820F3ECB1BB2E3780019B139 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 820F3ECA1BB2E3780019B139 /* Images.xcassets */; };
@@ -51,6 +50,7 @@
 		820F3F4E1BB2E9330019B139 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 820F3F4D1BB2E9330019B139 /* libxml2.dylib */; };
 		820F3F501BB2E93D0019B139 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 820F3F4F1BB2E93D0019B139 /* libz.dylib */; };
 		820F3F531BB2FA490019B139 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 820F3F511BB2FA490019B139 /* Localizable.strings */; };
+		820F3F5C1BB432150019B139 /* EpubTalk.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 820F3F5A1BB432150019B139 /* EpubTalk.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,7 +67,6 @@
 		820F3EBB1BB2E3780019B139 /* EpubTalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EpubTalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		820F3EBF1BB2E3780019B139 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		820F3EC01BB2E3780019B139 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		820F3EC31BB2E3780019B139 /* EpubTalk.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EpubTalk.xcdatamodel; sourceTree = "<group>"; };
 		820F3EC51BB2E3780019B139 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		820F3EC81BB2E3780019B139 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		820F3ECA1BB2E3780019B139 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -97,7 +96,7 @@
 		820F3EF71BB2E82E0019B139 /* TTBookService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTBookService.swift; sourceTree = "<group>"; };
 		820F3EF81BB2E82E0019B139 /* TTError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTError.swift; sourceTree = "<group>"; };
 		820F3EF91BB2E82E0019B139 /* Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
-		820F3F0E1BB2E8BD0019B139 /* LodingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LodingView.swift; sourceTree = "<group>"; };
+		820F3F0E1BB2E8BD0019B139 /* LodingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LodingView.swift; path = Classes/LodingView.swift; sourceTree = "<group>"; };
 		820F3F121BB2E8CB0019B139 /* BRLBUF.H */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BRLBUF.H; sourceTree = "<group>"; };
 		820F3F131BB2E8CB0019B139 /* BRLBUF.M */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BRLBUF.M; sourceTree = "<group>"; };
 		820F3F141BB2E8CB0019B139 /* FILE.H */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FILE.H; sourceTree = "<group>"; };
@@ -125,6 +124,7 @@
 		820F3F4F1BB2E93D0019B139 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		820F3F521BB2FA490019B139 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		820F3F541BB2FA590019B139 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		820F3F5B1BB432150019B139 /* EpubTalk.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EpubTalk.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,13 +174,14 @@
 			isa = PBXGroup;
 			children = (
 				820F3F101BB2E8CB0019B139 /* Libs */,
+				820F3F551BB42D9C0019B139 /* Views */,
 				820F3EE51BB2E82E0019B139 /* Classes */,
 				820F3EC01BB2E3780019B139 /* AppDelegate.swift */,
 				820F3EC51BB2E3780019B139 /* ViewController.swift */,
 				820F3EC71BB2E3780019B139 /* Main.storyboard */,
 				820F3ECA1BB2E3780019B139 /* Images.xcassets */,
+				820F3F5A1BB432150019B139 /* EpubTalk.xcdatamodeld */,
 				820F3ECC1BB2E3780019B139 /* LaunchScreen.xib */,
-				820F3EC21BB2E3780019B139 /* EpubTalk.xcdatamodeld */,
 				820F3EBE1BB2E3780019B139 /* Supporting Files */,
 			);
 			path = EpubTalk;
@@ -215,26 +216,18 @@
 		820F3EE51BB2E82E0019B139 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				820F3EE61BB2E82E0019B139 /* BookEntity.swift */,
+				820F3F561BB42DB30019B139 /* Models */,
 				820F3EE71BB2E82E0019B139 /* BookListViewController.swift */,
 				820F3EE81BB2E82E0019B139 /* Constants.swift */,
-				820F3EE91BB2E82E0019B139 /* Daisy.swift */,
 				820F3EEA1BB2E82E0019B139 /* DaisyManager.swift */,
 				820F3EEB1BB2E82E0019B139 /* DataManager.swift */,
 				820F3EEC1BB2E82E0019B139 /* DCMetadata.swift */,
-				820F3EED1BB2E82E0019B139 /* DiscInfo.swift */,
 				820F3EEE1BB2E82E0019B139 /* DiscInfoManager.swift */,
 				820F3EEF1BB2E82E0019B139 /* FileManager.swift */,
-				820F3F0E1BB2E8BD0019B139 /* LodingView.swift */,
-				820F3EF01BB2E82E0019B139 /* ManifestItem.swift */,
-				820F3EF11BB2E82E0019B139 /* Metadata.swift */,
-				820F3EF21BB2E82E0019B139 /* Navigation.swift */,
 				820F3EF31BB2E82E0019B139 /* NccManager.swift */,
-				820F3EF41BB2E82E0019B139 /* OPF.swift */,
 				820F3EF51BB2E82E0019B139 /* OpfManager.swift */,
 				820F3EF61BB2E82E0019B139 /* TTAlertController.swift */,
 				820F3EF71BB2E82E0019B139 /* TTBookService.swift */,
-				820F3EF81BB2E82E0019B139 /* TTError.swift */,
 				820F3EF91BB2E82E0019B139 /* Util.swift */,
 			);
 			path = Classes;
@@ -291,6 +284,29 @@
 				820F3F251BB2E8CB0019B139 /* zip.h */,
 			);
 			path = minizip;
+			sourceTree = "<group>";
+		};
+		820F3F551BB42D9C0019B139 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				820F3F0E1BB2E8BD0019B139 /* LodingView.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		820F3F561BB42DB30019B139 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				820F3EF01BB2E82E0019B139 /* ManifestItem.swift */,
+				820F3EF11BB2E82E0019B139 /* Metadata.swift */,
+				820F3EF21BB2E82E0019B139 /* Navigation.swift */,
+				820F3EF41BB2E82E0019B139 /* OPF.swift */,
+				820F3EF81BB2E82E0019B139 /* TTError.swift */,
+				820F3EE91BB2E82E0019B139 /* Daisy.swift */,
+				820F3EED1BB2E82E0019B139 /* DiscInfo.swift */,
+				820F3EE61BB2E82E0019B139 /* BookEntity.swift */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -398,6 +414,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				820F3EC61BB2E3780019B139 /* ViewController.swift in Sources */,
+				820F3F5C1BB432150019B139 /* EpubTalk.xcdatamodeld in Sources */,
 				820F3F401BB2E8CB0019B139 /* unzip.c in Sources */,
 				820F3F3A1BB2E8CB0019B139 /* LIST.M in Sources */,
 				820F3F011BB2E82E0019B139 /* DiscInfo.swift in Sources */,
@@ -409,7 +426,6 @@
 				820F3F411BB2E8CB0019B139 /* zip.c in Sources */,
 				820F3F071BB2E82E0019B139 /* NccManager.swift in Sources */,
 				820F3F0B1BB2E82E0019B139 /* TTBookService.swift in Sources */,
-				820F3EC41BB2E3780019B139 /* EpubTalk.xcdatamodeld in Sources */,
 				820F3F3E1BB2E8CB0019B139 /* ioapi.c in Sources */,
 				820F3EFA1BB2E82E0019B139 /* BookEntity.swift in Sources */,
 				820F3F421BB2E8CB0019B139 /* Readme.markdown in Sources */,
@@ -674,12 +690,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		820F3EC21BB2E3780019B139 /* EpubTalk.xcdatamodeld */ = {
+		820F3F5A1BB432150019B139 /* EpubTalk.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				820F3EC31BB2E3780019B139 /* EpubTalk.xcdatamodel */,
+				820F3F5B1BB432150019B139 /* EpubTalk.xcdatamodel */,
 			);
-			currentVersion = 820F3EC31BB2E3780019B139 /* EpubTalk.xcdatamodel */;
+			currentVersion = 820F3F5B1BB432150019B139 /* EpubTalk.xcdatamodel */;
 			path = EpubTalk.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

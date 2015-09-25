@@ -18,7 +18,7 @@
 "button_title_canceling" = "Canceling...";
 "button_title_help" = "Help";
 
-"link_help" = "http://www.nbs.co.jp/ios/english/daisytalk/use.htm";
+"link_help" = "http://www.nbs.co.jp/ios/english/epubtalk/use.htm";
 
 "error_msg_101" = "Failed to get file.";
 "error_msg_102" = "File not found.";

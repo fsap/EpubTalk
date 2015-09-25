@@ -62,7 +62,7 @@ class TTBookService {
         }
         
         // ファイル形式のチェック
-        if !(FileManager.isValiedExtension(filename)) {
+        if !(FileManager.isValidExtension(filename)) {
             Log(NSString(format: "Unsupported type:%@", filename))
             self.fileManager.removeFile(filepath)
             return TTErrorCode.UnsupportedFileType
@@ -89,20 +89,20 @@ class TTBookService {
         // 取り込み先ディレクトリ ex) sandbox/Library/Books/
         let bookDir = FileManager.getImportDir()
         
-        if (filename.pathExtension == Constants.kImportableExtensions[0]) {
-            // exe展開
+        if (filename.pathExtension == Constants.kImportableExtensions[0]
+            || filename.pathExtension == Constants.kImportableExtensions[1]
+            || filename.pathExtension == Constants.kImportableExtensions[2]) {
+            // 圧縮ファイル展開
             if !(self.fileManager.unzip(importFilePath, expandDir: expandDir)) {
                 LogE(NSString(format: "Unable to expand:%@", filename))
                 deInitImport([importFilePath], errorCode: TTErrorCode.UnsupportedFileType, didSuccess: didSuccess, didFailure: didFailure)
                 return
             }
             
-        } else if (filename.pathExtension == Constants.kImportableExtensions[1]) {
-            // zip解凍
-            if !(self.fileManager.unzip(importFilePath, expandDir: expandDir)) {
-                deInitImport([importFilePath], errorCode: TTErrorCode.UnsupportedFileType, didSuccess: didSuccess, didFailure: didFailure)
-                return
-            }
+        } else {
+            LogE(NSString(format: "Unable to expand:%@", filename))
+            deInitImport([importFilePath], errorCode: TTErrorCode.UnsupportedFileType, didSuccess: didSuccess, didFailure: didFailure)
+            return
         }
         Log(NSString(format: "tmp_dir:%@", self.fileManager.fileManager.contentsOfDirectoryAtPath(tmpDir, error: nil)!))
         

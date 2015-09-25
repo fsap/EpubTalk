@@ -56,7 +56,7 @@ class FileManager: NSObject {
     ///
     /// 有効な拡張子か
     /// :param: String ファイル名
-    static func isValiedExtension(filename : String)->Bool {
+    static func isValidExtension(filename : String)->Bool {
         return contains(Constants.kImportableExtensions, filename.pathExtension)
     }
     
