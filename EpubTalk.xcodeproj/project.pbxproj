@@ -51,6 +51,7 @@
 		820F3F501BB2E93D0019B139 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 820F3F4F1BB2E93D0019B139 /* libz.dylib */; };
 		820F3F531BB2FA490019B139 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 820F3F511BB2FA490019B139 /* Localizable.strings */; };
 		820F3F5C1BB432150019B139 /* EpubTalk.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 820F3F5A1BB432150019B139 /* EpubTalk.xcdatamodeld */; };
+		820F3F5E1BB5B5770019B139 /* EpubManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3F5D1BB5B5770019B139 /* EpubManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,6 +126,7 @@
 		820F3F521BB2FA490019B139 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		820F3F541BB2FA590019B139 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		820F3F5B1BB432150019B139 /* EpubTalk.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EpubTalk.xcdatamodel; sourceTree = "<group>"; };
+		820F3F5D1BB5B5770019B139 /* EpubManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EpubManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,6 +227,7 @@
 				820F3EEE1BB2E82E0019B139 /* DiscInfoManager.swift */,
 				820F3EEF1BB2E82E0019B139 /* FileManager.swift */,
 				820F3EF31BB2E82E0019B139 /* NccManager.swift */,
+				820F3F5D1BB5B5770019B139 /* EpubManager.swift */,
 				820F3EF51BB2E82E0019B139 /* OpfManager.swift */,
 				820F3EF61BB2E82E0019B139 /* TTAlertController.swift */,
 				820F3EF71BB2E82E0019B139 /* TTBookService.swift */,
@@ -432,6 +435,7 @@
 				820F3F051BB2E82E0019B139 /* Metadata.swift in Sources */,
 				820F3F3F1BB2E8CB0019B139 /* mztools.c in Sources */,
 				820F3F381BB2E8CB0019B139 /* BRLBUF.M in Sources */,
+				820F3F5E1BB5B5770019B139 /* EpubManager.swift in Sources */,
 				820F3F391BB2E8CB0019B139 /* file.m in Sources */,
 				820F3F431BB2E8CB0019B139 /* SSZipArchive.m in Sources */,
 				820F3EFD1BB2E82E0019B139 /* Daisy.swift in Sources */,
