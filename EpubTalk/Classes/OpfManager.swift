@@ -8,6 +8,10 @@
 
 import Foundation
 
+enum OpfTag: String {
+    case RootFile = "rootFile"
+}
+
 class OpfManager: NSObject, NSXMLParserDelegate {
     
     // 定数
