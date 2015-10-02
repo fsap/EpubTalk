@@ -9,7 +9,8 @@
 import Foundation
 
 enum MediaTypes: String {
-    case XML = "application/x-dtbook+xml"
+//    case XML = "application/x-dtbook+xml"
+    case XML = "application/xhtml+xml"
 }
 
 class Navigation: NSObject {

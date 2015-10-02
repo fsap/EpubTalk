@@ -105,41 +105,37 @@ class TTBookService {
             return
         }
         Log(NSString(format: "tmp_dir:%@", self.fileManager.fileManager.contentsOfDirectoryAtPath(tmpDir, error: nil)!))
-        // テスト用メッセージ
-        self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.SuccessToUnzipEpubFile, didSuccess: didSuccess, didFailure: didFailure)
-        return
         
         if !keepLoading {
             deInitImport([importFilePath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
             return
         }
         
-        // 初期化
         self.fileManager.initImport()
-
-        let daisyManager: DaisyManager = DaisyManager.sharedInstance
-        daisyManager.detectDaisyStandard(expandDir, didSuccess: { (version) -> Void in
-            Log(NSString(format: "success. ver:%f", version))
+        
+        let epubManager: EpubManager = EpubManager.sharedInstance
+        epubManager.detectEpubStandard(expandDir, didSuccess: { (path) -> Void in
+            Log(NSString(format: "success. path:%@", path!))
             
             if !self.keepLoading {
                 self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
                 return
             }
-
+            
             let queue: dispatch_queue_t = dispatch_queue_create("loadMetaData", nil)
             dispatch_async(queue, { () -> Void in
-
-                daisyManager.loadMetadata(expandDir, version: version, didSuccess: { (daisy) -> Void in
+                
+                epubManager.loadMetadata(expandDir, containerPath: path!, didSuccess: { (epub) -> Void in
                     // メタ情報の読み込みに成功
-                    Log(NSString(format: "success to get metadata. paths:%@", daisy.navigation.contentsPaths))
-                    Log(NSString(format: "daisy: title:%@ language:%@", daisy.metadata.title, daisy.metadata.language))
+                    Log(NSString(format: "success to get metadata. paths:%@", epub.navigation.contentsPaths))
+                    Log(NSString(format: "epub: title:%@ language:%@", epub.metadata.title, epub.metadata.language))
                     
                     if !self.keepLoading {
                         self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
                         return
                     }
-
-                    let saveFilePath = self.fileManager.loadXmlFiles(daisy.navigation.contentsPaths, saveDir:expandDir, metadata: daisy.metadata)
+                    
+                    let saveFilePath = self.fileManager.loadXmlFiles(epub.navigation.contentsPaths, saveDir:expandDir, metadata: epub.metadata)
                     if !self.keepLoading {
                         self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
                         return
@@ -158,9 +154,8 @@ class TTBookService {
                     
                     // 図書情報をDBに保存
                     var book: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
-                    book.title = daisy.metadata.title
-                    book.language = daisy.metadata.language
-//                    book.filename = FileManager.getImportDir().stringByAppendingPathComponent(saveFilePath.lastPathComponent.stringByDeletingPathExtension)
+                    book.title = epub.metadata.title
+                    book.language = epub.metadata.language
                     book.filename = saveFilePath.lastPathComponent.stringByDeletingPathExtension
                     book.sort_num = self.getBookList().count
                     var ret = self.dataManager.save()
@@ -171,12 +166,10 @@ class TTBookService {
                     
                     // 終了処理
                     self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
-                    
                 }, didFailure: { (errorCode) -> Void in
                     LogE(NSString(format: "[%d]Failed to load metadata. dir:%@", errorCode.rawValue, expandDir))
                     self.deInitImport([importFilePath, expandDir], errorCode: errorCode, didSuccess: didSuccess, didFailure: didFailure)
                 })
-
             })
             
         }) { (errorCode) -> Void in

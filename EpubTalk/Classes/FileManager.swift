@@ -118,7 +118,13 @@ class FileManager: NSObject {
                 continue
             }
             
-            // ディレクトリの場合で再帰的に検索する場合はサブディレクトリ検索
+            // ファイル名をチェック
+            if content == filename {
+                result = target.stringByAppendingPathComponent(content)
+                return true
+            }
+
+            // ディレクトリの場合で引き続き再帰的に検索する場合はサブディレクトリ検索
             if (isDir && recursive) {
                 if searchFile(filename, targetDir: target.stringByAppendingPathComponent(content), recursive: recursive, result: &result) {
                     return true
@@ -126,11 +132,6 @@ class FileManager: NSObject {
                 continue
             }
             
-            // ファイル名をチェック
-            if content == filename {
-                result = target.stringByAppendingPathComponent(content)
-                return true
-            }
         }
         
         return false

@@ -31,17 +31,18 @@ class EpubManager: NSObject {
     /// :param: Closure 処理に成功した時のクロージャを定義
     /// :param: Closure 処理に失敗した時のクロージャを定義
     ///
-    func detectEpubStandard(targetFileDir: String, didSuccess:((version: CGFloat)->Void), didFailure:((errorCode: TTErrorCode)->Void)) {
+    func detectEpubStandard(targetFileDir: String, didSuccess:((path: String?)->Void), didFailure:((errorCode: TTErrorCode)->Void)) {
         
         let fileManager: FileManager = FileManager.sharedInstance
         
         // メタデータディレクトリをサーチ
         var metaDataPath: String? = nil
         if fileManager.searchFile(EpubStandard_3_0.MetadataDirectory, targetDir: targetFileDir, recursive: true, result: &metaDataPath) {
+            Log(NSString(format: "META-INF found. %@", fileManager.fileManager.contentsOfDirectoryAtPath(metaDataPath!, error: nil)!))
             // META-INF内からcontainerをサーチ
             var containerPath: String? = nil
             if fileManager.searchFile(EpubStandard_3_0.MetadataFileName, targetDir: metaDataPath!, recursive: true, result: &containerPath) {
-                didSuccess(version: EpubStandard_3_0.Version)
+                didSuccess(path: containerPath)
                 return
             }
             LogE(NSString(format: "[%d] meta data file not found. dir:%@", TTErrorCode.FiledToParseMetadataFile.rawValue, containerPath!))
@@ -54,24 +55,33 @@ class EpubManager: NSObject {
     // メタ情報の読み込み
     //
     func loadMetadata(
-        targetDir :String,
-        didSuccess:((epub: AnyObject)->Void),
+        targetPath:String,
+        containerPath: String,
+        didSuccess:((epub: Epub)->Void),
         didFailure:((errorCode: TTErrorCode)->Void)
         )
     {
         let fileManager: FileManager = FileManager.sharedInstance
         
-        var opfFilePath: String? = nil
-        if fileManager.searchExtension(DaisyStandard3.MetadataFileExtension, targetDir: targetDir, recursive: true, result: &opfFilePath) {
-            // opfを読み取る
-            let opfManager: OpfManager = OpfManager.sharedInstance
-            opfManager.startParseOpfFile(opfFilePath!, didParseSuccess: { (daisy) -> Void in
-                didSuccess(epub: daisy)
-                
-                }, didParseFailure: { (errorCode) -> Void in
-                    LogE(NSString(format: "Metadata file %@ not found. dir:%@", DaisyStandard3.MetadataFileExtension, opfFilePath!))
-                    didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
+        let containerManager: ContainerManager = ContainerManager.sharedInstance
+        containerManager.startParseContainerFile(containerPath, didParseSuccess: { (opfFilePath) -> Void in
+            Log(NSString(format: "parse OPF:%@", targetPath.stringByAppendingPathComponent(opfFilePath)))
+            
+            let queue: dispatch_queue_t = dispatch_queue_create("parseOpf", nil)
+            dispatch_async(queue, { () -> Void in
+                // opfを読み取る
+                let opfManager: OpfManager = OpfManager.sharedInstance
+                opfManager.startParseOpfFile(targetPath.stringByAppendingPathComponent(opfFilePath), didParseSuccess: { (epub) -> Void in
+                    didSuccess(epub: epub)
+                    
+                    }, didParseFailure: { (errorCode) -> Void in
+                        LogE(NSString(format: "Metadata file not found. dir:%@", opfFilePath))
+                        didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
+                })
             })
+        }) { (errorCode) -> Void in
+            LogE(NSString(format: "Container file %@ not found.", targetPath))
+            didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
         }
     }
 }

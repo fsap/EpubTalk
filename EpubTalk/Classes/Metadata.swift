@@ -9,7 +9,7 @@
 import Foundation
 
 enum MetadataTag: String {
-    case Metadata = "meta"
+    case Metadata = "metadata"
     case DC_Identifier = "dc:identifier"
     case DC_Title = "dc:title"
     case DC_Publisher = "dc:publisher"
