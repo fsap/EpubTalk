@@ -1,5 +1,5 @@
 //
-//  NccManager.swift
+//  ContainerManager.swift
 //  tdtalk2dev
 //
 //  Created by Fujiwara on 2015/08/22.
@@ -8,30 +8,27 @@
 
 import Foundation
 
-enum SmilTag: String {
-    case H1 = "h1"
-    case H2 = "h2"
-    case A = "a"
+enum ContainerTag: String {
+    case RootFile = "rootfile"
 }
 
-enum SmilAttr: String {
-    case Href = "href"
+enum ContainerAttr: String {
+    case FullPath = "full-path"
 }
 
 
-class NccManager: NSObject, NSXMLParserDelegate {
+class ContainerManager: NSObject, NSXMLParserDelegate {
     
-    private var didParseSuccess: ((daisy: Daisy)->Void)?
+    private var didParseSuccess: ((opfPath: String)->Void)?
     private var didParseFailure: ((errorCode: TTErrorCode)->Void)?
-    private var daisy: Daisy
-    private var isInMetadata: Bool
-    private var isInSmil: Bool
+    private var opfFilePath: String
+    private var isInRoot: Bool
     private var currentDir: String
     
     
-    class var sharedInstance : NccManager {
+    class var sharedInstance : ContainerManager {
         struct Static {
-            static let instance : NccManager = NccManager()
+            static let instance : ContainerManager = ContainerManager()
         }
         return Static.instance
     }
@@ -39,22 +36,21 @@ class NccManager: NSObject, NSXMLParserDelegate {
     override init() {
         self.didParseSuccess = nil
         self.didParseFailure = nil
-        self.daisy = Daisy()
-        self.isInMetadata = false
-        self.isInSmil = false
+        self.opfFilePath = ""
+        self.isInRoot = false
         self.currentDir = ""
         
         super.init()
     }
     
-    func startParseNccFile(nccFilePath: String,
-        didParseSuccess: ((daisy: Daisy)->Void),
+    func startParseContainerFile(containerFilePath: String,
+        didParseSuccess: ((opfFilePath: String)->Void),
         didParseFailure:((errorCode: TTErrorCode)->Void))->Void
     {
         self.didParseSuccess = didParseSuccess
         self.didParseFailure = didParseFailure
         
-        let url: NSURL? = NSURL.fileURLWithPath(nccFilePath)
+        let url: NSURL? = NSURL.fileURLWithPath(containerFilePath)
         let parser: NSXMLParser? = NSXMLParser(contentsOfURL: url)
         
         if parser == nil {
@@ -62,7 +58,7 @@ class NccManager: NSObject, NSXMLParserDelegate {
             return
         }
         
-        currentDir = nccFilePath.stringByDeletingLastPathComponent
+        currentDir = containerFilePath.stringByDeletingLastPathComponent
         
         parser!.delegate = self
         
@@ -88,39 +84,13 @@ class NccManager: NSObject, NSXMLParserDelegate {
     {
         Log(NSString(format: " - found element:[%@] attr[%@]", elementName, attributeDict))
         
-        if elementName == MetadataTag.Metadata.rawValue {
-            
-            let name: String? = attributeDict[MetadataAttr.Name.rawValue] as? String
-            if name != nil {
-                let content: String = attributeDict[MetadataAttr.Content.rawValue] as! String
-                switch name! {
-                case MetadataTag.DC_Identifier.rawValue:
-                    self.daisy.metadata.identifier = content
-                    break
-                case MetadataTag.DC_Title.rawValue:
-                    self.daisy.metadata.title = content
-                    break
-                case MetadataTag.DC_Publisher.rawValue:
-                    self.daisy.metadata.publisher = content
-                    break
-                case MetadataTag.DC_Date.rawValue:
-                    self.daisy.metadata.date = content
-                    break
-                case MetadataTag.DC_Creator.rawValue:
-                    self.daisy.metadata.creator = content
-                    break
-                case MetadataTag.DC_Language.rawValue:
-                    self.daisy.metadata.language = content
-                    break
-                case MetadataTag.DC_Format.rawValue:
-                    self.daisy.metadata.format = content
-                    break
-                default:
-                    break
-                }
-            }
+        if elementName == ContainerTag.RootFile.rawValue {
+            var fullPath: String? = attributeDict[ContainerAttr.FullPath.rawValue] as? String
+            Log(NSString(format: "full-path:%@", fullPath!))
+            self.opfFilePath = fullPath!
         }
-        
+
+/*
         if elementName == SmilTag.H1.rawValue || elementName == SmilTag.H2.rawValue {
             self.isInSmil = true
         } else if self.isInSmil {
@@ -133,6 +103,7 @@ class NccManager: NSObject, NSXMLParserDelegate {
                 self.daisy.navigation.contentsPaths.append(path)
             }
         }
+*/
     }
     
     // valueを読み込み
@@ -145,14 +116,9 @@ class NccManager: NSObject, NSXMLParserDelegate {
     func parser(parser: NSXMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         Log(NSString(format: " - found element:[%@]", elementName))
         
-        if self.isInMetadata {
-            if elementName == MetadataTag.Metadata.rawValue {
-                self.isInMetadata = false
-            }
-        }
-        if self.isInSmil {
-            if elementName == SmilTag.H1.rawValue || elementName == SmilTag.H2.rawValue {
-                self.isInSmil = false
+        if self.isInRoot {
+            if elementName == ContainerTag.RootFile.rawValue {
+                self.isInRoot = false
             }
         }
     }
@@ -162,7 +128,7 @@ class NccManager: NSObject, NSXMLParserDelegate {
         LogM("--- end parse.")
         
         if self.didParseSuccess != nil {
-            self.didParseSuccess!(daisy: self.daisy)
+            self.didParseSuccess!(opfPath: self.opfFilePath)
         }
     }
     

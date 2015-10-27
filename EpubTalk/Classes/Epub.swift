@@ -1,5 +1,5 @@
 //
-//  Daisy.swift
+//  Epub.swift
 //  tdtalk2dev
 //
 //  Created by Fujiwara on 2015/08/21.
@@ -9,9 +9,9 @@
 import Foundation
 import UIKit
 
-class Daisy: NSObject {
+class Epub: NSObject {
     
-    // Daisyバージョン
+    // Epubバージョン
     var version: CGFloat
     // メタデータ
     var dcMetadadta: DCMetadata
@@ -21,7 +21,7 @@ class Daisy: NSObject {
     
 
     override init() {
-        self.version = 2.02
+        self.version = 3
         self.dcMetadadta = DCMetadata()
         self.metadata = Metadata()
         self.navigation = Navigation()

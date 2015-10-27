@@ -15,10 +15,10 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         static let kOpfFileExtension: String = "opf"
     }
 
-    private var didParseSuccess: ((daisy: Daisy)->Void)?
+    private var didParseSuccess: ((epub: Epub)->Void)?
     private var didParseFailure: ((errorCode: TTErrorCode)->Void)?
-    private var daisy: Daisy
-    private var isInDcMetadata: Bool
+    private var epub: Epub
+    private var isInMetadata: Bool
     private var isInManifest: Bool
     private var currentElement: String
     private var currentDir: String
@@ -34,8 +34,8 @@ class OpfManager: NSObject, NSXMLParserDelegate {
     override init() {
         self.didParseSuccess = nil
         self.didParseFailure = nil
-        self.daisy = Daisy()
-        self.isInDcMetadata = false
+        self.epub = Epub()
+        self.isInMetadata = false
         self.isInManifest = false
         self.currentElement = ""
         self.currentDir = ""
@@ -44,7 +44,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
     }
     
     func startParseOpfFile(opfFilePath: String,
-        didParseSuccess: ((daisy: Daisy)->Void),
+        didParseSuccess: ((epub: Epub)->Void),
         didParseFailure:((errorCode: TTErrorCode)->Void))->Void
     {
         self.didParseSuccess = didParseSuccess
@@ -82,13 +82,15 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         qualifiedName qName: String?,
         attributes attributeDict: [NSObject : AnyObject])
     {
-//        Log(NSString(format: " - found element:[%@] attr[%@]", elementName, attributeDict))
+        Log(NSString(format: " - found element:[%@] attr[%@]", elementName, attributeDict))
         
-        if elementName == DCMetadataTag.DC_Metadata.rawValue {
-            self.isInDcMetadata = true
-        } else if self.isInDcMetadata {
+        if elementName == MetadataTag.Metadata.rawValue {
+            self.isInMetadata = true
+            
+        } else if self.isInMetadata {
             self.currentElement = elementName
         }
+        Log(NSString(format: " - current element:[%@]", self.currentElement))
         
         if elementName == ManifestTag.Manifest.rawValue {
             self.isInManifest = true
@@ -100,7 +102,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
                 if attr == MediaTypes.XML.rawValue {
                     var href: String = attributeDict[ManifestItemAttr.Href.rawValue] as! String
                     var path: String = currentDir.stringByAppendingPathComponent(href)
-                    self.daisy.navigation.contentsPaths.append(path)
+                    self.epub.navigation.contentsPaths.append(path)
                 }
             }
         }
@@ -109,33 +111,30 @@ class OpfManager: NSObject, NSXMLParserDelegate {
     
     // valueを読み込み
     func parser(parser: NSXMLParser, foundCharacters string: String?) {
-//        Log(NSString(format: " - found value:[%@] current_elem:%@", string!, self.currentElement))
+        Log(NSString(format: " - found value:[%@] current_elem:%@", string!, self.currentElement))
         
-        if self.isInDcMetadata {
+        if self.isInMetadata {
             switch self.currentElement {
-            case DCMetadataTag.DC_Identifier.rawValue:
-                self.daisy.metadata.identifier = string!
+            case MetadataTag.DC_Identifier.rawValue:
+                self.epub.metadata.identifier = string!
                 break
-            case DCMetadataTag.DC_Title.rawValue:
-                self.daisy.metadata.title = string!
+            case MetadataTag.DC_Title.rawValue:
+                self.epub.metadata.title = string!
                 break
-            case DCMetadataTag.DC_Publisher.rawValue:
-                self.daisy.metadata.publisher = string!
+            case MetadataTag.DC_Publisher.rawValue:
+                self.epub.metadata.publisher = string!
                 break
-//            case DCMetadataTag.DC_Subject.rawValue:
-//                self.daisy.metadata.subject = string!
-//                break
-            case DCMetadataTag.DC_Date.rawValue:
-                self.daisy.metadata.date = string!
+            case MetadataTag.DC_Date.rawValue:
+                self.epub.metadata.date = string!
                 break
-            case DCMetadataTag.DC_Creator.rawValue:
-                self.daisy.metadata.creator = string!
+            case MetadataTag.DC_Creator.rawValue:
+                self.epub.metadata.creator = string!
                 break
-            case DCMetadataTag.DC_Language.rawValue:
-                self.daisy.metadata.language = string!
+            case MetadataTag.DC_Language.rawValue:
+                self.epub.metadata.language = string!
                 break
-            case DCMetadataTag.DC_Format.rawValue:
-                self.daisy.metadata.format = string!
+            case MetadataTag.DC_Format.rawValue:
+                self.epub.metadata.format = string!
                 break
             default:
                 break
@@ -146,11 +145,11 @@ class OpfManager: NSObject, NSXMLParserDelegate {
     
     // 要素の終了タグを読み込み
     func parser(parser: NSXMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-//        Log(NSString(format: " - found element:[%@]", elementName))
+        Log(NSString(format: " - end element:[%@] current[%@]", elementName, self.currentElement))
         
-        if self.isInDcMetadata {
-            if elementName == DCMetadataTag.DC_Metadata.rawValue {
-                self.isInDcMetadata = false
+        if self.isInMetadata {
+            if elementName == MetadataTag.Metadata.rawValue {
+                self.isInMetadata = false
             }
             self.currentElement = ""
         }
@@ -166,7 +165,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         LogM("--- end parse.")
         
         if self.didParseSuccess != nil {
-            self.didParseSuccess!(daisy: self.daisy)
+            self.didParseSuccess!(epub: self.epub)
         }
     }
     

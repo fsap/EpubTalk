@@ -16,17 +16,14 @@
 		820F3EFA1BB2E82E0019B139 /* BookEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EE61BB2E82E0019B139 /* BookEntity.swift */; };
 		820F3EFB1BB2E82E0019B139 /* BookListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EE71BB2E82E0019B139 /* BookListViewController.swift */; };
 		820F3EFC1BB2E82E0019B139 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EE81BB2E82E0019B139 /* Constants.swift */; };
-		820F3EFD1BB2E82E0019B139 /* Daisy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EE91BB2E82E0019B139 /* Daisy.swift */; };
-		820F3EFE1BB2E82E0019B139 /* DaisyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EEA1BB2E82E0019B139 /* DaisyManager.swift */; };
+		820F3EFD1BB2E82E0019B139 /* Epub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EE91BB2E82E0019B139 /* Epub.swift */; };
 		820F3EFF1BB2E82E0019B139 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EEB1BB2E82E0019B139 /* DataManager.swift */; };
 		820F3F001BB2E82E0019B139 /* DCMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EEC1BB2E82E0019B139 /* DCMetadata.swift */; };
 		820F3F011BB2E82E0019B139 /* DiscInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EED1BB2E82E0019B139 /* DiscInfo.swift */; };
-		820F3F021BB2E82E0019B139 /* DiscInfoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EEE1BB2E82E0019B139 /* DiscInfoManager.swift */; };
 		820F3F031BB2E82E0019B139 /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EEF1BB2E82E0019B139 /* FileManager.swift */; };
 		820F3F041BB2E82E0019B139 /* ManifestItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EF01BB2E82E0019B139 /* ManifestItem.swift */; };
 		820F3F051BB2E82E0019B139 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EF11BB2E82E0019B139 /* Metadata.swift */; };
 		820F3F061BB2E82E0019B139 /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EF21BB2E82E0019B139 /* Navigation.swift */; };
-		820F3F071BB2E82E0019B139 /* NccManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EF31BB2E82E0019B139 /* NccManager.swift */; };
 		820F3F081BB2E82E0019B139 /* OPF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EF41BB2E82E0019B139 /* OPF.swift */; };
 		820F3F091BB2E82E0019B139 /* OpfManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EF51BB2E82E0019B139 /* OpfManager.swift */; };
 		820F3F0A1BB2E82E0019B139 /* TTAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3EF61BB2E82E0019B139 /* TTAlertController.swift */; };
@@ -51,6 +48,8 @@
 		820F3F501BB2E93D0019B139 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 820F3F4F1BB2E93D0019B139 /* libz.dylib */; };
 		820F3F531BB2FA490019B139 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 820F3F511BB2FA490019B139 /* Localizable.strings */; };
 		820F3F5C1BB432150019B139 /* EpubTalk.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 820F3F5A1BB432150019B139 /* EpubTalk.xcdatamodeld */; };
+		820F3F5E1BB5B5770019B139 /* EpubManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3F5D1BB5B5770019B139 /* EpubManager.swift */; };
+		82DC19BD1BBEEE0A0068D32E /* ContainerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,17 +78,14 @@
 		820F3EE61BB2E82E0019B139 /* BookEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookEntity.swift; sourceTree = "<group>"; };
 		820F3EE71BB2E82E0019B139 /* BookListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookListViewController.swift; sourceTree = "<group>"; };
 		820F3EE81BB2E82E0019B139 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		820F3EE91BB2E82E0019B139 /* Daisy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Daisy.swift; sourceTree = "<group>"; };
-		820F3EEA1BB2E82E0019B139 /* DaisyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DaisyManager.swift; sourceTree = "<group>"; };
+		820F3EE91BB2E82E0019B139 /* Epub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Epub.swift; sourceTree = "<group>"; };
 		820F3EEB1BB2E82E0019B139 /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		820F3EEC1BB2E82E0019B139 /* DCMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCMetadata.swift; sourceTree = "<group>"; };
 		820F3EED1BB2E82E0019B139 /* DiscInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscInfo.swift; sourceTree = "<group>"; };
-		820F3EEE1BB2E82E0019B139 /* DiscInfoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscInfoManager.swift; sourceTree = "<group>"; };
 		820F3EEF1BB2E82E0019B139 /* FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
 		820F3EF01BB2E82E0019B139 /* ManifestItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManifestItem.swift; sourceTree = "<group>"; };
 		820F3EF11BB2E82E0019B139 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		820F3EF21BB2E82E0019B139 /* Navigation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
-		820F3EF31BB2E82E0019B139 /* NccManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NccManager.swift; sourceTree = "<group>"; };
 		820F3EF41BB2E82E0019B139 /* OPF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OPF.swift; sourceTree = "<group>"; };
 		820F3EF51BB2E82E0019B139 /* OpfManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpfManager.swift; sourceTree = "<group>"; };
 		820F3EF61BB2E82E0019B139 /* TTAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTAlertController.swift; sourceTree = "<group>"; };
@@ -125,6 +121,8 @@
 		820F3F521BB2FA490019B139 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		820F3F541BB2FA590019B139 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		820F3F5B1BB432150019B139 /* EpubTalk.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EpubTalk.xcdatamodel; sourceTree = "<group>"; };
+		820F3F5D1BB5B5770019B139 /* EpubManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EpubManager.swift; sourceTree = "<group>"; };
+		82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,12 +217,11 @@
 				820F3F561BB42DB30019B139 /* Models */,
 				820F3EE71BB2E82E0019B139 /* BookListViewController.swift */,
 				820F3EE81BB2E82E0019B139 /* Constants.swift */,
-				820F3EEA1BB2E82E0019B139 /* DaisyManager.swift */,
 				820F3EEB1BB2E82E0019B139 /* DataManager.swift */,
 				820F3EEC1BB2E82E0019B139 /* DCMetadata.swift */,
-				820F3EEE1BB2E82E0019B139 /* DiscInfoManager.swift */,
 				820F3EEF1BB2E82E0019B139 /* FileManager.swift */,
-				820F3EF31BB2E82E0019B139 /* NccManager.swift */,
+				82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */,
+				820F3F5D1BB5B5770019B139 /* EpubManager.swift */,
 				820F3EF51BB2E82E0019B139 /* OpfManager.swift */,
 				820F3EF61BB2E82E0019B139 /* TTAlertController.swift */,
 				820F3EF71BB2E82E0019B139 /* TTBookService.swift */,
@@ -302,7 +299,7 @@
 				820F3EF21BB2E82E0019B139 /* Navigation.swift */,
 				820F3EF41BB2E82E0019B139 /* OPF.swift */,
 				820F3EF81BB2E82E0019B139 /* TTError.swift */,
-				820F3EE91BB2E82E0019B139 /* Daisy.swift */,
+				820F3EE91BB2E82E0019B139 /* Epub.swift */,
 				820F3EED1BB2E82E0019B139 /* DiscInfo.swift */,
 				820F3EE61BB2E82E0019B139 /* BookEntity.swift */,
 			);
@@ -421,10 +418,9 @@
 				820F3F0C1BB2E82E0019B139 /* TTError.swift in Sources */,
 				820F3EC11BB2E3780019B139 /* AppDelegate.swift in Sources */,
 				820F3F081BB2E82E0019B139 /* OPF.swift in Sources */,
-				820F3EFE1BB2E82E0019B139 /* DaisyManager.swift in Sources */,
 				820F3F001BB2E82E0019B139 /* DCMetadata.swift in Sources */,
 				820F3F411BB2E8CB0019B139 /* zip.c in Sources */,
-				820F3F071BB2E82E0019B139 /* NccManager.swift in Sources */,
+				82DC19BD1BBEEE0A0068D32E /* ContainerManager.swift in Sources */,
 				820F3F0B1BB2E82E0019B139 /* TTBookService.swift in Sources */,
 				820F3F3E1BB2E8CB0019B139 /* ioapi.c in Sources */,
 				820F3EFA1BB2E82E0019B139 /* BookEntity.swift in Sources */,
@@ -432,16 +428,16 @@
 				820F3F051BB2E82E0019B139 /* Metadata.swift in Sources */,
 				820F3F3F1BB2E8CB0019B139 /* mztools.c in Sources */,
 				820F3F381BB2E8CB0019B139 /* BRLBUF.M in Sources */,
+				820F3F5E1BB5B5770019B139 /* EpubManager.swift in Sources */,
 				820F3F391BB2E8CB0019B139 /* file.m in Sources */,
 				820F3F431BB2E8CB0019B139 /* SSZipArchive.m in Sources */,
-				820F3EFD1BB2E82E0019B139 /* Daisy.swift in Sources */,
+				820F3EFD1BB2E82E0019B139 /* Epub.swift in Sources */,
 				820F3F031BB2E82E0019B139 /* FileManager.swift in Sources */,
 				820F3F0D1BB2E82E0019B139 /* Util.swift in Sources */,
 				820F3EFB1BB2E82E0019B139 /* BookListViewController.swift in Sources */,
 				820F3F3C1BB2E8CB0019B139 /* Changelog.markdown in Sources */,
 				820F3F061BB2E82E0019B139 /* Navigation.swift in Sources */,
 				820F3EFF1BB2E82E0019B139 /* DataManager.swift in Sources */,
-				820F3F021BB2E82E0019B139 /* DiscInfoManager.swift in Sources */,
 				820F3F0F1BB2E8BD0019B139 /* LodingView.swift in Sources */,
 				820F3F091BB2E82E0019B139 /* OpfManager.swift in Sources */,
 				820F3EFC1BB2E82E0019B139 /* Constants.swift in Sources */,
