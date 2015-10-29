@@ -14,7 +14,7 @@ class TTAlertController : UIViewController, UIAlertViewDelegate {
     var actionCancelBlock: (()->Void)
     var alertView: UIAlertView
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         self.actionOkBlock = {}
         self.actionCancelBlock = {}
         self.alertView = UIAlertView()
@@ -31,9 +31,9 @@ class TTAlertController : UIViewController, UIAlertViewDelegate {
     // メッセージダイアログ(OKボタンのみ)
     func show(parentViewController: UIViewController?, title: String, message: String, actionOk: (()->Void))->Void {
         if objc_getClass("UIAlertController") != nil {
-            var alertController: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+            let alertController: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
             if parentViewController != nil {
-                let alertAction = UIAlertAction(title: "OK", style: .Default, handler: { (action: UIAlertAction!) -> Void in
+                let alertAction = UIAlertAction(title: "OK", style: .Default, handler: { (action: UIAlertAction) -> Void in
                     alertController.dismissViewControllerAnimated(true, completion: nil)
                     actionOk()
                 })
@@ -51,13 +51,13 @@ class TTAlertController : UIViewController, UIAlertViewDelegate {
     // メッセージダイアログ(OK, Cancelボタン)
     func show(parentViewController: UIViewController?, title: String, message: String, actionOk: (()->Void), actionCancel: (()->Void)?) {
         if objc_getClass("UIAlertController") != nil {
-            var alertController: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+            let alertController: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
             if parentViewController != nil {
-                let alertOkAction = UIAlertAction(title: "OK", style: .Default, handler: { (action: UIAlertAction!) -> Void in
+                let alertOkAction = UIAlertAction(title: "OK", style: .Default, handler: { (action: UIAlertAction) -> Void in
                     alertController.dismissViewControllerAnimated(true, completion: nil)
                     actionOk()
                 })
-                let alertCancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: { (action: UIAlertAction!) -> Void in
+                let alertCancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: { (action: UIAlertAction) -> Void in
                     alertController.dismissViewControllerAnimated(true, completion: nil)
                     if actionCancel != nil {
                         actionCancel!()

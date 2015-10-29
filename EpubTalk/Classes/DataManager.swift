@@ -18,7 +18,7 @@ class DataManager {
     lazy var applicationDocumentsDirectory: NSURL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named "jp.fsap.TdTalk2Dev" in the application's documents Application Support directory.
         let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
-        return urls[urls.count-1] as! NSURL
+        return urls[urls.count-1] 
     }()
 
     lazy var managedObjectModel: NSManagedObjectModel = {
@@ -35,7 +35,10 @@ class DataManager {
         Log(NSString(format: "sqlite:%@", url))
         var error: NSError? = nil
         var failureReason = "There was an error creating or loading the application's saved data."
-        if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil, error: &error) == nil {
+        do {
+            try coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil)
+        } catch var error1 as NSError {
+            error = error1
             coordinator = nil
             // Report any error we got.
             var dict = [String: AnyObject]()
@@ -47,6 +50,8 @@ class DataManager {
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             NSLog("Unresolved error \(error), \(error!.userInfo)")
             abort()
+        } catch {
+            fatalError()
         }
         
         return coordinator
@@ -72,7 +77,7 @@ class DataManager {
     }
     
     func find(entityName: String, condition: NSPredicate?, sort: [NSSortDescriptor]?)->[AnyObject]? {
-        var request: NSFetchRequest = NSFetchRequest()
+        let request: NSFetchRequest = NSFetchRequest()
         let entity = NSEntityDescription.entityForName(entityName, inManagedObjectContext: self.managedObjectContext!)
         request.entity = entity
         if condition != nil {
@@ -83,7 +88,13 @@ class DataManager {
         }
         
         var error: NSError?
-        let results = self.managedObjectContext?.executeFetchRequest(request, error: &error)
+        let results: [AnyObject]?
+        do {
+            results = try self.managedObjectContext?.executeFetchRequest(request)
+        } catch let error1 as NSError {
+            error = error1
+            results = nil
+        }
         if error != nil {
             Log(NSString(format: "error code:%d msg:%@", error!.code, error!.description))
             return []
@@ -92,15 +103,20 @@ class DataManager {
     }
     
     func getEntity(entityName: String)->NSManagedObject {
-        return NSEntityDescription.insertNewObjectForEntityForName(entityName, inManagedObjectContext: self.managedObjectContext!) as! NSManagedObject
+        return NSEntityDescription.insertNewObjectForEntityForName(entityName, inManagedObjectContext: self.managedObjectContext!) 
     }
     
     func save()->TTErrorCode {
         if let context = self.managedObjectContext {
             var error: NSError? = nil
-            if context.hasChanges && !context.save(&error) {
-                Log(NSString(format: "error code:%d msg:%@", error!.code, error!.description))
-                return TTErrorCode.FailedToSaveDB
+            if context.hasChanges {
+                do {
+                    try context.save()
+                } catch let error1 as NSError {
+                    error = error1
+                    Log(NSString(format: "error code:%d msg:%@", error!.code, error!.description))
+                    return TTErrorCode.FailedToSaveDB
+                }
             }
         }
         return TTErrorCode.Normal
@@ -110,7 +126,10 @@ class DataManager {
         if let context = self.managedObjectContext {
             context.deleteObject(entity)
             var error: NSError? = nil
-            if !context.save(&error) {
+            do {
+                try context.save()
+            } catch let error1 as NSError {
+                error = error1
                 Log(NSString(format: "error code:%d msg:%@", error!.code, error!.description))
                 return TTErrorCode.FailedToSaveDB
             }

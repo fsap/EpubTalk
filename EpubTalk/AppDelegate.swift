@@ -22,10 +22,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         if launchOptions != nil {
             var options = launchOptions!
-            var url = options[UIApplicationLaunchOptionsURLKey] as! NSURL;
-            Log(NSString(format: "url:%@", url.absoluteString!))
+            let url = options[UIApplicationLaunchOptionsURLKey] as! NSURL;
+            Log(NSString(format: "url:%@", url))
             
-            if !self.startImportBook(url.absoluteString!) {
+            if !self.startImportBook(url) {
                 return false
             }
         }
@@ -38,7 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Log(NSString(format: "lifecycle:handle_open_url:%@", url.lastPathComponent!))
         // Override point for customization after application launch.
         
-        if !self.startImportBook(url.absoluteString!) {
+        if !self.startImportBook(url) {
             return false
         }
         
@@ -68,14 +68,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Saves changes in the application's managed object context before the application terminates.
     }
 
-    private func startImportBook(url: String)->Bool {
+    ///
+    /// 図書ファイル読み込み開始
+    /// - parameter url: NSURL! 取り込み元URL
+    /// - returns: Bool
+    ///
+    private func startImportBook(url: NSURL!)->Bool {
+        // 既に読み込みが走っている場合はスルー
         if self.loadingFlg {
             return false
         }
         
-        var bookService = TTBookService.sharedInstance
+        let bookService = TTBookService.sharedInstance
         bookService.delegate?.importStarted()
-        var ret = bookService.validate(url.lastPathComponent)
+        let ret = bookService.validate(url)
         
         // エラーメッセージ
         switch ret {
@@ -86,7 +92,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             alertController.show(
                 window?.rootViewController!,
                 title:NSLocalizedString("dialog_title_error", comment: ""),
-                message:TTError.getErrorMessage(ret), actionOk: {() -> Void in})
+                message:TTError.getErrorMessage(ret), actionOk: {() -> Void in
+                    bookService.delegate?.importFailed()
+            })
             return false
         }
         
@@ -95,7 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let queue = dispatch_queue_create("import_book", nil)
         dispatch_async(queue, { () -> Void in
             // インポート
-            bookService.importDaisy(url.lastPathComponent, didSuccess: { () -> Void in
+            bookService.importDaisy(url, didSuccess: { () -> Void in
                 // 完了
                 self.loadingFlg = false
                 

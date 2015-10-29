@@ -58,7 +58,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
             return
         }
         
-        currentDir = opfFilePath.stringByDeletingLastPathComponent
+        currentDir = (opfFilePath as NSString).stringByDeletingLastPathComponent
         
         parser!.delegate = self
         
@@ -80,7 +80,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         didStartElement elementName: String,
         namespaceURI: String?,
         qualifiedName qName: String?,
-        attributes attributeDict: [NSObject : AnyObject])
+        attributes attributeDict: [String : String])
     {
         Log(NSString(format: " - found element:[%@] attr[%@]", elementName, attributeDict))
         
@@ -98,10 +98,10 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         } else if self.isInManifest {
             if elementName == ManifestTag.Item.rawValue {
                 // xmlファイル情報のみ取得
-                var attr: String = attributeDict[ManifestItemAttr.MediaType.rawValue] as! String
+                let attr: String = attributeDict[ManifestItemAttr.MediaType.rawValue] as! String
                 if attr == MediaTypes.XML.rawValue {
-                    var href: String = attributeDict[ManifestItemAttr.Href.rawValue] as! String
-                    var path: String = currentDir.stringByAppendingPathComponent(href)
+                    let href: String = attributeDict[ManifestItemAttr.Href.rawValue] as! String
+                    let path: String = (currentDir as NSString).stringByAppendingPathComponent(href)
                     self.epub.navigation.contentsPaths.append(path)
                 }
             }

@@ -45,26 +45,24 @@ class TTBookService {
     //
     // ファイル形式の検証
     //
-    func validate(target :String)->TTErrorCode {
+    func validate(targetUrl :NSURL)->TTErrorCode {
+        Log(NSString(format: "--- target path:%@", targetUrl.path!))
         
-        if target == "" {
+        if targetUrl == "" {
             return TTErrorCode.FailedToGetFile
         }
-        var filename: String = target.stringByRemovingPercentEncoding!
-
-        let filepath = FileManager.getInboxDir().stringByAppendingPathComponent(filename)
-        Log(NSString(format: "--- paht:%@", filepath))
+        let filename: String = targetUrl.lastPathComponent!.stringByRemovingPercentEncoding!
         
         // ファイルの存在チェック
-        if !(self.fileManager.exists(filepath)) {
-            Log(NSString(format: "%@ not found.", filepath))
+        if !(self.fileManager.exists(targetUrl.path!)) {
+            Log(NSString(format: "%@ not found.", targetUrl.path!))
             return TTErrorCode.FileNotExists
         }
         
         // ファイル形式のチェック
-        if !(FileManager.isValidExtension(filename)) {
+        if !(FileManager.isValiedExtension(filename)) {
             Log(NSString(format: "Unsupported type:%@", filename))
-            self.fileManager.removeFile(filepath)
+            self.fileManager.removeFile(targetUrl.path!)
             return TTErrorCode.UnsupportedFileType
         }
         
@@ -74,43 +72,45 @@ class TTBookService {
     //
     // ファイルの取り込み
     //
-    func importDaisy(target :String, didSuccess:(()->Void), didFailure:((errorCode: TTErrorCode)->Void))->Void {
+    func importDaisy(sourceUrl :NSURL, didSuccess:(()->Void), didFailure:((errorCode: TTErrorCode)->Void))->Void {
         
-//        self.delegate?.importStarted()
         self.keepLoading = true
         
-        var filename: String = target.stringByRemovingPercentEncoding!
-        // 外部から渡ってきたファイルのパス ex) sadbox/Documents/Inbox/What_Is_HTML5_.zip
-        let importFilePath = FileManager.getInboxDir().stringByAppendingPathComponent(filename)
-        // 作業用ディレクトリ ex) sadbox/tmp/
-        let tmpDir = FileManager.getTmpDir()
-        // 作業ファイル展開用ディレクトリ ex) sadbox/tmp/What_Is_HTML5_
-        let expandDir = tmpDir.stringByAppendingPathComponent(filename.stringByDeletingPathExtension)
-        // 取り込み先ディレクトリ ex) sandbox/Library/Books/
-        let bookDir = FileManager.getImportDir()
+        let filename: String = sourceUrl.lastPathComponent!.stringByRemovingPercentEncoding!
+        let tmpUrl: NSURL = FileManager.getTmpDir()
+        let expandUrl: NSURL = tmpUrl.URLByAppendingPathComponent(filename).URLByDeletingPathExtension!
         
-        if (filename.pathExtension == Constants.kImportableExtensions[0]
-            || filename.pathExtension == Constants.kImportableExtensions[1]
-            || filename.pathExtension == Constants.kImportableExtensions[2]) {
-            // 圧縮ファイル展開
-            if !(self.fileManager.unzip(importFilePath, expandDir: expandDir)) {
-                LogE(NSString(format: "Unable to expand:%@", filename))
-                deInitImport([importFilePath], errorCode: TTErrorCode.UnsupportedFileType, didSuccess: didSuccess, didFailure: didFailure)
+        // 外部から渡ってきたファイルのパス ex) sadbox/Documents/Inbox/What_Is_HTML5_.zip
+        let sourcePath: String = sourceUrl.path!
+        // 作業用ディレクトリ ex) sadbox/tmp/
+        let tmpPath: String = tmpUrl.path!
+        // 作業ファイル展開用ディレクトリ ex) sadbox/tmp/What_Is_HTML5_
+        let expandPath: String = expandUrl.path!
+        
+        if (sourceUrl.pathExtension == Constants.kImportableExtensions[0]) {
+            // exe展開
+            if !(self.fileManager.unzip(sourcePath, expandPath: expandPath)) {
+                LogE(NSString(format: "Unable to expand path:%@ file:%@", sourceUrl, filename))
+                deInitImport([sourcePath], errorCode: TTErrorCode.UnsupportedFileType, didSuccess: didSuccess, didFailure: didFailure)
                 return
             }
             
-        } else {
-            LogE(NSString(format: "Unable to expand:%@", filename))
-            deInitImport([importFilePath], errorCode: TTErrorCode.UnsupportedFileType, didSuccess: didSuccess, didFailure: didFailure)
-            return
+        } else if (sourceUrl.pathExtension == Constants.kImportableExtensions[1]) {
+            // zip解凍
+            if !(self.fileManager.unzip(sourcePath, expandPath: expandPath)) {
+                LogE(NSString(format: "Unable to expand path:%@ file:%@", sourcePath, filename))
+                deInitImport([sourcePath], errorCode: TTErrorCode.UnsupportedFileType, didSuccess: didSuccess, didFailure: didFailure)
+                return
+            }
         }
-        Log(NSString(format: "tmp_dir:%@", self.fileManager.fileManager.contentsOfDirectoryAtPath(tmpDir, error: nil)!))
+        Log(NSString(format: "tmp_dir:%@", try! self.fileManager.fileManager.contentsOfDirectoryAtPath(tmpPath)))
         
         if !keepLoading {
-            deInitImport([importFilePath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
+            deInitImport([sourcePath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
             return
         }
         
+        // 初期化
         self.fileManager.initImport()
         
         let epubManager: EpubManager = EpubManager.sharedInstance
@@ -146,19 +146,19 @@ class TTBookService {
                     }
                     
                     // 本棚へ登録
-                    var result = self.fileManager.saveToBook(saveFilePath)
+                    let result = self.fileManager.saveToBook(saveFilePath)
                     if result != TTErrorCode.Normal {
                         self.deInitImport([importFilePath, expandDir], errorCode: result, didSuccess: didSuccess, didFailure: didFailure)
                         return
                     }
                     
                     // 図書情報をDBに保存
-                    var book: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
+                    let book: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
                     book.title = epub.metadata.title
                     book.language = epub.metadata.language
-                    book.filename = saveFilePath.lastPathComponent.stringByDeletingPathExtension
+                    book.filename = ((saveFilePath as NSString).lastPathComponent as NSString).stringByDeletingPathExtension
                     book.sort_num = self.getBookList().count
-                    var ret = self.dataManager.save()
+                    let ret = self.dataManager.save()
                     if ret != TTErrorCode.Normal {
                         self.deInitImport([importFilePath, expandDir], errorCode: ret, didSuccess: didSuccess, didFailure: didFailure)
                         return
@@ -196,9 +196,9 @@ class TTBookService {
         }
 
         var result:[String] = []
-        let files = self.fileManager.fileManager.contentsOfDirectoryAtPath(bookDir, error: nil)!
+        let files = try! self.fileManager.fileManager.contentsOfDirectoryAtPath(bookDir)
         for file in files {
-            var file:String = file as! String
+            let file:String = file 
             result.append(file)
         }
         return result
@@ -217,7 +217,7 @@ class TTBookService {
     // 図書ファイルを削除
     func deleteBook(book: BookEntity)->TTErrorCode {
         // ファイル削除
-        let filepath: String = FileManager.getImportDir().stringByAppendingPathComponent(book.filename)
+        let filepath: String = (FileManager.getImportDir() as NSString).stringByAppendingPathComponent(book.filename)
         let fileResult: TTErrorCode = self.fileManager.removeFile(filepath)
         Log(NSString(format: "remove file:%@", filepath))
         if fileResult != TTErrorCode.Normal {
@@ -225,7 +225,7 @@ class TTBookService {
         }
         
         // 完了したらDBからも削除
-        var dbResult: TTErrorCode = self.dataManager.remove(book)
+        let dbResult: TTErrorCode = self.dataManager.remove(book)
         
         return dbResult
     }

@@ -27,7 +27,7 @@ class LoadingView: UIView, BookListViewDelegate {
         super.init(frame: frame)
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -49,15 +49,15 @@ class LoadingView: UIView, BookListViewDelegate {
 //        self.accessibilityFrame = self.frame
         
         // mask
-        var maskView: UIView = UIView(frame: parentView.frame)
+        let maskView: UIView = UIView(frame: parentView.frame)
         maskView.backgroundColor = UIColor.grayColor()
         maskView.isAccessibilityElement = true
         maskView.accessibilityLabel = NSLocalizedString("msg_loading", comment: "")
         maskView.accessibilityFrame = self.frame
         
         // メッセージラベル
-        var msgView: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-        var msgLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 20))
+        let msgView: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+        let msgLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 20))
         msgView.center = parentView.center
         msgView.backgroundColor = UIColor.clearColor()
         msgLabel.textColor = UIColor.whiteColor()
@@ -72,7 +72,7 @@ class LoadingView: UIView, BookListViewDelegate {
         activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.White
         
         // 中止ボタン
-        var cancelBtn: UIButton = UIButton(frame: CGRect(x: 0, y: 0, width: 150, height: 40))
+        let cancelBtn: UIButton = UIButton(frame: CGRect(x: 0, y: 0, width: 150, height: 40))
         cancelBtn.backgroundColor = UIColor.whiteColor()
         cancelBtn.addTarget(self, action: "cancelBtnTapped", forControlEvents: UIControlEvents.TouchUpInside)
         cancelBtn.setTitleColor(UIColor.blackColor(), forState: .Normal)

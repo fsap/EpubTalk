@@ -58,7 +58,7 @@ class ContainerManager: NSObject, NSXMLParserDelegate {
             return
         }
         
-        currentDir = containerFilePath.stringByDeletingLastPathComponent
+        currentDir = (containerFilePath as NSString).stringByDeletingLastPathComponent
         
         parser!.delegate = self
         
@@ -80,12 +80,12 @@ class ContainerManager: NSObject, NSXMLParserDelegate {
         didStartElement elementName: String,
         namespaceURI: String?,
         qualifiedName qName: String?,
-        attributes attributeDict: [NSObject : AnyObject])
+        attributes attributeDict: [String : String])
     {
         Log(NSString(format: " - found element:[%@] attr[%@]", elementName, attributeDict))
         
         if elementName == ContainerTag.RootFile.rawValue {
-            var fullPath: String? = attributeDict[ContainerAttr.FullPath.rawValue] as? String
+            let fullPath: String? = attributeDict[ContainerAttr.FullPath.rawValue] as? String
             Log(NSString(format: "full-path:%@", fullPath!))
             self.opfFilePath = fullPath!
         }

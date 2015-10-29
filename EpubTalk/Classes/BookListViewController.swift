@@ -52,7 +52,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
             self.startLoading()
         }
         
-        var bookService = TTBookService.sharedInstance
+        let bookService = TTBookService.sharedInstance
         bookService.delegate = self
         
         self.bookList = bookService.getBookList()
@@ -89,7 +89,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     
     // 並び順をリフレッシュする
     private func refreshSort()->Void {
-        for (index, book: BookEntity) in enumerate(self.bookList) {
+        for (index, book): (Int, BookEntity) in self.bookList.enumerate() {
             // 降順で並べるため
             book.sort_num = self.bookList.count - index
             self.manager.save()
@@ -121,7 +121,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     private func createBooks()->Void {
         
         for (var i=0; i<5; i++) {
-            var book: BookEntity = self.manager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
+            let book: BookEntity = self.manager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
             book.title = NSString(format: "title_%d", i) as String
             book.sort_num = i
             manager.save()
@@ -166,7 +166,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         
         // Debug
         let fileManager: NSFileManager = NSFileManager.defaultManager()
-        let attr = fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", FileManager.getImportDir().stringByAppendingPathComponent(book.filename), book.filename) as String, error: nil)
+        let attr = try? fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", (FileManager.getImportDir() as NSString).stringByAppendingPathComponent(book.filename), book.filename) as String)
         Log(NSString(format: "--- selected book. file:%@ attr:%@", book.filename, attr!))
     }
     
@@ -195,7 +195,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
                 message: NSLocalizedString("dialog_msg_delete", comment: ""),
                 actionOk: { () -> Void in
                     let book: BookEntity = self.bookList[indexPath.row]
-                    var result: TTErrorCode = TTBookService.sharedInstance.deleteBook(book)
+                    let result: TTErrorCode = TTBookService.sharedInstance.deleteBook(book)
                     if result == TTErrorCode.Normal {
                         self.bookList.removeAtIndex(indexPath.row)
                         self.bookListTableView?.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Left)
@@ -221,7 +221,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // 移動の確定タイミングで呼ばれる
     func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
 
-        var sourceBook: BookEntity = self.bookList[sourceIndexPath.row]
+        let sourceBook: BookEntity = self.bookList[sourceIndexPath.row]
         self.bookList.removeAtIndex(sourceIndexPath.row)
         self.bookList.insert(sourceBook, atIndex: destinationIndexPath.row)
         self.refreshSort()
@@ -261,7 +261,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // MARK: LoadingViewDelegate
     //
     func cancelLoad() {
-        var bookService: TTBookService = TTBookService.sharedInstance
+        let bookService: TTBookService = TTBookService.sharedInstance
         bookService.cancelImport()
     }
 }
