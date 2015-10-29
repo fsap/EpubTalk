@@ -31,7 +31,7 @@ class EpubManager: NSObject {
     /// - parameter Closure: 処理に成功した時のクロージャを定義
     /// - parameter Closure: 処理に失敗した時のクロージャを定義
     ///
-    func detectEpubStandard(targetUrl: NSURL, didSuccess:((path: NSURL?)->Void), didFailure:((errorCode: TTErrorCode)->Void)) {
+    func detectEpubStandard(targetUrl: NSURL, didSuccess:((containerUrl: NSURL?)->Void), didFailure:((errorCode: TTErrorCode)->Void)) {
         
         let fileManager: FileManager = FileManager.sharedInstance
         
@@ -41,11 +41,12 @@ class EpubManager: NSObject {
             Log(NSString(format: "META-INF found. %@", try! fileManager.fileManager.contentsOfDirectoryAtPath(metaDataPath!)))
             // META-INF内からcontainerをサーチ
             var containerPath: String? = nil
-            if fileManager.searchFile(EpubStandard_3_0.MetadataFileName, targetUrl: metaDataPath!, recursive: true, result: &containerPath) {
-                didSuccess(path: containerPath)
+            let metaDataUrl: NSURL = NSURL(fileURLWithPath: metaDataPath!)
+            if fileManager.searchFile(EpubStandard_3_0.MetadataFileName, targetUrl: metaDataUrl, recursive: true, result: &containerPath) {
+                didSuccess(containerUrl: NSURL(fileURLWithPath: containerPath!))
                 return
             }
-            LogE(NSString(format: "[%d] meta data file not found. dir:%@", TTErrorCode.FiledToParseMetadataFile.rawValue, containerPath!))
+            LogE(NSString(format: "[%d] meta data file not found. dir:%@", TTErrorCode.FiledToParseMetadataFile.rawValue, metaDataUrl))
             didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
             return
         }
@@ -55,8 +56,8 @@ class EpubManager: NSObject {
     // メタ情報の読み込み
     //
     func loadMetadata(
-        targetPath:String,
-        containerPath: String,
+        targetUrl: NSURL,
+        containerUrl: NSURL,
         didSuccess:((epub: Epub)->Void),
         didFailure:((errorCode: TTErrorCode)->Void)
         )

@@ -114,41 +114,41 @@ class TTBookService {
         self.fileManager.initImport()
         
         let epubManager: EpubManager = EpubManager.sharedInstance
-        epubManager.detectEpubStandard(expandDir, didSuccess: { (path) -> Void in
-            Log(NSString(format: "success. path:%@", path!))
+        epubManager.detectEpubStandard(expandUrl, didSuccess: { (containerUrl) -> Void in
+            Log(NSString(format: "success. path:%@", containerUrl!))
             
             if !self.keepLoading {
-                self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
+                self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
                 return
             }
             
             let queue: dispatch_queue_t = dispatch_queue_create("loadMetaData", nil)
             dispatch_async(queue, { () -> Void in
                 
-                epubManager.loadMetadata(expandDir, containerPath: path!, didSuccess: { (epub) -> Void in
+                epubManager.loadMetadata(expandUrl, containerUrl: containerUrl!, didSuccess: { (epub) -> Void in
                     // メタ情報の読み込みに成功
                     Log(NSString(format: "success to get metadata. paths:%@", epub.navigation.contentsPaths))
                     Log(NSString(format: "epub: title:%@ language:%@", epub.metadata.title, epub.metadata.language))
                     
                     if !self.keepLoading {
-                        self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
+                        self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
                         return
                     }
                     
-                    let saveFilePath = self.fileManager.loadXmlFiles(epub.navigation.contentsPaths, saveDir:expandDir, metadata: epub.metadata)
+                    let saveFilePath = self.fileManager.loadXmlFiles(epub.navigation.contentsPaths, saveUrl:expandUrl, metadata: epub.metadata)
                     if !self.keepLoading {
-                        self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
+                        self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
                         return
                     }
                     if saveFilePath == "" {
-                        self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.FailedToLoadFile, didSuccess: didSuccess, didFailure: didFailure)
+                        self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.FailedToLoadFile, didSuccess: didSuccess, didFailure: didFailure)
                         return
                     }
                     
                     // 本棚へ登録
                     let result = self.fileManager.saveToBook(saveFilePath)
                     if result != TTErrorCode.Normal {
-                        self.deInitImport([importFilePath, expandDir], errorCode: result, didSuccess: didSuccess, didFailure: didFailure)
+                        self.deInitImport([sourcePath, expandPath], errorCode: result, didSuccess: didSuccess, didFailure: didFailure)
                         return
                     }
                     
@@ -156,25 +156,27 @@ class TTBookService {
                     let book: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
                     book.title = epub.metadata.title
                     book.language = epub.metadata.language
-                    book.filename = ((saveFilePath as NSString).lastPathComponent as NSString).stringByDeletingPathExtension
+                    let saveFileUrl: NSURL = NSURL(fileURLWithPath: saveFilePath)
+//                    book.filename = ((saveFilePath as NSString).lastPathComponent as NSString).stringByDeletingPathExtension
+                    book.filename = saveFileUrl.URLByDeletingPathExtension!.lastPathComponent!
                     book.sort_num = self.getBookList().count
                     let ret = self.dataManager.save()
                     if ret != TTErrorCode.Normal {
-                        self.deInitImport([importFilePath, expandDir], errorCode: ret, didSuccess: didSuccess, didFailure: didFailure)
+                        self.deInitImport([sourcePath, expandPath], errorCode: ret, didSuccess: didSuccess, didFailure: didFailure)
                         return
                     }
                     
                     // 終了処理
-                    self.deInitImport([importFilePath, expandDir], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
+                    self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
                 }, didFailure: { (errorCode) -> Void in
-                    LogE(NSString(format: "[%d]Failed to load metadata. dir:%@", errorCode.rawValue, expandDir))
-                    self.deInitImport([importFilePath, expandDir], errorCode: errorCode, didSuccess: didSuccess, didFailure: didFailure)
+                    LogE(NSString(format: "[%d]Failed to load metadata. dir:%@", errorCode.rawValue, expandPath))
+                    self.deInitImport([sourcePath, expandPath], errorCode: errorCode, didSuccess: didSuccess, didFailure: didFailure)
                 })
             })
             
         }) { (errorCode) -> Void in
-            LogE(NSString(format: "[%d]Invalid directory format. dir:%@", errorCode.rawValue, expandDir))
-            self.deInitImport([importFilePath, expandDir], errorCode: errorCode, didSuccess: didSuccess, didFailure: didFailure)
+            LogE(NSString(format: "[%d]Invalid directory format. dir:%@", errorCode.rawValue, expandPath))
+            self.deInitImport([sourcePath, expandPath], errorCode: errorCode, didSuccess: didSuccess, didFailure: didFailure)
         }
         
     }
