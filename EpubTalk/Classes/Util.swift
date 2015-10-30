@@ -15,30 +15,36 @@ import UIKit
 // デバッグログ出力(DEBUGビルド時のみ)
 // formatして出力したい時
 func Log(message: NSString,
+    file: String = __FILE__,
     function: String = __FUNCTION__,
     line: Int = __LINE__)
 {
 #if DEBUG
-    NSLog("DEBUG:%@(%d) %@", function, line, message)
+    let file: NSURL = NSURL(fileURLWithPath: file)
+    NSLog("DEBUG:%@:%@(%d) %@", file.lastPathComponent!, function, line, message)
 #endif
 }
 
 // メッセージのみ
 func LogM(message: String,
+    file: String = __FILE__,
     function: String = __FUNCTION__,
     line: Int = __LINE__)
 {
 #if DEBUG
-    NSLog("DEBUG:%@(%d) %@", function, line, message)
+    let file: NSURL = NSURL(fileURLWithPath: file)
+    NSLog("DEBUG:%@:%@(%d) %@", file.lastPathComponent!, function, line, message)
 #endif
 }
 
 // エラーログ出力
 func LogE(message: NSString,
+    file: String = __FILE__,
     function: String = __FUNCTION__,
     line: Int = __LINE__)
 {
-    NSLog("ERR:%@(%d) %@", function, line, message)
+    let file: NSURL = NSURL(fileURLWithPath: file)
+    NSLog("ERR:%@:%@(%d) %@", file.lastPathComponent!, function, line, message)
 }
 
 /*

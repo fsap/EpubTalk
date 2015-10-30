@@ -141,18 +141,18 @@ class FileManager: NSObject {
                 continue
             }
             
+            // ファイル名をチェック
+            if content == filename {
+                result = targetUrl.URLByAppendingPathComponent(content).path!
+                return true
+            }
+            
             // ディレクトリの場合で再帰的に検索する場合はサブディレクトリ検索
             if (isDir && recursive) {
                 if searchFile(filename, targetUrl: targetUrl.URLByAppendingPathComponent(content), recursive: recursive, result: &result) {
                     return true
                 }
                 continue
-            }
-            
-            // ファイル名をチェック
-            if content == filename {
-                result = targetUrl.URLByAppendingPathComponent(content).path!
-                return true
             }
         }
         

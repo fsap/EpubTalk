@@ -19,11 +19,11 @@ enum ContainerAttr: String {
 
 class ContainerManager: NSObject, NSXMLParserDelegate {
     
-    private var didParseSuccess: ((opfPath: String)->Void)?
+    private var didParseSuccess: ((opfUrl: NSURL?)->Void)?
     private var didParseFailure: ((errorCode: TTErrorCode)->Void)?
-    private var opfFilePath: String
+    private var opfUrl: NSURL?
     private var isInRoot: Bool
-    private var currentDir: String
+    private var currentDir: NSURL?
     
     
     class var sharedInstance : ContainerManager {
@@ -36,29 +36,28 @@ class ContainerManager: NSObject, NSXMLParserDelegate {
     override init() {
         self.didParseSuccess = nil
         self.didParseFailure = nil
-        self.opfFilePath = ""
+        self.opfUrl = nil
         self.isInRoot = false
-        self.currentDir = ""
+        self.currentDir = nil
         
         super.init()
     }
     
-    func startParseContainerFile(containerFilePath: String,
-        didParseSuccess: ((opfFilePath: String)->Void),
+    func startParseContainerFile(containerUrl: NSURL,
+        didParseSuccess: ((opfUrl: NSURL?)->Void),
         didParseFailure:((errorCode: TTErrorCode)->Void))->Void
     {
         self.didParseSuccess = didParseSuccess
         self.didParseFailure = didParseFailure
         
-        let url: NSURL? = NSURL.fileURLWithPath(containerFilePath)
-        let parser: NSXMLParser? = NSXMLParser(contentsOfURL: url)
+        let parser: NSXMLParser? = NSXMLParser(contentsOfURL: containerUrl)
         
         if parser == nil {
             didParseFailure(errorCode: TTErrorCode.MetadataFileNotFound)
             return
         }
         
-        currentDir = (containerFilePath as NSString).stringByDeletingLastPathComponent
+        currentDir = containerUrl.URLByDeletingLastPathComponent
         
         parser!.delegate = self
         
@@ -85,9 +84,11 @@ class ContainerManager: NSObject, NSXMLParserDelegate {
         Log(NSString(format: " - found element:[%@] attr[%@]", elementName, attributeDict))
         
         if elementName == ContainerTag.RootFile.rawValue {
-            let fullPath: String? = attributeDict[ContainerAttr.FullPath.rawValue] as? String
-            Log(NSString(format: "full-path:%@", fullPath!))
-            self.opfFilePath = fullPath!
+            let fullPath: String? = attributeDict[ContainerAttr.FullPath.rawValue]
+            if fullPath != nil {
+                Log(NSString(format: "full-path:%@", fullPath!))
+                self.opfUrl = NSURL(fileURLWithPath: fullPath!)
+            }
         }
 
 /*
@@ -107,8 +108,8 @@ class ContainerManager: NSObject, NSXMLParserDelegate {
     }
     
     // valueを読み込み
-    func parser(parser: NSXMLParser, foundCharacters string: String?) {
-        Log(NSString(format: " - found value:[%@]", string!))
+    func parser(parser: NSXMLParser, foundCharacters string: String) {
+        Log(NSString(format: " - found value:[%@]", string))
         
     }
     
@@ -128,7 +129,7 @@ class ContainerManager: NSObject, NSXMLParserDelegate {
         LogM("--- end parse.")
         
         if self.didParseSuccess != nil {
-            self.didParseSuccess!(opfPath: self.opfFilePath)
+            self.didParseSuccess!(opfUrl: self.opfUrl)
         }
     }
     

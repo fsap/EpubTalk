@@ -166,8 +166,8 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         
         // Debug
         let fileManager: NSFileManager = NSFileManager.defaultManager()
-        let attr = try? fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", (FileManager.getImportDir() as NSString).stringByAppendingPathComponent(book.filename), book.filename) as String)
-        Log(NSString(format: "--- selected book. file:%@ attr:%@", book.filename, attr!))
+        let attr = try! fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", FileManager.getImportDir(book.filename), book.filename) as String)
+        Log(NSString(format: "--- selected book. file:%@ attr:%@", book.filename, attr))
     }
     
     // 編集可否の設定

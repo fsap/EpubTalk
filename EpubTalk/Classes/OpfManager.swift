@@ -21,7 +21,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
     private var isInMetadata: Bool
     private var isInManifest: Bool
     private var currentElement: String
-    private var currentDir: String
+    private var currentDir: NSURL?
     
     
     class var sharedInstance : OpfManager {
@@ -38,27 +38,26 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         self.isInMetadata = false
         self.isInManifest = false
         self.currentElement = ""
-        self.currentDir = ""
+        self.currentDir = nil
         
         super.init()
     }
     
-    func startParseOpfFile(opfFilePath: String,
+    func startParseOpfFile(opfUrl: NSURL,
         didParseSuccess: ((epub: Epub)->Void),
         didParseFailure:((errorCode: TTErrorCode)->Void))->Void
     {
         self.didParseSuccess = didParseSuccess
         self.didParseFailure = didParseFailure
         
-        let url: NSURL? = NSURL.fileURLWithPath(opfFilePath)
-        let parser: NSXMLParser? = NSXMLParser(contentsOfURL: url)
+        let parser: NSXMLParser? = NSXMLParser(contentsOfURL: opfUrl)
         
         if parser == nil {
             didParseFailure(errorCode: TTErrorCode.MetadataFileNotFound)
             return
         }
         
-        currentDir = (opfFilePath as NSString).stringByDeletingLastPathComponent
+        currentDir = opfUrl.URLByDeletingLastPathComponent
         
         parser!.delegate = self
         
@@ -98,10 +97,10 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         } else if self.isInManifest {
             if elementName == ManifestTag.Item.rawValue {
                 // xmlファイル情報のみ取得
-                let attr: String = attributeDict[ManifestItemAttr.MediaType.rawValue] as! String
+                let attr: String? = attributeDict[ManifestItemAttr.MediaType.rawValue]
                 if attr == MediaTypes.XML.rawValue {
-                    let href: String = attributeDict[ManifestItemAttr.Href.rawValue] as! String
-                    let path: String = (currentDir as NSString).stringByAppendingPathComponent(href)
+                    let href: String = attributeDict[ManifestItemAttr.Href.rawValue]!
+                    let path: String = self.currentDir!.URLByAppendingPathComponent(href).path!
                     self.epub.navigation.contentsPaths.append(path)
                 }
             }
@@ -110,31 +109,31 @@ class OpfManager: NSObject, NSXMLParserDelegate {
     }
     
     // valueを読み込み
-    func parser(parser: NSXMLParser, foundCharacters string: String?) {
-        Log(NSString(format: " - found value:[%@] current_elem:%@", string!, self.currentElement))
+    func parser(parser: NSXMLParser, foundCharacters string: String) {
+        Log(NSString(format: " - found value:[%@] current_elem:%@", string, self.currentElement))
         
         if self.isInMetadata {
             switch self.currentElement {
             case MetadataTag.DC_Identifier.rawValue:
-                self.epub.metadata.identifier = string!
+                self.epub.metadata.identifier = string
                 break
             case MetadataTag.DC_Title.rawValue:
-                self.epub.metadata.title = string!
+                self.epub.metadata.title = string
                 break
             case MetadataTag.DC_Publisher.rawValue:
-                self.epub.metadata.publisher = string!
+                self.epub.metadata.publisher = string
                 break
             case MetadataTag.DC_Date.rawValue:
-                self.epub.metadata.date = string!
+                self.epub.metadata.date = string
                 break
             case MetadataTag.DC_Creator.rawValue:
-                self.epub.metadata.creator = string!
+                self.epub.metadata.creator = string
                 break
             case MetadataTag.DC_Language.rawValue:
-                self.epub.metadata.language = string!
+                self.epub.metadata.language = string
                 break
             case MetadataTag.DC_Format.rawValue:
-                self.epub.metadata.format = string!
+                self.epub.metadata.format = string
                 break
             default:
                 break

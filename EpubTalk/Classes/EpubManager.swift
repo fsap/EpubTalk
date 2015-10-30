@@ -46,10 +46,9 @@ class EpubManager: NSObject {
                 didSuccess(containerUrl: NSURL(fileURLWithPath: containerPath!))
                 return
             }
-            LogE(NSString(format: "[%d] meta data file not found. dir:%@", TTErrorCode.FiledToParseMetadataFile.rawValue, metaDataUrl))
-            didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
-            return
         }
+        LogE(NSString(format: "[%d] meta data file not found. dir:%@", TTErrorCode.MetadataFileNotFound.rawValue, targetUrl))
+        didFailure(errorCode: TTErrorCode.MetadataFileNotFound)
     }
 
     //
@@ -62,27 +61,31 @@ class EpubManager: NSObject {
         didFailure:((errorCode: TTErrorCode)->Void)
         )
     {
-        let fileManager: FileManager = FileManager.sharedInstance
-        
         let containerManager: ContainerManager = ContainerManager.sharedInstance
-        containerManager.startParseContainerFile(containerPath, didParseSuccess: { (opfFilePath) -> Void in
-            Log(NSString(format: "parse OPF:%@", (targetPath as NSString).stringByAppendingPathComponent(opfFilePath)))
-            
-            let queue: dispatch_queue_t = dispatch_queue_create("parseOpf", nil)
-            dispatch_async(queue, { () -> Void in
-                // opfを読み取る
-                let opfManager: OpfManager = OpfManager.sharedInstance
-                opfManager.startParseOpfFile((targetPath as NSString).stringByAppendingPathComponent(opfFilePath), didParseSuccess: { (epub) -> Void in
-                    didSuccess(epub: epub)
-                    
-                    }, didParseFailure: { (errorCode) -> Void in
-                        LogE(NSString(format: "Metadata file not found. dir:%@", opfFilePath))
-                        didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
+        containerManager.startParseContainerFile(containerUrl, didParseSuccess: { (opfUrl) -> Void in
+            if opfUrl != nil {
+                Log(NSString(format: "parse OPF:%@", targetUrl.URLByAppendingPathComponent(opfUrl!.path!)))
+                
+                let queue: dispatch_queue_t = dispatch_queue_create("parseOpf", nil)
+                dispatch_async(queue, { () -> Void in
+                    // opfを読み取る
+                    let opfManager: OpfManager = OpfManager.sharedInstance
+                    opfManager.startParseOpfFile(targetUrl.URLByAppendingPathComponent(opfUrl!.path!), didParseSuccess: { (epub) -> Void in
+                            didSuccess(epub: epub)
+                        
+                        }, didParseFailure: { (errorCode) -> Void in
+                            LogE(NSString(format: "Metadata file not found. dir:%@", opfUrl!))
+                            didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
+                    })
                 })
-            })
-        }) { (errorCode) -> Void in
-            LogE(NSString(format: "Container file %@ not found.", targetPath))
-            didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
+            } else {
+                LogE(NSString(format: "Metadata file not found. dir:%@", targetUrl))
+                didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
+            }
+            
+            }) { (errorCode) -> Void in
+                LogE(NSString(format: "Container file %@ not found.", targetUrl))
+                didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
         }
     }
 }
