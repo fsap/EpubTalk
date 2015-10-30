@@ -59,6 +59,9 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         
         currentDir = opfUrl.URLByDeletingLastPathComponent
         
+        // 初期化しておく
+        self.epub = Epub()
+        
         parser!.delegate = self
         
         parser!.parse()
