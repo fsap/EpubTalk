@@ -277,9 +277,11 @@ fclose(fp);
 	if((InFp = fopen(filename,"r")) == NULL) {
 		return(-1);
 	}
+/*
 fp = fopen("log.txt", "a");
 fprintf(fp, "%s\n",filename);
 fclose(fp);
+*/
 	if (RMode) {
 		[m_EditBuffer End];
 	}
@@ -369,11 +371,11 @@ fclose(fp);
 			memset(TmpDat, 0x00, sizeof(TmpDat));
 			continue;
 		}
-
+/*
 fp = fopen("log.txt", "a");
 fprintf(fp, "%d  %s\n",strlen(TmpDat), TmpDat);
 fclose(fp);
-
+*/
 		if ([self sSearch:TmpDat Str2:"<body" Start:0] != -1) {
 			Body = 1;
 		}
@@ -432,11 +434,11 @@ fclose(fp);
 			Start++;
 		}
 		start6:
-
+/*
 fp = fopen("log.txt", "a");
 fprintf(fp, "start6  %s\n", TmpDat + Start);
 fclose(fp);
-
+*/
 		if (!TmpDat[Start]) {
 			if (strlen(rStr)) {
 				m_EditData.Block.LineAttr.Map.Midashi = Midashi;

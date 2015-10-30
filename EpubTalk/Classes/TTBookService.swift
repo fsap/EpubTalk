@@ -135,7 +135,7 @@ class TTBookService {
                         return
                     }
                     
-                    let saveFilePath = self.fileManager.loadXmlFiles(epub.navigation.contentsPaths, saveUrl:expandUrl, metadata: epub.metadata)
+                    let saveFilePath = self.fileManager.loadHtmlFiles(epub.navigation.contentsPaths, saveUrl:expandUrl, metadata: epub.metadata)
                     if !self.keepLoading {
                         self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
                         return

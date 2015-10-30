@@ -296,6 +296,64 @@ class FileManager: NSObject {
         return saveFilePath
     }
     
+    //
+    // HTMLファイルの読み込み
+    //
+    func loadHtmlFiles(htmlFilePaths:[String], saveUrl: NSURL, metadata: Metadata)->String {
+        Log(NSString(format: "html_file_path:%@", htmlFilePaths))
+        if htmlFilePaths.count == 0 {
+            LogE(NSString(format: "No html files. [%@]", htmlFilePaths))
+            return ""
+        }
+        
+        // コンテンツ読み出し
+        let brllist:BrlBuffer = BrlBuffer()
+        brllist.Setinit()
+        let file = File()
+        file.DataSet(brllist)
+        var headInfo: TDV_HEAD = TDV_HEAD()
+        memset(&headInfo, 0x00, sizeof(TDV_HEAD))
+        // メタ情報の設定
+        switch metadata.language.lowercaseString {
+        case Languages.ja.langString():
+            headInfo.VoiceGengo = Languages.ja.rawValue
+            break
+        case Languages.en_us.langString():
+            headInfo.VoiceGengo = Languages.en_us.rawValue
+            break
+        default:
+            break
+        }
+        
+        for (index,html) in htmlFilePaths.enumerate() {
+            if !keepLoading {
+                keepLoading = true
+                return ""
+            }
+            
+            let htmlFile:String = html
+            Log(NSString(format: "html:%@", htmlFile))
+            
+            let targetFile:[CChar] = html.cStringUsingEncoding(NSUTF8StringEncoding)!
+            let mode:Int32 = index == 0 ? 0 : 1
+            file.LoadHtmlFile(targetFile, readMode: mode)
+//            file.LoadXmlFile(tagetFile, readMode: mode)
+        }
+        // 一時保存
+        let titleBaseName = saveUrl.URLByDeletingPathExtension?.lastPathComponent!
+        Log(NSString(format: "base name:%@", titleBaseName!))
+        let saveFilePath:String = saveUrl.URLByAppendingPathComponent(titleBaseName! + ".tdv").path!
+        Log(NSString(format: "save_to:%@", saveFilePath))
+        if !(file.SaveTdvFile(saveFilePath.cStringUsingEncoding(NSUTF8StringEncoding)!, head:&headInfo)) {
+            LogE(NSString(format: "Failed to save tdv file. save_file[%@]", saveFilePath))
+            keepLoading = true
+            return ""
+        }
+        keepLoading = true
+        
+        return saveFilePath
+    }
+    
     func cancelLoad() {
         keepLoading = false
     }

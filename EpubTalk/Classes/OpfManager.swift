@@ -118,7 +118,12 @@ class OpfManager: NSObject, NSXMLParserDelegate {
                 self.epub.metadata.identifier = string
                 break
             case MetadataTag.DC_Title.rawValue:
-                self.epub.metadata.title = string
+                if self.epub.metadata.title == "" {
+                    self.epub.metadata.title = string
+                } else {
+                    self.epub.metadata.title += string
+                }
+                Log(NSString(format: "title:%@", self.epub.metadata.title))
                 break
             case MetadataTag.DC_Publisher.rawValue:
                 self.epub.metadata.publisher = string
