@@ -83,7 +83,8 @@ class EpubManager: NSObject {
                 let containerManager: ContainerManager = ContainerManager.sharedInstance
                 let containerUrl: NSURL = NSURL(fileURLWithPath: containerPath!)
                 containerManager.startParseContainerFile(
-                    containerUrl,
+                    targetUrl,
+                    containerUrl: containerUrl,
                     didParseSuccess: {(opfUrl: NSURL?) -> Void in
                         if opfUrl != nil {
                             Log(NSString(format: "opf found. %@", opfUrl!))
@@ -114,7 +115,7 @@ class EpubManager: NSObject {
         let opfManager: OpfManager = OpfManager.sharedInstance
         opfManager.startParseOpfFile(
             opfUrl,
-            didParseSuccess: { (ncxUrl) -> Void in
+            didParseSuccess: { (ncxUrl, metadata) -> Void in
                 if ncxUrl != nil {
                     Log(NSString(format: "ncx found. %@", ncxUrl!))
                     
@@ -123,6 +124,7 @@ class EpubManager: NSObject {
                         let navigationManager: NavigationManager = NavigationManager.sharedInstance
                         navigationManager.startParseOpfFile(
                             ncxUrl!,
+                            metadata: metadata,
                             didParseSuccess: { (epub) -> Void in
                                 LogM("Epub file found.")
                                 didSuccess(epub: epub)

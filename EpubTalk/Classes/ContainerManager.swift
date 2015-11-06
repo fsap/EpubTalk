@@ -43,7 +43,9 @@ class ContainerManager: NSObject, NSXMLParserDelegate {
         super.init()
     }
     
-    func startParseContainerFile(containerUrl: NSURL,
+    func startParseContainerFile(
+        targetUrl: NSURL,
+        containerUrl: NSURL,
         didParseSuccess: ((opfUrl: NSURL?)->Void),
         didParseFailure:((errorCode: TTErrorCode)->Void))->Void
     {
@@ -53,15 +55,20 @@ class ContainerManager: NSObject, NSXMLParserDelegate {
         let parser: NSXMLParser? = NSXMLParser(contentsOfURL: containerUrl)
         
         if parser == nil {
+            LogE(NSString(format: "[%d] container not found. dir:%@", TTErrorCode.MetadataFileNotFound.rawValue, targetUrl))
             didParseFailure(errorCode: TTErrorCode.MetadataFileNotFound)
             return
         }
         
-        currentDir = containerUrl.URLByDeletingLastPathComponent
+        self.currentDir = targetUrl
+        self.opfUrl = nil
         
         parser!.delegate = self
         
-        parser!.parse()
+        if !parser!.parse() {
+            LogE(NSString(format: "[%d] Failed to start parse. dir:%@", TTErrorCode.NavigationFileNotFound.rawValue, containerUrl))
+            didParseFailure(errorCode: TTErrorCode.MetadataFileNotFound)
+        }
     }
     
     
@@ -87,7 +94,7 @@ class ContainerManager: NSObject, NSXMLParserDelegate {
             let fullPath: String? = attributeDict[ContainerAttr.FullPath.rawValue]
             if fullPath != nil {
                 Log(NSString(format: "full-path:%@", fullPath!))
-                self.opfUrl = NSURL(fileURLWithPath: fullPath!)
+                self.opfUrl = self.currentDir!.URLByAppendingPathComponent(fullPath!)
             }
         }
 

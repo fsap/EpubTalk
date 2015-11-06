@@ -10,9 +10,10 @@ import Foundation
 
 class OpfManager: NSObject, NSXMLParserDelegate {
     
-    private var didParseSuccess: ((ncxUrl: NSURL?)->Void)?
+    private var didParseSuccess: ((ncxUrl: NSURL?, metadata: Metadata)->Void)?
     private var didParseFailure: ((errorCode: TTErrorCode)->Void)?
     private var ncxUrl: NSURL?
+    private var metadata: Metadata
     private var isInMetadata: Bool
     private var isInManifest: Bool
     private var currentElement: String
@@ -30,6 +31,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         self.didParseSuccess = nil
         self.didParseFailure = nil
         self.ncxUrl = nil
+        self.metadata = Metadata()
         self.isInMetadata = false
         self.isInManifest = false
         self.currentElement = ""
@@ -39,7 +41,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
     }
     
     func startParseOpfFile(opfUrl: NSURL,
-        didParseSuccess: ((ncxUrl: NSURL?)->Void),
+        didParseSuccess: ((ncxUrl: NSURL?, metadata: Metadata)->Void),
         didParseFailure:((errorCode: TTErrorCode)->Void))->Void
     {
         self.didParseSuccess = didParseSuccess
@@ -48,15 +50,22 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         let parser: NSXMLParser? = NSXMLParser(contentsOfURL: opfUrl)
         
         if parser == nil {
+            LogE(NSString(format: "[%d] opf not found. dir:%@", TTErrorCode.NavigationFileNotFound.rawValue, opfUrl))
             didParseFailure(errorCode: TTErrorCode.NavigationFileNotFound)
             return
         }
         
-        currentDir = opfUrl.URLByDeletingLastPathComponent
+        self.currentDir = opfUrl.URLByDeletingLastPathComponent
+        
+        self.ncxUrl = nil
+        self.metadata = Metadata()
         
         parser!.delegate = self
         
-        parser!.parse()
+        if !parser!.parse() {
+            LogE(NSString(format: "[%d] Failed to start parse. dir:%@", TTErrorCode.NavigationFileNotFound.rawValue, opfUrl))
+            didParseFailure(errorCode: TTErrorCode.NavigationFileNotFound)
+        }
     }
     
     
@@ -94,12 +103,12 @@ class OpfManager: NSObject, NSXMLParserDelegate {
                 // xmlファイル情報のみ取得
                 let attr: String? = attributeDict[ManifestItemAttr.MediaType.rawValue]
                 if attr == MediaTypes.NOC.rawValue {
-                    let itemId: String = attributeDict[ManifestItemAttr.Id.rawValue]!
-                    if itemId == EpubStandard_3_0.NativationFileExtension {
+//                    let itemId: String = attributeDict[ManifestItemAttr.Id.rawValue]!
+//                    if itemId == EpubStandard_3_0.NativationFileExtension {
                         let href: String = attributeDict[ManifestItemAttr.Href.rawValue]!
                         let path: String = self.currentDir!.URLByAppendingPathComponent(href).path!
                         self.ncxUrl = NSURL(fileURLWithPath: path)
-                    }
+//                    }
                 }
             }
         }
@@ -109,6 +118,39 @@ class OpfManager: NSObject, NSXMLParserDelegate {
     // valueを読み込み
     func parser(parser: NSXMLParser, foundCharacters string: String) {
         Log(NSString(format: " - found value:[%@] current_elem:%@", string, self.currentElement))
+        
+        if self.isInMetadata {
+            switch self.currentElement {
+            case MetadataTag.DC_Identifier.rawValue:
+                self.metadata.identifier = string
+                break
+            case MetadataTag.DC_Title.rawValue:
+                if self.metadata.title == "" {
+                    self.metadata.title = string
+                } else {
+                    self.metadata.title += string
+                }
+                Log(NSString(format: "title:%@", self.metadata.title))
+                break
+            case MetadataTag.DC_Publisher.rawValue:
+                self.metadata.publisher = string
+                break
+            case MetadataTag.DC_Date.rawValue:
+                self.metadata.date = string
+                break
+            case MetadataTag.DC_Creator.rawValue:
+                self.metadata.creator = string
+                break
+            case MetadataTag.DC_Language.rawValue:
+                self.metadata.language = string
+                break
+            case MetadataTag.DC_Format.rawValue:
+                self.metadata.format = string
+                break
+            default:
+                break
+            }
+        }
     }
     
     // 要素の終了タグを読み込み
@@ -133,7 +175,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         LogM("--- end parse.")
         
         if self.didParseSuccess != nil {
-            self.didParseSuccess!(ncxUrl: self.ncxUrl)
+            self.didParseSuccess!(ncxUrl: self.ncxUrl, metadata: self.metadata)
         }
     }
     

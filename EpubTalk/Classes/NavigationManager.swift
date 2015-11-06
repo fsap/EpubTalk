@@ -33,6 +33,7 @@ class NavigationManager: NSObject, NSXMLParserDelegate {
     }
     
     func startParseOpfFile(ncxUrl: NSURL,
+        metadata: Metadata,
         didParseSuccess: ((epub: Epub)->Void),
         didParseFailure:((errorCode: TTErrorCode)->Void))->Void
     {
@@ -42,6 +43,7 @@ class NavigationManager: NSObject, NSXMLParserDelegate {
         let parser: NSXMLParser? = NSXMLParser(contentsOfURL: ncxUrl)
         
         if parser == nil {
+            LogE(NSString(format: "[%d] ncx not found. dir:%@", TTErrorCode.MetadataFileNotFound.rawValue, ncxUrl))
             didParseFailure(errorCode: TTErrorCode.NavigationFileNotFound)
             return
         }
@@ -50,10 +52,14 @@ class NavigationManager: NSObject, NSXMLParserDelegate {
         
         // 初期化しておく
         self.epub = Epub()
+        self.epub.metadata = metadata
         
         parser!.delegate = self
         
-        parser!.parse()
+        if !parser!.parse() {
+            LogE(NSString(format: "[%d] Failed to start parse. dir:%@", TTErrorCode.NavigationFileNotFound.rawValue, ncxUrl))
+            didParseFailure(errorCode: TTErrorCode.NavigationFileNotFound)
+        }
     }
     
     
@@ -79,7 +85,9 @@ class NavigationManager: NSObject, NSXMLParserDelegate {
             let contentPath: String? = attributeDict[ContentAttr.Src.rawValue]
             if contentPath != nil {
                 Log(NSString(format: "content src:%@", contentPath!))
-                self.epub.navigation.contentsPaths.append(contentPath!)
+                let ary: [String] = contentPath!.componentsSeparatedByString("#")
+                let contentUrl: NSURL = self.currentDir!.URLByAppendingPathComponent(ary[0])
+                self.epub.navigation.contentsPaths.append(contentUrl.path!)
             }
         }
     }
@@ -101,6 +109,9 @@ class NavigationManager: NSObject, NSXMLParserDelegate {
         LogM("--- end parse.")
         
         if self.didParseSuccess != nil {
+            // 重複を除く
+            let set: NSOrderedSet = NSOrderedSet(array: self.epub.navigation.contentsPaths)
+            self.epub.navigation.contentsPaths = set.array as! [String]
             self.didParseSuccess!(epub: self.epub)
         }
     }

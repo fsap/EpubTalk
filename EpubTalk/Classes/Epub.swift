@@ -14,7 +14,6 @@ class Epub: NSObject {
     // Epubバージョン
     var version: CGFloat
     // メタデータ
-    var dcMetadadta: DCMetadata
     var metadata: Metadata
     // 目次情報
     var navigation: Navigation
@@ -22,7 +21,6 @@ class Epub: NSObject {
 
     override init() {
         self.version = 3
-        self.dcMetadadta = DCMetadata()
         self.metadata = Metadata()
         self.navigation = Navigation()
     }
