@@ -19,8 +19,8 @@ enum TTErrorCode :Int {
         FailedToSaveFile,
         FailedToDeleteFile,
         MetadataFileNotFound,
-        FiledToParseMetadataFile,
-        SuccessToUnzipEpubFile
+        NavigationFileNotFound,
+        ContentFileNotFound
     // 2xx : DBに関するエラー
     case FailedToSaveDB = 201
 }
