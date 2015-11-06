@@ -9,7 +9,6 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>exe</string>
 				<string>zip</string>
 				<string>epub</string>
 			</array>
@@ -23,14 +22,12 @@
 				<string>application/x-zip-compressed</string>
 				<string>application/x-msdownload</string>
 				<string>application/octet-stream</string>
-				<string>application/x-exe</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>EPUB Talk</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>ZIP</string>
-				<string>EXE</string>
 				<string>EPUB</string>
 			</array>
 			<key>CFBundleTypeRole</key>
@@ -41,7 +38,6 @@
 			<array>
 				<string>com.pkware.zip-archive</string>
 				<string>org.gnu.gnu-zip-archive</string>
-				<string>com.microsoft.windows-executable</string>
 				<string>org.idpf.epub-container</string>
 			</array>
 		</dict>
@@ -53,7 +49,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>Epub Talk</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

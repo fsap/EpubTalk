@@ -20,7 +20,7 @@ struct Constants {
         ファイル操作関連
     */
     // 取り込み可能な拡張子
-    static let kImportableExtensions: [String] = ["exe", "zip", "epub"]
+    static let kImportableExtensions: [String] = ["zip", "epub"]
     // 他アプリからエクスポートされたファイルの格納場所
     static let kInboxDocumentPath: String = "Documents/Inbox"
     // 一時作業用ディレクトリ

@@ -88,8 +88,7 @@ class TTBookService {
         let expandPath: String = expandUrl.path!
         
         if (sourceUrl.pathExtension == Constants.kImportableExtensions[0]
-            || sourceUrl.pathExtension == Constants.kImportableExtensions[1]
-            || sourceUrl.pathExtension == Constants.kImportableExtensions[2]) {
+            || sourceUrl.pathExtension == Constants.kImportableExtensions[1]) {
                 // 圧縮ファイル展開
                 if !(self.fileManager.unzip(sourcePath, expandPath: expandPath)) {
                     LogE(NSString(format: "Unable to expand path:%@ file:%@", sourceUrl, filename))
