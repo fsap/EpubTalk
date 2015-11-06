@@ -114,8 +114,9 @@ class TTBookService {
         self.fileManager.initImport()
         
         let epubManager: EpubManager = EpubManager.sharedInstance
-        epubManager.detectEpubStandard(expandUrl, didSuccess: { (containerUrl) -> Void in
-            Log(NSString(format: "success. path:%@", containerUrl!))
+        epubManager.searchMetaData(expandUrl, didSuccess: { (opfUrl) -> Void in
+            // メタ情報の読み込みに成功
+            Log(NSString(format: "success to get metadata. path:%@", opfUrl))
             
             if !self.keepLoading {
                 self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
@@ -124,10 +125,9 @@ class TTBookService {
             
             let queue: dispatch_queue_t = dispatch_queue_create("loadMetaData", nil)
             dispatch_async(queue, { () -> Void in
-                
-                epubManager.loadMetadata(expandUrl, containerUrl: containerUrl!, didSuccess: { (epub) -> Void in
-                    // メタ情報の読み込みに成功
-                    Log(NSString(format: "success to get metadata. paths:%@", epub.navigation.contentsPaths))
+                epubManager.loadContents(opfUrl, didSuccess: { (epub) -> Void in
+                    // ナビゲーション情報の読み込みに成功
+                    Log(NSString(format: "success to load navigation. contents paths:%@", epub.navigation.contentsPaths))
                     Log(NSString(format: "epub: title:%@ language:%@", epub.metadata.title, epub.metadata.language))
                     
                     if !self.keepLoading {
@@ -157,7 +157,6 @@ class TTBookService {
                     book.title = epub.metadata.title
                     book.language = epub.metadata.language
                     let saveFileUrl: NSURL = NSURL(fileURLWithPath: saveFilePath)
-//                    book.filename = ((saveFilePath as NSString).lastPathComponent as NSString).stringByDeletingPathExtension
                     book.filename = saveFileUrl.URLByDeletingPathExtension!.lastPathComponent!
                     book.sort_num = self.getBookList().count
                     let ret = self.dataManager.save()
@@ -168,16 +167,17 @@ class TTBookService {
                     
                     // 終了処理
                     self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
+
                 }, didFailure: { (errorCode) -> Void in
-                    LogE(NSString(format: "[%d]Failed to load metadata. dir:%@", errorCode.rawValue, expandPath))
+                    LogE(NSString(format: "[%d]Failed to load contents. dir:%@", errorCode.rawValue, expandPath))
                     self.deInitImport([sourcePath, expandPath], errorCode: errorCode, didSuccess: didSuccess, didFailure: didFailure)
                 })
             })
-            
-        }) { (errorCode) -> Void in
+
+        }, didFailure: { (errorCode) -> Void in
             LogE(NSString(format: "[%d]Invalid directory format. dir:%@", errorCode.rawValue, expandPath))
             self.deInitImport([sourcePath, expandPath], errorCode: errorCode, didSuccess: didSuccess, didFailure: didFailure)
-        }
+        })
         
     }
     

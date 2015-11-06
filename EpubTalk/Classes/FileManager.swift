@@ -331,13 +331,18 @@ class FileManager: NSObject {
                 return ""
             }
             
-            let htmlFile:String = html
+            let htmlFile: String = html
+            let htmlUrl: NSURL = NSURL(fileURLWithPath: htmlFile)
             Log(NSString(format: "html:%@", htmlFile))
             
             let targetFile:[CChar] = html.cStringUsingEncoding(NSUTF8StringEncoding)!
             let mode:Int32 = index == 0 ? 0 : 1
-            file.LoadHtmlFile(targetFile, readMode: mode)
-//            file.LoadXmlFile(tagetFile, readMode: mode)
+            if htmlUrl.pathExtension == ContentExt.HTML.rawValue || htmlUrl.pathExtension == ContentExt.XHTML.rawValue {
+                file.LoadHtmlFile(targetFile, readMode: mode)
+            }
+            else if htmlUrl.pathExtension == ContentExt.XML.rawValue {
+                file.LoadXmlFile(targetFile, readMode: mode)
+            }
         }
         // 一時保存
         let titleBaseName = saveUrl.URLByDeletingPathExtension?.lastPathComponent!

@@ -28,8 +28,8 @@
 "error_msg_106" = "Failed to save file.";
 "error_msg_107" = "Failed to delete file.";
 "error_msg_108" = "Meta data not found.";
-"error_msg_109" = "Filed to analyze meta data.";
-"error_msg_110" = "Success to expand epub file.";    // ToDo:仮メッセージ
+"error_msg_109" = "Navigation file not found.";
+"error_msg_110" = "Cotents file not found.";
 
 "msg_import_success" = "Import completed.";
 "msg_loading" = "Loading the book data...";

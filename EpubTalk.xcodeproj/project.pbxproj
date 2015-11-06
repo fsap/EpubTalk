@@ -50,6 +50,7 @@
 		820F3F5C1BB432150019B139 /* EpubTalk.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 820F3F5A1BB432150019B139 /* EpubTalk.xcdatamodeld */; };
 		820F3F5E1BB5B5770019B139 /* EpubManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3F5D1BB5B5770019B139 /* EpubManager.swift */; };
 		82DC19BD1BBEEE0A0068D32E /* ContainerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */; };
+		F0A5AEF61BECDEF500152F26 /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +124,7 @@
 		820F3F5B1BB432150019B139 /* EpubTalk.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EpubTalk.xcdatamodel; sourceTree = "<group>"; };
 		820F3F5D1BB5B5770019B139 /* EpubManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EpubManager.swift; sourceTree = "<group>"; };
 		82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerManager.swift; sourceTree = "<group>"; };
+		F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -222,6 +224,7 @@
 				820F3EEF1BB2E82E0019B139 /* FileManager.swift */,
 				82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */,
 				820F3F5D1BB5B5770019B139 /* EpubManager.swift */,
+				F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */,
 				820F3EF51BB2E82E0019B139 /* OpfManager.swift */,
 				820F3EF61BB2E82E0019B139 /* TTAlertController.swift */,
 				820F3EF71BB2E82E0019B139 /* TTBookService.swift */,
@@ -423,6 +426,7 @@
 				820F3F001BB2E82E0019B139 /* DCMetadata.swift in Sources */,
 				820F3F411BB2E8CB0019B139 /* zip.c in Sources */,
 				82DC19BD1BBEEE0A0068D32E /* ContainerManager.swift in Sources */,
+				F0A5AEF61BECDEF500152F26 /* NavigationManager.swift in Sources */,
 				820F3F0B1BB2E82E0019B139 /* TTBookService.swift in Sources */,
 				820F3F3E1BB2E8CB0019B139 /* ioapi.c in Sources */,
 				820F3EFA1BB2E82E0019B139 /* BookEntity.swift in Sources */,

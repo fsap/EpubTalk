@@ -12,8 +12,10 @@ import UIKit
 struct EpubStandard_3_0 {
     static let Version: CGFloat = 3.0
     static let MetadataDirectory: String = "META-INF"
-    static let MetadataFileName:String = "container.xml"
-    static let MetadataFileExtension:String = "opf"
+    static let MetadataFileName: String = "container.xml"
+    static let MetadataFileExtension: String = "opf"
+    static let NativationFileExtension: String = "ncx"
+    static let NavigationFileName: String = "toc.ncx"
 }
 
 class EpubManager: NSObject {
@@ -50,7 +52,100 @@ class EpubManager: NSObject {
         LogE(NSString(format: "[%d] meta data file not found. dir:%@", TTErrorCode.MetadataFileNotFound.rawValue, targetUrl))
         didFailure(errorCode: TTErrorCode.MetadataFileNotFound)
     }
+    
+    func searchMetaData(
+        targetUrl: NSURL,
+        didSuccess:((opfUrl: NSURL)->Void),
+        didFailure:((errorCode: TTErrorCode)->Void))
+    {
+        let fileManager: FileManager = FileManager.sharedInstance
+        
+        // META-INFディレクトリをサーチ
+        var metaInfPath: String? = nil
+        if !fileManager.searchFile(EpubStandard_3_0.MetadataDirectory, targetUrl: targetUrl, recursive: true, result: &metaInfPath) {
+            LogE(NSString(format: "[%d] META-INF file not found. dir:%@", TTErrorCode.MetadataFileNotFound.rawValue, targetUrl))
+            didFailure(errorCode: TTErrorCode.MetadataFileNotFound)
+            
+        } else {
+            Log(NSString(format: "META-INF found. %@", try! fileManager.fileManager.contentsOfDirectoryAtPath(metaInfPath!)))
+            
+            // META-INF内からcontainerをサーチ
+            var containerPath: String? = nil
+            let metaInfUrl: NSURL = NSURL(fileURLWithPath: metaInfPath!)
+            if !fileManager.searchFile(EpubStandard_3_0.MetadataFileName, targetUrl: metaInfUrl, recursive: true, result: &containerPath) {
+                LogE(NSString(format: "[%d] container not found. dir:%@", TTErrorCode.MetadataFileNotFound.rawValue, targetUrl))
+                didFailure(errorCode: TTErrorCode.MetadataFileNotFound)
 
+            } else {
+                Log(NSString(format: "container found. %@", containerPath!))
+                
+                // container.xmlからopfをサーチ
+                let containerManager: ContainerManager = ContainerManager.sharedInstance
+                let containerUrl: NSURL = NSURL(fileURLWithPath: containerPath!)
+                containerManager.startParseContainerFile(
+                    containerUrl,
+                    didParseSuccess: {(opfUrl: NSURL?) -> Void in
+                        if opfUrl != nil {
+                            Log(NSString(format: "opf found. %@", opfUrl!))
+                            didSuccess(opfUrl: opfUrl!)
+                        } else {
+                            LogE(NSString(format: "[%d] opf not found. dir:%@", TTErrorCode.MetadataFileNotFound.rawValue, targetUrl))
+                            didFailure(errorCode: TTErrorCode.MetadataFileNotFound)
+                        }
+                    },
+                    didParseFailure: { (errorCode) -> Void in
+                        LogE(NSString(format: "[%d] opf not found. dir:%@", TTErrorCode.MetadataFileNotFound.rawValue, targetUrl))
+                        didFailure(errorCode: errorCode)
+                    }
+                )
+            }
+        }
+    }
+    
+    func loadContents(
+        opfUrl: NSURL,
+        didSuccess:((epub: Epub)->Void),
+        didFailure:((errorCode: TTErrorCode)->Void)
+        )
+    {
+        Log(NSString(format: "parse OPF:%@", opfUrl))
+        
+        // opfファイル内をパースしてtoc.ncxファイルをサーチ
+        let opfManager: OpfManager = OpfManager.sharedInstance
+        opfManager.startParseOpfFile(
+            opfUrl,
+            didParseSuccess: { (ncxUrl) -> Void in
+                if ncxUrl != nil {
+                    Log(NSString(format: "ncx found. %@", ncxUrl!))
+                    
+                    let queue: dispatch_queue_t = dispatch_queue_create("parseOpf", nil)
+                    dispatch_async(queue, { () -> Void in
+                        let navigationManager: NavigationManager = NavigationManager.sharedInstance
+                        navigationManager.startParseOpfFile(
+                            ncxUrl!,
+                            didParseSuccess: { (epub) -> Void in
+                                LogM("Epub file found.")
+                                didSuccess(epub: epub)
+                            },
+                            didParseFailure: { (errorCode) -> Void in
+                                LogE(NSString(format: "[%d] Contents file not found. dir:%@", TTErrorCode.ContentFileNotFound.rawValue, ncxUrl!))
+                                didFailure(errorCode: TTErrorCode.ContentFileNotFound)
+                            }
+                        )
+                    })
+                } else {
+                    LogE(NSString(format: "[%d] Ncx file not found. dir:%@", TTErrorCode.NavigationFileNotFound.rawValue, opfUrl))
+                    didFailure(errorCode: TTErrorCode.NavigationFileNotFound)
+                }
+            },
+            didParseFailure: { (errorCode) -> Void in
+                LogE(NSString(format: "[%d] Ncx file not found. dir:%@", TTErrorCode.NavigationFileNotFound.rawValue, opfUrl))
+                didFailure(errorCode: TTErrorCode.NavigationFileNotFound)
+            }
+        )
+    }
+
+/*
     //
     // メタ情報の読み込み
     //
@@ -88,4 +183,5 @@ class EpubManager: NSObject {
                 didFailure(errorCode: TTErrorCode.FiledToParseMetadataFile)
         }
     }
+*/
 }
