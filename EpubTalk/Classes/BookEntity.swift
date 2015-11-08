@@ -11,6 +11,7 @@ import CoreData
 
 class BookEntity: NSManagedObject {
 
+    @NSManaged var book_id: NSNumber
     @NSManaged var creator: String
     @NSManaged var date: NSDate
     @NSManaged var filename: String

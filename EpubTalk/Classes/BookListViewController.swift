@@ -127,6 +127,14 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
             manager.save()
         }
     }
+    
+    
+    //
+    // MARK: IBAction
+    //
+    @IBAction func createNewFolderTapped(sender: AnyObject) {
+        LogM("Create New Folder.")
+    }
         
     
     //
@@ -166,7 +174,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         
         // Debug
         let fileManager: NSFileManager = NSFileManager.defaultManager()
-        let attr = try! fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", FileManager.getImportDir(book.filename), book.filename) as String)
+        let attr = try! fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", FileManager.getImportDir(book.filename).path!, book.filename) as String)
         Log(NSString(format: "--- selected book. file:%@ attr:%@", book.filename, attr))
     }
     

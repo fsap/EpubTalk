@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8B1-hc-Cyb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8B1-hc-Cyb">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--BookList-->
@@ -18,14 +20,19 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="u9j-CW-lyT">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="608"/>
+                                <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="ZbA-c9-xLo">
+                                        <rect key="frame" x="0.0" y="86" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZbA-c9-xLo" id="X4M-JX-YPK">
+                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <animations/>
                                         </tableViewCellContentView>
+                                        <animations/>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -33,13 +40,37 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="CgP-vj-alA"/>
                                 </connections>
                             </tableView>
+                            <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="500" translatesAutoresizingMaskIntoConstraints="NO" id="Ke8-mR-2h0">
+                                <rect key="frame" x="0.0" y="540" width="600" height="60"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" restorationIdentifier="new_folder_button" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgN-1L-zFt">
+                                        <rect key="frame" x="497" y="15" width="90" height="30"/>
+                                        <animations/>
+                                        <state key="normal" title="New Folder"/>
+                                        <connections>
+                                            <action selector="createNewFolderTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="WVo-ZW-YMu"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <animations/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="3xC-XM-6yJ"/>
+                                    <constraint firstAttribute="trailing" secondItem="xgN-1L-zFt" secondAttribute="trailing" constant="13" id="J1c-ep-C8h"/>
+                                </constraints>
+                            </view>
                         </subviews>
+                        <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="u9j-CW-lyT" secondAttribute="trailing" id="4bi-I6-btE"/>
-                            <constraint firstItem="u9j-CW-lyT" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="dco-bz-oWw"/>
+                            <constraint firstItem="Ke8-mR-2h0" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="4rx-4t-sjE"/>
+                            <constraint firstItem="Ke8-mR-2h0" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" priority="750" id="EVB-iS-a4A"/>
+                            <constraint firstItem="u9j-CW-lyT" firstAttribute="bottomMargin" secondItem="wfy-db-euE" secondAttribute="top" id="dco-bz-oWw"/>
                             <constraint firstItem="u9j-CW-lyT" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="hc8-0X-Cbl"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Ke8-mR-2h0" secondAttribute="centerX" priority="750" id="jfN-da-EeW"/>
                             <constraint firstItem="u9j-CW-lyT" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="qDE-Q0-quv"/>
+                            <constraint firstItem="Ke8-mR-2h0" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="zeK-W2-p5c"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Book List" id="NQc-1k-KeO"/>
@@ -67,6 +98,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="a11-LS-FS2">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
                     </navigationBar>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="yLN-p5-cmQ"/>

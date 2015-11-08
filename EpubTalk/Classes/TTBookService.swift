@@ -158,11 +158,18 @@ class TTBookService {
                     let saveFileUrl: NSURL = NSURL(fileURLWithPath: saveFilePath)
                     book.filename = saveFileUrl.URLByDeletingPathExtension!.lastPathComponent!
                     book.sort_num = self.getBookList().count
+                    book.book_id = self.getBookList().count
                     let ret = self.dataManager.save()
                     if ret != TTErrorCode.Normal {
                         self.deInitImport([sourcePath, expandPath], errorCode: ret, didSuccess: didSuccess, didFailure: didFailure)
                         return
                     }
+                    Log(NSString(format: "***** book saved. id:%@ lang:%@ filename:%@ sort:%@",
+                        book.book_id,
+                        book.language,
+                        book.filename,
+                        book.sort_num
+                    ))
                     
                     // 終了処理
                     self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
