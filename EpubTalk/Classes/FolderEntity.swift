@@ -1,5 +1,5 @@
 //
-//  ShelfEntity.swift
+//  FolderEntity.swift
 //  tdtalk2dev
 //
 //  Created by Fujiwara on 2015/08/07.
@@ -9,10 +9,9 @@
 import Foundation
 import CoreData
 
-class ShelfEntity: NSManagedObject {
+class FolderEntity: NSManagedObject {
 
-    @NSManaged var shelf_id: NSNumber
+    @NSManaged var folder_id: String
     @NSManaged var name: String
-    @NSManaged var sort_num: NSNumber
 
 }

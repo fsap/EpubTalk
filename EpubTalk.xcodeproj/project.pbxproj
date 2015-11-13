@@ -50,7 +50,8 @@
 		820F3F5C1BB432150019B139 /* EpubTalk.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 820F3F5A1BB432150019B139 /* EpubTalk.xcdatamodeld */; };
 		820F3F5E1BB5B5770019B139 /* EpubManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820F3F5D1BB5B5770019B139 /* EpubManager.swift */; };
 		82DC19BD1BBEEE0A0068D32E /* ContainerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */; };
-		82E154C81BEF7CE400A4CEDB /* ShelfEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154C71BEF7CE400A4CEDB /* ShelfEntity.swift */; };
+		82E154C81BEF7CE400A4CEDB /* FolderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154C71BEF7CE400A4CEDB /* FolderEntity.swift */; };
+		82E154CA1BF24A6100A4CEDB /* ShelfObjectEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154C91BF24A6100A4CEDB /* ShelfObjectEntity.swift */; };
 		F0A5AEF61BECDEF500152F26 /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -125,7 +126,8 @@
 		820F3F5B1BB432150019B139 /* EpubTalk.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EpubTalk.xcdatamodel; sourceTree = "<group>"; };
 		820F3F5D1BB5B5770019B139 /* EpubManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EpubManager.swift; sourceTree = "<group>"; };
 		82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerManager.swift; sourceTree = "<group>"; };
-		82E154C71BEF7CE400A4CEDB /* ShelfEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShelfEntity.swift; sourceTree = "<group>"; };
+		82E154C71BEF7CE400A4CEDB /* FolderEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderEntity.swift; sourceTree = "<group>"; };
+		82E154C91BF24A6100A4CEDB /* ShelfObjectEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShelfObjectEntity.swift; sourceTree = "<group>"; };
 		F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -299,7 +301,9 @@
 		820F3F561BB42DB30019B139 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				82E154C71BEF7CE400A4CEDB /* ShelfEntity.swift */,
+				820F3EE61BB2E82E0019B139 /* BookEntity.swift */,
+				82E154C91BF24A6100A4CEDB /* ShelfObjectEntity.swift */,
+				82E154C71BEF7CE400A4CEDB /* FolderEntity.swift */,
 				820F3EF01BB2E82E0019B139 /* ManifestItem.swift */,
 				820F3EF11BB2E82E0019B139 /* Metadata.swift */,
 				820F3EF21BB2E82E0019B139 /* Navigation.swift */,
@@ -307,7 +311,6 @@
 				820F3EF81BB2E82E0019B139 /* TTError.swift */,
 				820F3EE91BB2E82E0019B139 /* Epub.swift */,
 				820F3EED1BB2E82E0019B139 /* DiscInfo.swift */,
-				820F3EE61BB2E82E0019B139 /* BookEntity.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -427,7 +430,7 @@
 				820F3EC11BB2E3780019B139 /* AppDelegate.swift in Sources */,
 				820F3F081BB2E82E0019B139 /* OPF.swift in Sources */,
 				820F3F001BB2E82E0019B139 /* DCMetadata.swift in Sources */,
-				82E154C81BEF7CE400A4CEDB /* ShelfEntity.swift in Sources */,
+				82E154C81BEF7CE400A4CEDB /* FolderEntity.swift in Sources */,
 				820F3F411BB2E8CB0019B139 /* zip.c in Sources */,
 				82DC19BD1BBEEE0A0068D32E /* ContainerManager.swift in Sources */,
 				F0A5AEF61BECDEF500152F26 /* NavigationManager.swift in Sources */,
@@ -450,6 +453,7 @@
 				820F3EFF1BB2E82E0019B139 /* DataManager.swift in Sources */,
 				820F3F0F1BB2E8BD0019B139 /* LodingView.swift in Sources */,
 				820F3F091BB2E82E0019B139 /* OpfManager.swift in Sources */,
+				82E154CA1BF24A6100A4CEDB /* ShelfObjectEntity.swift in Sources */,
 				820F3EFC1BB2E82E0019B139 /* Constants.swift in Sources */,
 				820F3F0A1BB2E82E0019B139 /* TTAlertController.swift in Sources */,
 				820F3F041BB2E82E0019B139 /* ManifestItem.swift in Sources */,

@@ -20,7 +20,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
 
     @IBOutlet weak var bookListTableView: UITableView!
     
-    var bookList :[BookEntity] = []
+    var shelfObjectList :[ShelfObjectEntity] = []
     var manager: DataManager = DataManager.sharedInstance
     var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
     var loadingView: LoadingView?
@@ -55,11 +55,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         let bookService = TTBookService.sharedInstance
         bookService.delegate = self
         
-        self.bookList = bookService.getBookList()
-//        if self.bookList.count == 0 {
-//            self.createBooks()
-//            self.bookList = TTBookService.sharedInstance.getBookList()
-//        }
+        self.shelfObjectList = bookService.getShelfObjectList()
     }
     
     override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -89,11 +85,11 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     
     // 並び順をリフレッシュする
     private func refreshSort()->Void {
-        for (index, book): (Int, BookEntity) in self.bookList.enumerate() {
-            // 降順で並べるため
-            book.sort_num = self.bookList.count - index
-            self.manager.save()
-        }
+//        for (index, shelfObject): (Int, ShelfObjectEntity) in self.shelfObjectList.enumerate() {
+//            // 降順で並べるため
+//            shelfObject.sort_num = self.shelfObjectList.count - index
+//            self.manager.save()
+//        }
         self.bookListTableView.reloadData()
     }
     
@@ -149,7 +145,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     
     // セクションあたり行数
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return bookList.count
+        return shelfObjectList.count
     }
     
     // 行の高さ
@@ -160,8 +156,8 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // セルの設定
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "Cell")
-        let book = bookList[indexPath.row]
-        cell.textLabel?.text = book.title
+        let shelfObject = shelfObjectList[indexPath.row]
+        cell.textLabel?.text = shelfObject.name
 
         return cell
     }
@@ -169,13 +165,13 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // セルが選択された
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        let book: BookEntity = self.bookList[indexPath.row]
-        Log(NSString(format: "--- selected book. title:%@ file:%@", book.title, book.filename))
+        let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
+        Log(NSString(format: "--- selected shelf object. title:%@ file:%@", shelfObject.name, shelfObject.target_id))
         
-        // Debug
-        let fileManager: NSFileManager = NSFileManager.defaultManager()
-        let attr = try! fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", FileManager.getImportDir(book.filename).path!, book.filename) as String)
-        Log(NSString(format: "--- selected book. file:%@ attr:%@", book.filename, attr))
+//        // Debug
+//        let fileManager: NSFileManager = NSFileManager.defaultManager()
+//        let attr = try! fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", FileManager.getImportDir(book.filename).path!, book.filename) as String)
+//        Log(NSString(format: "--- selected book. file:%@ attr:%@", book.filename, attr))
     }
     
     // 編集可否の設定
@@ -188,15 +184,25 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
         Log(NSString(format: "section:%d row:%d", indexPath.section, indexPath.row))
         if (self.editing) {
-            return .Delete
+            let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
+            switch shelfObject.type {
+            case ShelfObjectTypes.Folder.rawValue:
+                return .None
+            case ShelfObjectTypes.Book.rawValue:
+                return .Delete
+            default:
+                return .None
+            }
         }
         return .None
     }
     
     // 編集の確定タイミングで呼ばれる
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+//        let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
         switch editingStyle {
         case .Delete:
+/*
             // 確認を取る
             self.alertController.show(self,
                 title: NSLocalizedString("dialog_title_notice", comment: ""),
@@ -214,6 +220,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
                             message: TTError.getErrorMessage(result), actionOk: { () -> Void in})
                     }
             }, actionCancel:nil)
+*/
             return
         default:
             return
@@ -229,9 +236,10 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // 移動の確定タイミングで呼ばれる
     func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
 
-        let sourceBook: BookEntity = self.bookList[sourceIndexPath.row]
-        self.bookList.removeAtIndex(sourceIndexPath.row)
-        self.bookList.insert(sourceBook, atIndex: destinationIndexPath.row)
+        let sourceObj: ShelfObjectEntity = self.shelfObjectList[sourceIndexPath.row]
+        self.shelfObjectList.removeAtIndex(sourceIndexPath.row)
+        self.shelfObjectList.insert(sourceObj, atIndex: destinationIndexPath.row)
+        self.manager.save()
         self.refreshSort()
     }
     
@@ -253,7 +261,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             self.stopLoading()
             self.view.backgroundColor = UIColor.whiteColor()
-            self.bookList = TTBookService.sharedInstance.getBookList()
+            self.shelfObjectList = TTBookService.sharedInstance.getShelfObjectList()
             self.bookListTableView.reloadData()
         })
     }

@@ -11,7 +11,8 @@ import CoreData
 
 class BookEntity: NSManagedObject {
 
-    @NSManaged var book_id: NSNumber
+    @NSManaged var book_id: String
+    @NSManaged var folder_id: String    // 親フォルダID
     @NSManaged var creator: String
     @NSManaged var date: NSDate
     @NSManaged var filename: String
@@ -20,7 +21,7 @@ class BookEntity: NSManagedObject {
     @NSManaged var identifier: String
     @NSManaged var language: String
     @NSManaged var publisher: String
-    @NSManaged var sort_num: NSNumber
+    @NSManaged var sort_num: NSNumber   // フォルダ内での並び順
     @NSManaged var title: String
 
 }

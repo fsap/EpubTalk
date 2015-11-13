@@ -152,6 +152,7 @@ class TTBookService {
                     }
                     
                     // 図書情報をDBに保存
+                    /*
                     let book: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
                     book.title = epub.metadata.title
                     book.language = epub.metadata.language
@@ -160,16 +161,12 @@ class TTBookService {
                     book.sort_num = self.getBookList().count
                     book.book_id = self.getBookList().count
                     let ret = self.dataManager.save()
+                    */
+                    let ret = self.saveBook(epub, saveFileUrl: NSURL(fileURLWithPath: saveFilePath))
                     if ret != TTErrorCode.Normal {
                         self.deInitImport([sourcePath, expandPath], errorCode: ret, didSuccess: didSuccess, didFailure: didFailure)
                         return
                     }
-                    Log(NSString(format: "***** book saved. id:%@ lang:%@ filename:%@ sort:%@",
-                        book.book_id,
-                        book.language,
-                        book.filename,
-                        book.sort_num
-                    ))
                     
                     // 終了処理
                     self.deInitImport([sourcePath, expandPath], errorCode: TTErrorCode.Normal, didSuccess: didSuccess, didFailure: didFailure)
@@ -185,6 +182,54 @@ class TTBookService {
             self.deInitImport([sourcePath, expandPath], errorCode: errorCode, didSuccess: didSuccess, didFailure: didFailure)
         })
         
+    }
+    
+    func saveBook(epub: Epub, saveFileUrl: NSURL)->TTErrorCode {
+        // 表示オブジェクトの並び順更新
+        for shelfObject in self.getShelfObjectList() {
+            let sort: Int = shelfObject.sort_num.integerValue
+            shelfObject.sort_num = sort+1
+            Log(NSString(format: "***** shelf object updated. type:%@ target_id:%@ name:%@ sort:%@ create_time:%@",
+                shelfObject.type,
+                shelfObject.target_id,
+                shelfObject.name,
+                shelfObject.sort_num,
+                shelfObject.create_time
+            ))
+        }
+        
+        // 図書本体の登録
+        let book: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
+        book.book_id = DataManager.createUUID()
+        book.title = epub.metadata.title
+        book.language = epub.metadata.language
+        book.filename = saveFileUrl.URLByDeletingPathExtension!.lastPathComponent!
+//        book.sort_num = nil
+        
+        // 表示オブジェクトとして登録
+        let newShelfObject: ShelfObjectEntity = self.dataManager.getEntity(DataManager.Const.kShelfObjectEntityName) as! ShelfObjectEntity
+        newShelfObject.type = ShelfObjectTypes.Book.rawValue
+        newShelfObject.target_id = book.book_id
+        newShelfObject.name = book.title
+        newShelfObject.sort_num = 1
+        newShelfObject.create_time = NSDate()
+        
+        let ret = self.dataManager.save()
+        Log(NSString(format: "***** book saved. id:%@ title:%@ lang:%@ filename:%@",
+            book.book_id,
+            book.title,
+            book.language,
+            book.filename
+        ))
+        Log(NSString(format: "***** shelf object saved. type:%@ target_id:%@ name:%@ sort:%@ create_time:%@",
+            newShelfObject.type,
+            newShelfObject.target_id,
+            newShelfObject.name,
+            newShelfObject.sort_num,
+            newShelfObject.create_time
+        ))
+        
+        return ret
     }
     
     //
@@ -218,11 +263,16 @@ class TTBookService {
     }
     
     //
-    // 保存済み図書リストを取得
+    // 本棚に表示するオブジェクト一覧を取得
     //
-    func getBookList()->[BookEntity] {
-        let sortDescriptor = NSSortDescriptor(key: "sort_num", ascending: false)
-        let results: [BookEntity] = self.dataManager.find(DataManager.Const.kBookEntityName, condition: nil, sort: [sortDescriptor]) as! [BookEntity]
+    func getShelfObjectList()->[ShelfObjectEntity] {
+        let sortDescriptor = NSSortDescriptor(key: "sort_num", ascending: true)
+        let results: [ShelfObjectEntity] = self.dataManager.find(
+            DataManager.Const.kShelfObjectEntityName,
+            condition: nil,
+            sort: [sortDescriptor],
+            limit: nil
+        ) as! [ShelfObjectEntity]
 
         return results
     }

@@ -13,6 +13,8 @@ class DataManager {
     
     struct Const {
         static let kBookEntityName: String = "Book"
+        static let kFolderEntityName: String = "Folder"
+        static let kShelfObjectEntityName: String = "ShelfObject"
     }
     
     lazy var applicationDocumentsDirectory: NSURL = {
@@ -76,7 +78,7 @@ class DataManager {
         return Static.instance
     }
     
-    func find(entityName: String, condition: NSPredicate?, sort: [NSSortDescriptor]?)->[AnyObject]? {
+    func find(entityName: String, condition: NSPredicate?, sort: [NSSortDescriptor]?, limit: Int?)->[AnyObject]? {
         let request: NSFetchRequest = NSFetchRequest()
         let entity = NSEntityDescription.entityForName(entityName, inManagedObjectContext: self.managedObjectContext!)
         request.entity = entity
@@ -85,6 +87,9 @@ class DataManager {
         }
         if sort != nil {
             request.sortDescriptors = sort
+        }
+        if limit != nil {
+            request.fetchLimit = limit!
         }
         
         var error: NSError?
@@ -135,5 +140,9 @@ class DataManager {
             }
         }
         return TTErrorCode.Normal
+    }
+    
+    static func createUUID()->String {
+        return NSUUID().UUIDString
     }
 }
