@@ -23,6 +23,8 @@ enum TTErrorCode :Int {
         ContentFileNotFound
     // 2xx : DBに関するエラー
     case FailedToSaveDB = 201
+    // 3xx : フォルダ作成に関するエラー
+    case DuplicateFolderName = 301
 }
 
 class TTError {

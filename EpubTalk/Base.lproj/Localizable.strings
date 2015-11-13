@@ -10,6 +10,7 @@
 "dialog_title_notice" = "Confirm";
 
 "dialog_msg_delete" = "Delete book?";
+"dialog_msg_folder_created" = "New folder created.";
 
 "dialog_ok" = "OK";
 "dialog_cancel" = "Cancel";
@@ -30,6 +31,8 @@
 "error_msg_108" = "Meta data not found.";
 "error_msg_109" = "Navigation file not found.";
 "error_msg_110" = "Cotents file not found.";
+
+"error_msg_301" = "Input name already exists.";
 
 "msg_import_success" = "Import completed.";
 "msg_loading" = "Loading the book data...";

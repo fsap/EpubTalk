@@ -10,6 +10,7 @@
 "dialog_title_notice" = "確認";
 
 "dialog_msg_delete" = "削除してもよろしいですか？";
+"dialog_msg_folder_created" = "フォルダの作成が完了しました";
 
 "dialog_ok" = "OK";
 "dialog_cancel" = "Cancel";
@@ -30,6 +31,8 @@
 "error_msg_108" = "メタ情報ファイルが見つかりません";
 "error_msg_109" = "索引情報ファイルが見つかりません";
 "error_msg_110" = "コンテンツファイルが見つかりません";
+
+"error_msg_301" = "そのフォルダは既に存在します";
 
 "msg_import_success" = "ファイルの取り込みが完了しました";
 "msg_loading" = "図書データの読み込み中";

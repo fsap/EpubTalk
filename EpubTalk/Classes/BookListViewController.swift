@@ -20,8 +20,9 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
 
     @IBOutlet weak var bookListTableView: UITableView!
     
+    let bookService: TTBookService = TTBookService.sharedInstance
     var shelfObjectList :[ShelfObjectEntity] = []
-    var manager: DataManager = DataManager.sharedInstance
+//    var manager: DataManager = DataManager.sharedInstance
     var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
     var loadingView: LoadingView?
     var delegate: BookListViewDelegate?
@@ -52,8 +53,8 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
             self.startLoading()
         }
         
-        let bookService = TTBookService.sharedInstance
-        bookService.delegate = self
+//        let bookService = TTBookService.sharedInstance
+        self.bookService.delegate = self
         
         self.shelfObjectList = bookService.getShelfObjectList()
     }
@@ -113,23 +114,49 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         })
     }
     
-    // test
-    private func createBooks()->Void {
-        
-        for (var i=0; i<5; i++) {
-            let book: BookEntity = self.manager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
-            book.title = NSString(format: "title_%d", i) as String
-            book.sort_num = i
-            manager.save()
-        }
+    // メッセージダイアログ
+    private func showMessageDialog(message: String, didOk:(()->Void)?)->Void {
+        alertController.show(
+            self,
+            title: NSLocalizedString("dialog_title_notice", comment: ""),
+            message: message, actionOk: {() -> Void in
+                if didOk != nil {
+                    didOk!()
+                }
+        })
     }
     
+    // エラーダイアログ
+    private func showErrorDialog(errorCode: TTErrorCode, didOk:(()->Void)?)->Void {
+        alertController.show(
+            self,
+            title: NSLocalizedString("dialog_title_error", comment: ""),
+            message: TTError.getErrorMessage(errorCode), actionOk: {() -> Void in
+                if didOk != nil {
+                    didOk!()
+                }
+        })
+    }
     
     //
     // MARK: IBAction
     //
     @IBAction func createNewFolderTapped(sender: AnyObject) {
         LogM("Create New Folder.")
+    }
+    
+    func createFolder(newFolderName: String) {
+        let ret = self.bookService.createFolder(newFolderName)
+        if ret == TTErrorCode.Normal {
+            // ToDo: ダイアログいるか確認
+            self.showMessageDialog(NSLocalizedString("dialog_msg_folder_created", comment: ""), didOk: {() -> Void in
+                self.shelfObjectList = self.bookService.getShelfObjectList()
+                self.bookListTableView.reloadData()
+            })
+            
+        } else {
+            self.showErrorDialog(ret, didOk: nil)
+        }
     }
         
     
@@ -236,11 +263,11 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // 移動の確定タイミングで呼ばれる
     func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
 
+        let bookService: TTBookService = TTBookService.sharedInstance
         let sourceObj: ShelfObjectEntity = self.shelfObjectList[sourceIndexPath.row]
         self.shelfObjectList.removeAtIndex(sourceIndexPath.row)
         self.shelfObjectList.insert(sourceObj, atIndex: destinationIndexPath.row)
-        self.manager.save()
-        self.refreshSort()
+        bookService.refreshSort(self.shelfObjectList)
     }
     
     
