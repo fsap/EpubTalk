@@ -24,7 +24,9 @@ enum TTErrorCode :Int {
     // 2xx : DBに関するエラー
     case FailedToSaveDB = 201
     // 3xx : フォルダ作成に関するエラー
-    case DuplicateFolderName = 301
+    case DuplicateFolderName = 301,
+        CannotDeleteFolder,
+        FailedToPasteBook
 }
 
 class TTError {

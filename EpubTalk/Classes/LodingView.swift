@@ -14,7 +14,7 @@ protocol LoadingViewDelegate {
     func cancelLoad()
 }
 
-class LoadingView: UIView, BookListViewDelegate {
+class LoadingView: UIView, ShelfObjectListViewDelegate {
     
     var delegate: LoadingViewDelegate?
     

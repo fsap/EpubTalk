@@ -7,10 +7,84 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
+        <!--Book List View Controller-->
+        <scene sceneID="mPl-8Q-qug">
+            <objects>
+                <viewController id="dOb-tQ-s90" customClass="BookListViewController" customModule="EpubTalk" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ROA-Xr-8B7"/>
+                        <viewControllerLayoutGuide type="bottom" id="ooR-BN-OkJ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="E5w-VV-vlm">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="7yh-CO-Dxl">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <animations/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="jTp-DN-ABh">
+                                        <rect key="frame" x="0.0" y="92" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jTp-DN-ABh" id="Xht-5P-Tum">
+                                            <rect key="frame" x="0.0" y="0.0" width="567" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <animations/>
+                                        </tableViewCellContentView>
+                                        <animations/>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="dOb-tQ-s90" id="Snn-Tw-nMU"/>
+                                    <outlet property="delegate" destination="dOb-tQ-s90" id="dyi-Eg-HDa"/>
+                                </connections>
+                            </tableView>
+                            <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="500" translatesAutoresizingMaskIntoConstraints="NO" id="Lmx-aK-6Yb">
+                                <rect key="frame" x="0.0" y="540" width="600" height="60"/>
+                                <subviews>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" restorationIdentifier="new_folder_button" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pig-jN-qXx">
+                                        <rect key="frame" x="497" y="15" width="90" height="30"/>
+                                        <animations/>
+                                        <state key="normal" title="Paste"/>
+                                        <connections>
+                                            <action selector="paseteBookTapped:" destination="dOb-tQ-s90" eventType="touchUpInside" id="Eih-yC-1St"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <animations/>
+                                <color key="backgroundColor" white="0.66666666669999997" alpha="0.25" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="pig-jN-qXx" secondAttribute="trailing" constant="13" id="BmV-ND-G5r"/>
+                                    <constraint firstAttribute="height" constant="60" id="NZY-eI-OHB"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="7yh-CO-Dxl" firstAttribute="bottom" secondItem="ooR-BN-OkJ" secondAttribute="top" id="5FN-Mx-PPG"/>
+                            <constraint firstItem="Lmx-aK-6Yb" firstAttribute="trailing" secondItem="7yh-CO-Dxl" secondAttribute="trailing" id="9q1-d7-eP5"/>
+                            <constraint firstItem="7yh-CO-Dxl" firstAttribute="leading" secondItem="E5w-VV-vlm" secondAttribute="leading" id="Yuo-YT-HFQ"/>
+                            <constraint firstAttribute="trailing" secondItem="7yh-CO-Dxl" secondAttribute="trailing" id="jFY-Sf-Gok"/>
+                            <constraint firstItem="7yh-CO-Dxl" firstAttribute="top" secondItem="E5w-VV-vlm" secondAttribute="top" id="rBW-IG-Bhc"/>
+                            <constraint firstItem="Lmx-aK-6Yb" firstAttribute="leading" secondItem="7yh-CO-Dxl" secondAttribute="leading" id="ypA-Ly-Jiy"/>
+                            <constraint firstItem="Lmx-aK-6Yb" firstAttribute="bottom" secondItem="7yh-CO-Dxl" secondAttribute="bottom" id="zel-6i-VtW"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="bookListTableView" destination="7yh-CO-Dxl" id="550-6D-hVF"/>
+                        <outlet property="pasteButton" destination="pig-jN-qXx" id="574-qh-yNc"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Srp-of-aiS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1977" y="1147"/>
+        </scene>
         <!--BookList-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController title="BookList" id="BYZ-38-t0r" customClass="BookListViewController" customModule="EpubTalk" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="BookList" id="BYZ-38-t0r" customClass="ShelfObjectListViewController" customModule="EpubTalk" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -53,7 +127,7 @@
                                     </button>
                                 </subviews>
                                 <animations/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="0.25" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="3xC-XM-6yJ"/>
                                     <constraint firstAttribute="trailing" secondItem="xgN-1L-zFt" secondAttribute="trailing" constant="13" id="J1c-ep-C8h"/>
@@ -75,12 +149,13 @@
                     </view>
                     <navigationItem key="navigationItem" title="Book List" id="NQc-1k-KeO"/>
                     <connections>
-                        <outlet property="bookListTableView" destination="u9j-CW-lyT" id="n0X-Bp-ek0"/>
+                        <outlet property="ShelfObjectListTableView" destination="u9j-CW-lyT" id="Avm-QP-CXJ"/>
+                        <segue destination="dOb-tQ-s90" kind="show" identifier="bookListView" id="Pac-Ne-1Vd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1080" y="1124"/>
+            <point key="canvasLocation" x="1103" y="1128"/>
         </scene>
         <!--Root-->
         <scene sceneID="daP-As-jxB">

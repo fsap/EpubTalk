@@ -25,6 +25,9 @@ class TTBookService {
     
     var delegate: BookServiceDelegate?
     
+    var copiedBook: BookEntity?
+    var cutBook: BookEntity?
+    
     private var keepLoading: Bool
     
     class var sharedInstance : TTBookService {
@@ -293,6 +296,22 @@ class TTBookService {
         return results!.first
     }
     
+    // 本棚オブジェクトをIDで検索
+    func getShelfObjectByName(type: String, name: String)->ShelfObjectEntity? {
+        let predicate: NSPredicate = NSPredicate(format: "type = %@ AND name = %@", type, name)
+        let results: [ShelfObjectEntity]? = self.dataManager.find(
+            DataManager.Const.kShelfObjectEntityName,
+            condition: predicate,
+            sort: nil,
+            limit: 1
+            ) as! [ShelfObjectEntity]?
+        
+        if results == nil {
+            return nil
+        }
+        return results!.first
+    }
+    
     // 図書をIDで検索
     func getBookById(bookId: String)->BookEntity? {
         let predicate = NSPredicate(format: "book_id = %@", bookId)
@@ -309,11 +328,41 @@ class TTBookService {
         return results!.first
     }
     
+    // フォルダIDで検索
+    func getFolderById(folderId: String)->FolderEntity? {
+        let predicate = NSPredicate(format: "folder_id = %@", folderId)
+        let results: [FolderEntity]? = self.dataManager.find(
+            DataManager.Const.kFolderEntityName,
+            condition: predicate,
+            sort: nil,
+            limit: 1
+            ) as! [FolderEntity]?
+        
+        if results == nil {
+            return nil
+        }
+        return results!.first
+    }
+    
+    // フォルダ内図書を検索
+    func getBooksInFolder(folderId: String)->[BookEntity]? {
+        let predicate = NSPredicate(format: "folder_id = %@", folderId)
+        let sortDescriptor = NSSortDescriptor(key: "sort_num", ascending: true)
+        let results: [BookEntity]? = self.dataManager.find(
+            DataManager.Const.kBookEntityName,
+            condition: predicate,
+            sort: [sortDescriptor],
+            limit: 1
+            ) as! [BookEntity]?
+        
+        return results
+    }
+    
     // フォルダを作成
     func createFolder(folderName: String)->TTErrorCode {
         
         // 重複をチェック
-        if self.getFolderByName(folderName) == nil {
+        if self.getFolderByName(folderName) != nil {
             return TTErrorCode.DuplicateFolderName
         }
         
@@ -348,13 +397,30 @@ class TTBookService {
     }
 
     //
-    // 渡されたリストの順番にソートを更新する
+    // 渡された本棚オブジェクトリストの順番にソートを更新する
     //
     func refreshSort(shelfObjectList: [ShelfObjectEntity]) {
         for (index, shelfObject): (Int, ShelfObjectEntity) in shelfObjectList.enumerate() {
             shelfObject.sort_num = index+1
         }
         self.dataManager.save()
+    }
+    
+    //
+    // 渡された図書オブジェクトリストの順番にソートを更新する
+    //
+    func refreshSort(bookList: [BookEntity]) {
+        for (index, book): (Int, BookEntity) in bookList.enumerate() {
+            book.sort_num = index+1
+        }
+        self.dataManager.save()
+    }
+    
+    // 本棚表示オブジェクトを削除
+    func deleteShelfObject(shelfObject: ShelfObjectEntity)->TTErrorCode {
+        let dbResult: TTErrorCode = self.dataManager.remove(shelfObject)
+        
+        return dbResult
     }
     
     // 図書ファイルを削除
@@ -372,6 +438,55 @@ class TTBookService {
         
         return dbResult
     }
+    
+    // フォルダを削除
+    func deleteFolder(folder: FolderEntity)->TTErrorCode {
+        let books: [BookEntity]? = self.getBooksInFolder(folder.folder_id)
+        // 中が空でない
+        if books != nil && books?.count > 0 {
+            return TTErrorCode.CannotDeleteFolder
+        }
+        
+        let dbResult: TTErrorCode = self.dataManager.remove(folder)
+        
+        return dbResult
+    }
+    
+    // 図書をコピー
+    func copyBook(book: BookEntity?) {
+        self.copiedBook = book
+    }
+    
+    // 図書を切り取り
+    func cutBook(book: BookEntity?) {
+        self.cutBook = book
+    }
+    
+    // 図書をペースト
+    func pasteBook(folder: FolderEntity)->TTErrorCode {
+        if self.cutBook == nil && self.copiedBook == nil {
+            return TTErrorCode.FailedToPasteBook
+        }
+        
+        var book: BookEntity?
+        if self.copiedBook != nil {
+            book = self.copiedBook!
+        }
+        if self.cutBook != nil {
+            book = self.cutBook!
+        }
+        Log(NSString(format: "source book:%@", book!))
+//        let oldFolderId: String = book!.folder_id
+        
+        book!.folder_id = folder.folder_id
+        
+        let shelfObject: ShelfObjectEntity? = self.getShelfObjectByName(ShelfObjectTypes.Book.rawValue, name: book!.title)
+        if shelfObject == nil {
+            return self.dataManager.save()
+        }
+        return self.dataManager.remove(shelfObject!)
+    }
+    
     
     //
     // MARK: Private

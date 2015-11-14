@@ -12,51 +12,51 @@ protocol BookListViewDelegate {
     func needRedraw(view: UIView)
 }
 
-class BookListViewController : UIViewController, UITableViewDelegate, UITableViewDataSource, BookServiceDelegate, LoadingViewDelegate {
+class BookListViewController : UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     struct Const {
         static let kBookListViewLineHeight :CGFloat = 64.0
     }
 
     @IBOutlet weak var bookListTableView: UITableView!
+    @IBOutlet weak var pasteButton: UIButton!
     
     let bookService: TTBookService = TTBookService.sharedInstance
-    var shelfObjectList :[ShelfObjectEntity] = []
-//    var manager: DataManager = DataManager.sharedInstance
+    var bookList :[BookEntity] = []
     var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
     var loadingView: LoadingView?
     var delegate: BookListViewDelegate?
     
+    var folder: FolderEntity?
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        folder = nil
+        super.init(coder: aDecoder)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         LogM("viewDidLoad")
         // Do any additional setup after loading the view, typically from a nib.
         // title
-        self.navigationItem.title = NSLocalizedString("page_title_book_list", comment: "")
-        self.navigationItem.accessibilityLabel = NSLocalizedString("page_title_book_list", comment: "")
-        // help
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: NSLocalizedString("button_title_help", comment: ""),
-            style: .Plain,
-            target: self,
-            action: "leftBarButtonTapped:"
-        )
-        self.navigationItem.leftBarButtonItem?.accessibilityLabel = NSLocalizedString("button_title_help", comment: "")
+        self.navigationItem.title = folder!.name
+        self.navigationItem.accessibilityLabel = folder!.name
         // edit
         self.navigationItem.rightBarButtonItem = self.editButtonItem()
         self.bookListTableView.delegate = self
         
-        // ロード中だったらローディング画面へ
-        let appDelegate: AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        if appDelegate.loadingFlg {
-            self.startLoading()
+        self.bookList = bookService.getBooksInFolder(folder!.folder_id)!
+        
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        if self.bookService.copiedBook != nil {
+            Log(NSString(format: "copied book:%@", self.bookService.copiedBook!))
         }
-        
-//        let bookService = TTBookService.sharedInstance
-        self.bookService.delegate = self
-        
-        self.shelfObjectList = bookService.getShelfObjectList()
+        if self.bookService.copiedBook != nil || self.bookService.cutBook != nil {
+            self.pasteButton.hidden = false
+        }
     }
     
     override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -79,39 +79,9 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // MARK: Private
     //
     
-    // help
-    func leftBarButtonTapped(button: UIButton) {
-        UIApplication.sharedApplication().openURL(NSURL(string: NSLocalizedString("link_help", comment: ""))!)
-    }
-    
-    // 並び順をリフレッシュする
-    private func refreshSort()->Void {
-//        for (index, shelfObject): (Int, ShelfObjectEntity) in self.shelfObjectList.enumerate() {
-//            // 降順で並べるため
-//            shelfObject.sort_num = self.shelfObjectList.count - index
-//            self.manager.save()
-//        }
+    // 再読み込み
+    private func reload()->Void {
         self.bookListTableView.reloadData()
-    }
-    
-    // ローディング中の処理
-    private func startLoading()->Void {
-        LogM("start loading")
-        
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.loadingView = LoadingView(parentView: self.parentViewController!.view)
-            self.loadingView?.delegate = self
-            self.delegate = self.loadingView
-            self.loadingView?.start()
-        })
-    }
-    
-    // ローディング中のサウンド停止
-    private func stopLoading()->Void {
-        LogM("stop loading")
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.loadingView?.stop()
-        })
     }
     
     // メッセージダイアログ
@@ -138,28 +108,27 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         })
     }
     
+    
     //
     // MARK: IBAction
     //
-    @IBAction func createNewFolderTapped(sender: AnyObject) {
-        LogM("Create New Folder.")
-    }
-    
-    func createFolder(newFolderName: String) {
-        let ret = self.bookService.createFolder(newFolderName)
-        if ret == TTErrorCode.Normal {
-            // ToDo: ダイアログいるか確認
-            self.showMessageDialog(NSLocalizedString("dialog_msg_folder_created", comment: ""), didOk: {() -> Void in
-                self.shelfObjectList = self.bookService.getShelfObjectList()
-                self.bookListTableView.reloadData()
-            })
+    // ペースト
+    @IBAction func paseteBookTapped(sender: AnyObject) {
+        LogM("Paste book.")
+        let result = self.bookService.pasteBook(self.folder!)
+        if result == TTErrorCode.Normal {
+            self.bookService.copyBook(nil)
+            self.bookService.cutBook(nil)
+            self.pasteButton.hidden = true
             
+            self.bookList = self.bookService.getBooksInFolder(folder!.folder_id)!
+            self.reload()
         } else {
-            self.showErrorDialog(ret, didOk: nil)
+            self.showErrorDialog(result, didOk: nil)
         }
     }
-        
     
+
     //
     // MARK: UITableViewDelegate
     //
@@ -172,7 +141,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     
     // セクションあたり行数
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return shelfObjectList.count
+        return self.bookList.count
     }
     
     // 行の高さ
@@ -182,9 +151,9 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     
     // セルの設定
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "Cell")
-        let shelfObject = shelfObjectList[indexPath.row]
-        cell.textLabel?.text = shelfObject.name
+        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "Cell")
+        let book = self.bookList[indexPath.row]
+        cell.textLabel?.text = book.title
 
         return cell
     }
@@ -192,13 +161,8 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // セルが選択された
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
-        Log(NSString(format: "--- selected shelf object. title:%@ file:%@", shelfObject.name, shelfObject.target_id))
-        
-//        // Debug
-//        let fileManager: NSFileManager = NSFileManager.defaultManager()
-//        let attr = try! fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", FileManager.getImportDir(book.filename).path!, book.filename) as String)
-//        Log(NSString(format: "--- selected book. file:%@ attr:%@", book.filename, attr))
+        let book: BookEntity = self.bookList[indexPath.row]
+        Log(NSString(format: "--- selected book. title:%@ file:%@", book.title, book.filename))
     }
     
     // 編集可否の設定
@@ -207,47 +171,86 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         return true
     }
     
-    // 編集時のスタイル
+    // 編集時のスタイル(このメソッドを定義するとスワイプで編集メニューが無効になる)
     func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
+/*
         Log(NSString(format: "section:%d row:%d", indexPath.section, indexPath.row))
         if (self.editing) {
             let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
             switch shelfObject.type {
             case ShelfObjectTypes.Folder.rawValue:
-                return .None
+                return .Insert
             case ShelfObjectTypes.Book.rawValue:
                 return .Delete
             default:
                 return .None
             }
         }
-        return .None
+*/
+        return .Delete
+    }
+    
+    
+    // 編集アクション
+    @available(iOS 8.0, *)
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        let book: BookEntity = self.bookList[indexPath.row]
+        var actions: [UITableViewRowAction] = []
+        
+        // 共通
+        let deleteAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_delete", comment: "")) { (action, indexPath) -> Void in
+            LogM("delete.")
+            var actionOk: (() -> Void) = {
+                let result: TTErrorCode = self.bookService.deleteBook(book)
+                if result == TTErrorCode.Normal {
+                    self.bookList.removeAtIndex(indexPath.row)
+                    self.bookListTableView?.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Left)
+                    self.bookService.refreshSort(self.bookList)
+                    self.reload()
+                } else {
+                    self.alertController.show(self,
+                        title: NSLocalizedString("dialog_title_error", comment: ""),
+                        message: TTError.getErrorMessage(result), actionOk: { () -> Void in})
+                }
+            }
+            
+            self.alertController.show(self,
+                title: NSLocalizedString("dialog_title_notice", comment: ""),
+                message: NSLocalizedString("dialog_msg_delete", comment: ""),
+                actionOk: actionOk, actionCancel:nil)
+        }
+        deleteAction.backgroundColor = UIColor.redColor()
+        actions.append(deleteAction)
+        
+        // コピー
+        let copyAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_copy", comment: "")) { (action, indexPath) -> Void in
+            LogM("copy book.")
+            // コピーする
+            self.bookService.copyBook(book)
+            
+            self.showMessageDialog(NSLocalizedString("dialog_msg_copy_done", comment: ""), didOk: nil)
+        }
+        copyAction.backgroundColor = UIColor.greenColor()
+        actions.append(copyAction)
+        
+        // 切り取り
+        let cutAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_cut", comment: "")) { (action, indexPath) -> Void in
+            LogM("cut book.")
+            // カットする
+            self.bookService.cutBook(book)
+            
+            self.showMessageDialog(NSLocalizedString("dialog_msg_cut_done", comment: ""), didOk: nil)
+        }
+        cutAction.backgroundColor = UIColor.greenColor()
+        actions.append(cutAction)
+        
+        return actions
     }
     
     // 編集の確定タイミングで呼ばれる
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-//        let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
         switch editingStyle {
         case .Delete:
-/*
-            // 確認を取る
-            self.alertController.show(self,
-                title: NSLocalizedString("dialog_title_notice", comment: ""),
-                message: NSLocalizedString("dialog_msg_delete", comment: ""),
-                actionOk: { () -> Void in
-                    let book: BookEntity = self.bookList[indexPath.row]
-                    let result: TTErrorCode = TTBookService.sharedInstance.deleteBook(book)
-                    if result == TTErrorCode.Normal {
-                        self.bookList.removeAtIndex(indexPath.row)
-                        self.bookListTableView?.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Left)
-                        self.refreshSort()
-                    } else {
-                        self.alertController.show(self,
-                            title: NSLocalizedString("dialog_title_error", comment: ""),
-                            message: TTError.getErrorMessage(result), actionOk: { () -> Void in})
-                    }
-            }, actionCancel:nil)
-*/
             return
         default:
             return
@@ -263,48 +266,10 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // 移動の確定タイミングで呼ばれる
     func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
 
-        let bookService: TTBookService = TTBookService.sharedInstance
-        let sourceObj: ShelfObjectEntity = self.shelfObjectList[sourceIndexPath.row]
-        self.shelfObjectList.removeAtIndex(sourceIndexPath.row)
-        self.shelfObjectList.insert(sourceObj, atIndex: destinationIndexPath.row)
-        bookService.refreshSort(self.shelfObjectList)
+        let sourceBook: BookEntity = self.bookList[sourceIndexPath.row]
+        self.bookList.removeAtIndex(sourceIndexPath.row)
+        self.bookList.insert(sourceBook, atIndex: destinationIndexPath.row)
+        bookService.refreshSort(self.bookList)
     }
     
-    
-    //
-    // MARK: BookServiceDelegate
-    //
-    
-    func importStarted() {
-        LogM("import started.")
-        
-//        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.startLoading()
-//        })
-    }
-    
-    func importCompleted() {
-        LogM("import completed.")
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.stopLoading()
-            self.view.backgroundColor = UIColor.whiteColor()
-            self.shelfObjectList = TTBookService.sharedInstance.getShelfObjectList()
-            self.bookListTableView.reloadData()
-        })
-    }
-    
-    func importFailed() {
-        LogM("import failed.")
-//        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.stopLoading()
-//        })
-    }
-    
-    //
-    // MARK: LoadingViewDelegate
-    //
-    func cancelLoad() {
-        let bookService: TTBookService = TTBookService.sharedInstance
-        bookService.cancelImport()
-    }
 }

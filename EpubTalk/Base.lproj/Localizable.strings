@@ -8,16 +8,26 @@
 
 "dialog_title_error" = "Error";
 "dialog_title_notice" = "Confirm";
+"dialog_title_create_folder" = "Create New Folder";
 
 "dialog_msg_delete" = "Delete book?";
+"dialog_msg_create_new_folder" = "Input new folder name.";
 "dialog_msg_folder_created" = "New folder created.";
+"dialog_msg_copy_done" = "Copy done.";
+"dialog_msg_cut_done" = "Cut done.";
 
 "dialog_ok" = "OK";
 "dialog_cancel" = "Cancel";
+"dialog_create" = "Create";
 
 "button_title_cancel_loading" = "Cancel";
 "button_title_canceling" = "Canceling...";
 "button_title_help" = "Help";
+
+"cell_action_titile_delete" = "Delete";
+"cell_action_titile_copy" = "Copy";
+"cell_action_titile_cut" = "Cut";
+"cell_action_titile_change_title" = "Change Title";
 
 "link_help" = "http://www.nbs.co.jp/ios/english/epubtalk/use.htm";
 
@@ -33,6 +43,8 @@
 "error_msg_110" = "Cotents file not found.";
 
 "error_msg_301" = "Input name already exists.";
+"error_msg_302" = "Folder not empty.";
+"error_msg_303" = "Failed to move book.";
 
 "msg_import_success" = "Import completed.";
 "msg_loading" = "Loading the book data...";

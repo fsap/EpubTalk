@@ -8,16 +8,27 @@
 
 "dialog_title_error" = "エラー";
 "dialog_title_notice" = "確認";
+"dialog_title_create_folder" = "新規フォルダ";
 
 "dialog_msg_delete" = "削除してもよろしいですか？";
+"dialog_msg_create_new_folder" = "フォルダの名前を入力してください";
 "dialog_msg_folder_created" = "フォルダの作成が完了しました";
+"dialog_msg_copy_done" = "コピーしました";
+"dialog_msg_cut_done" = "切り取りました";
 
 "dialog_ok" = "OK";
 "dialog_cancel" = "Cancel";
+"dialog_create" = "作成";
 
 "button_title_cancel_loading" = "中止";
 "button_title_canceling" = "中止しています...";
 "button_title_help" = "ヘルプ";
+
+"cell_action_titile_delete" = "削除";
+"cell_action_titile_copy" = "コピー";
+"cell_action_titile_cut" = "切り取り";
+"cell_action_titile_change_title" = "タイトル変更";
+
 
 "link_help" = "http://www.nbs.co.jp/ios/epubtalk/use.htm";
 
@@ -33,6 +44,8 @@
 "error_msg_110" = "コンテンツファイルが見つかりません";
 
 "error_msg_301" = "そのフォルダは既に存在します";
+"error_msg_302" = "フォルダ内が空ではありません";
+"error_msg_303" = "図書の移動に失敗しました";
 
 "msg_import_success" = "ファイルの取り込みが完了しました";
 "msg_loading" = "図書データの読み込み中";

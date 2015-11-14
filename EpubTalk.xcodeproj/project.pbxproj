@@ -52,6 +52,8 @@
 		82DC19BD1BBEEE0A0068D32E /* ContainerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */; };
 		82E154C81BEF7CE400A4CEDB /* FolderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154C71BEF7CE400A4CEDB /* FolderEntity.swift */; };
 		82E154CA1BF24A6100A4CEDB /* ShelfObjectEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154C91BF24A6100A4CEDB /* ShelfObjectEntity.swift */; };
+		82E154CC1BF6381C00A4CEDB /* CreateFolderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154CB1BF6381C00A4CEDB /* CreateFolderViewController.swift */; };
+		82E154CE1BF68E1100A4CEDB /* ShelfObjectListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154CD1BF68E1100A4CEDB /* ShelfObjectListViewController.swift */; };
 		F0A5AEF61BECDEF500152F26 /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -128,6 +130,8 @@
 		82DC19BC1BBEEE0A0068D32E /* ContainerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerManager.swift; sourceTree = "<group>"; };
 		82E154C71BEF7CE400A4CEDB /* FolderEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderEntity.swift; sourceTree = "<group>"; };
 		82E154C91BF24A6100A4CEDB /* ShelfObjectEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShelfObjectEntity.swift; sourceTree = "<group>"; };
+		82E154CB1BF6381C00A4CEDB /* CreateFolderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateFolderViewController.swift; sourceTree = "<group>"; };
+		82E154CD1BF68E1100A4CEDB /* ShelfObjectListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShelfObjectListViewController.swift; sourceTree = "<group>"; };
 		F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -222,6 +226,8 @@
 			children = (
 				820F3F561BB42DB30019B139 /* Models */,
 				820F3EE71BB2E82E0019B139 /* BookListViewController.swift */,
+				82E154CD1BF68E1100A4CEDB /* ShelfObjectListViewController.swift */,
+				82E154CB1BF6381C00A4CEDB /* CreateFolderViewController.swift */,
 				820F3EE81BB2E82E0019B139 /* Constants.swift */,
 				820F3EEB1BB2E82E0019B139 /* DataManager.swift */,
 				820F3EEC1BB2E82E0019B139 /* DCMetadata.swift */,
@@ -422,6 +428,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				820F3EC61BB2E3780019B139 /* ViewController.swift in Sources */,
+				82E154CC1BF6381C00A4CEDB /* CreateFolderViewController.swift in Sources */,
 				820F3F5C1BB432150019B139 /* EpubTalk.xcdatamodeld in Sources */,
 				820F3F401BB2E8CB0019B139 /* unzip.c in Sources */,
 				820F3F3A1BB2E8CB0019B139 /* LIST.M in Sources */,
@@ -432,6 +439,7 @@
 				820F3F001BB2E82E0019B139 /* DCMetadata.swift in Sources */,
 				82E154C81BEF7CE400A4CEDB /* FolderEntity.swift in Sources */,
 				820F3F411BB2E8CB0019B139 /* zip.c in Sources */,
+				82E154CE1BF68E1100A4CEDB /* ShelfObjectListViewController.swift in Sources */,
 				82DC19BD1BBEEE0A0068D32E /* ContainerManager.swift in Sources */,
 				F0A5AEF61BECDEF500152F26 /* NavigationManager.swift in Sources */,
 				820F3F0B1BB2E82E0019B139 /* TTBookService.swift in Sources */,
