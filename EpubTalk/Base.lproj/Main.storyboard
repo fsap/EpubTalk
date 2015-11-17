@@ -28,7 +28,7 @@
                                         <rect key="frame" x="0.0" y="92" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jTp-DN-ABh" id="Xht-5P-Tum">
-                                            <rect key="frame" x="0.0" y="0.0" width="567" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -81,10 +81,10 @@
             </objects>
             <point key="canvasLocation" x="1977" y="1147"/>
         </scene>
-        <!--BookList-->
+        <!--Shelf Object View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController title="BookList" id="BYZ-38-t0r" customClass="ShelfObjectListViewController" customModule="EpubTalk" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Shelf Object View Controller" id="BYZ-38-t0r" customClass="ShelfObjectListViewController" customModule="EpubTalk" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -117,8 +117,8 @@
                             <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="500" translatesAutoresizingMaskIntoConstraints="NO" id="Ke8-mR-2h0">
                                 <rect key="frame" x="0.0" y="540" width="600" height="60"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" restorationIdentifier="new_folder_button" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgN-1L-zFt">
-                                        <rect key="frame" x="497" y="15" width="90" height="30"/>
+                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgN-1L-zFt">
+                                        <rect key="frame" x="447" y="15" width="140" height="30"/>
                                         <animations/>
                                         <state key="normal" title="New Folder"/>
                                         <connections>
@@ -147,9 +147,10 @@
                             <constraint firstItem="Ke8-mR-2h0" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="zeK-W2-p5c"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Book List" id="NQc-1k-KeO"/>
+                    <navigationItem key="navigationItem" title="Shelf" id="NQc-1k-KeO"/>
                     <connections>
                         <outlet property="ShelfObjectListTableView" destination="u9j-CW-lyT" id="Avm-QP-CXJ"/>
+                        <outlet property="createFolderButton" destination="xgN-1L-zFt" id="vRc-wI-YrA"/>
                         <segue destination="dOb-tQ-s90" kind="show" identifier="bookListView" id="Pac-Ne-1Vd"/>
                     </connections>
                 </viewController>

@@ -24,6 +24,8 @@
 "button_title_canceling" = "中止しています...";
 "button_title_help" = "ヘルプ";
 
+"new_folder_button" = "新規フォルダ作成";
+
 "cell_action_titile_delete" = "削除";
 "cell_action_titile_copy" = "コピー";
 "cell_action_titile_cut" = "切り取り";

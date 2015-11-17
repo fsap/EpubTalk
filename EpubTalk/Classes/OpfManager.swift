@@ -10,10 +10,10 @@ import Foundation
 
 class OpfManager: NSObject, NSXMLParserDelegate {
     
-    private var didParseSuccess: ((ncxUrl: NSURL?, metadata: Metadata)->Void)?
+    private var didParseSuccess: ((epub: Epub)->Void)?
     private var didParseFailure: ((errorCode: TTErrorCode)->Void)?
     private var ncxUrl: NSURL?
-    private var metadata: Metadata
+    private var epub: Epub
     private var isInMetadata: Bool
     private var isInManifest: Bool
     private var currentElement: String
@@ -31,7 +31,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         self.didParseSuccess = nil
         self.didParseFailure = nil
         self.ncxUrl = nil
-        self.metadata = Metadata()
+        self.epub = Epub()
         self.isInMetadata = false
         self.isInManifest = false
         self.currentElement = ""
@@ -41,7 +41,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
     }
     
     func startParseOpfFile(opfUrl: NSURL,
-        didParseSuccess: ((ncxUrl: NSURL?, metadata: Metadata)->Void),
+        didParseSuccess: ((epub: Epub)->Void),
         didParseFailure:((errorCode: TTErrorCode)->Void))->Void
     {
         self.didParseSuccess = didParseSuccess
@@ -57,8 +57,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         
         self.currentDir = opfUrl.URLByDeletingLastPathComponent
         
-        self.ncxUrl = nil
-        self.metadata = Metadata()
+        self.epub = Epub()
         
         parser!.delegate = self
         
@@ -101,18 +100,15 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         } else if self.isInManifest {
             if elementName == ManifestTag.Item.rawValue {
                 // xmlファイル情報のみ取得
+                // xmlファイル情報のみ取得
                 let attr: String? = attributeDict[ManifestItemAttr.MediaType.rawValue]
-                if attr == MediaTypes.NOC.rawValue {
-//                    let itemId: String = attributeDict[ManifestItemAttr.Id.rawValue]!
-//                    if itemId == EpubStandard_3_0.NativationFileExtension {
-                        let href: String = attributeDict[ManifestItemAttr.Href.rawValue]!
-                        let path: String = self.currentDir!.URLByAppendingPathComponent(href).path!
-                        self.ncxUrl = NSURL(fileURLWithPath: path)
-//                    }
+                if attr == MediaTypes.XML.rawValue {
+                    let href: String = attributeDict[ManifestItemAttr.Href.rawValue]!
+                    let path: String = self.currentDir!.URLByAppendingPathComponent(href).path!
+                    self.epub.navigation.contentsPaths.append(path)
                 }
             }
         }
-        
     }
     
     // valueを読み込み
@@ -122,30 +118,30 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         if self.isInMetadata {
             switch self.currentElement {
             case MetadataTag.DC_Identifier.rawValue:
-                self.metadata.identifier = string
+                self.epub.metadata.identifier = string
                 break
             case MetadataTag.DC_Title.rawValue:
-                if self.metadata.title == "" {
-                    self.metadata.title = string
+                if self.epub.metadata.title == "" {
+                    self.epub.metadata.title = string
                 } else {
-                    self.metadata.title += string
+                    self.epub.metadata.title += string
                 }
-                Log(NSString(format: "title:%@", self.metadata.title))
+                Log(NSString(format: "title:%@", self.epub.metadata.title))
                 break
             case MetadataTag.DC_Publisher.rawValue:
-                self.metadata.publisher = string
+                self.epub.metadata.publisher = string
                 break
             case MetadataTag.DC_Date.rawValue:
-                self.metadata.date = string
+                self.epub.metadata.date = string
                 break
             case MetadataTag.DC_Creator.rawValue:
-                self.metadata.creator = string
+                self.epub.metadata.creator = string
                 break
             case MetadataTag.DC_Language.rawValue:
-                self.metadata.language = string
+                self.epub.metadata.language = string
                 break
             case MetadataTag.DC_Format.rawValue:
-                self.metadata.format = string
+                self.epub.metadata.format = string
                 break
             default:
                 break
@@ -175,7 +171,7 @@ class OpfManager: NSObject, NSXMLParserDelegate {
         LogM("--- end parse.")
         
         if self.didParseSuccess != nil {
-            self.didParseSuccess!(ncxUrl: self.ncxUrl, metadata: self.metadata)
+            self.didParseSuccess!(epub: self.epub)
         }
     }
     

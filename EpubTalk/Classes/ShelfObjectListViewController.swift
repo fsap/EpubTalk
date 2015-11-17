@@ -19,6 +19,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     }
 
     @IBOutlet weak var ShelfObjectListTableView: UITableView!
+    @IBOutlet weak var createFolderButton: UIButton!
     
     let bookService: TTBookService = TTBookService.sharedInstance
     var shelfObjectList :[ShelfObjectEntity] = []
@@ -47,6 +48,8 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         // edit
         self.navigationItem.rightBarButtonItem = self.editButtonItem()
         self.ShelfObjectListTableView.delegate = self
+        // create folder
+        self.createFolderButton.setTitle(NSLocalizedString("new_folder_button", comment: ""), forState: .Normal)
         
         // ロード中だったらローディング画面へ
         let appDelegate: AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -85,7 +88,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
 //            let folder: FolderEntity = sender as! FolderEntity
             let folderId: String = sender as! String
             let folder: FolderEntity = self.bookService.getFolderById(folderId)!
-            var bookListViewController: BookListViewController = segue.destinationViewController as! BookListViewController
+            let bookListViewController: BookListViewController = segue.destinationViewController as! BookListViewController
             bookListViewController.folder = folder
         }
     }

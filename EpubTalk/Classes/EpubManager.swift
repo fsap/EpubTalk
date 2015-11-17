@@ -115,33 +115,12 @@ class EpubManager: NSObject {
         let opfManager: OpfManager = OpfManager.sharedInstance
         opfManager.startParseOpfFile(
             opfUrl,
-            didParseSuccess: { (ncxUrl, metadata) -> Void in
-                if ncxUrl != nil {
-                    Log(NSString(format: "ncx found. %@", ncxUrl!))
-                    
-                    let queue: dispatch_queue_t = dispatch_queue_create("parseOpf", nil)
-                    dispatch_async(queue, { () -> Void in
-                        let navigationManager: NavigationManager = NavigationManager.sharedInstance
-                        navigationManager.startParseOpfFile(
-                            ncxUrl!,
-                            metadata: metadata,
-                            didParseSuccess: { (epub) -> Void in
-                                LogM("Epub file found.")
-                                didSuccess(epub: epub)
-                            },
-                            didParseFailure: { (errorCode) -> Void in
-                                LogE(NSString(format: "[%d] Contents file not found. dir:%@", TTErrorCode.ContentFileNotFound.rawValue, ncxUrl!))
-                                didFailure(errorCode: TTErrorCode.ContentFileNotFound)
-                            }
-                        )
-                    })
-                } else {
-                    LogE(NSString(format: "[%d] Ncx file not found. dir:%@", TTErrorCode.NavigationFileNotFound.rawValue, opfUrl))
-                    didFailure(errorCode: TTErrorCode.NavigationFileNotFound)
-                }
+            didParseSuccess: { (epub) -> Void in
+                LogM("Epub file found.")
+                didSuccess(epub: epub)
             },
             didParseFailure: { (errorCode) -> Void in
-                LogE(NSString(format: "[%d] Ncx file not found. dir:%@", TTErrorCode.NavigationFileNotFound.rawValue, opfUrl))
+                LogE(NSString(format: "[%d] Contents file not found. dir:%@", TTErrorCode.NavigationFileNotFound.rawValue, opfUrl))
                 didFailure(errorCode: TTErrorCode.NavigationFileNotFound)
             }
         )
