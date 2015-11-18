@@ -54,6 +54,8 @@
 		82E154CA1BF24A6100A4CEDB /* ShelfObjectEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154C91BF24A6100A4CEDB /* ShelfObjectEntity.swift */; };
 		82E154CC1BF6381C00A4CEDB /* CreateFolderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154CB1BF6381C00A4CEDB /* CreateFolderViewController.swift */; };
 		82E154CE1BF68E1100A4CEDB /* ShelfObjectListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E154CD1BF68E1100A4CEDB /* ShelfObjectListViewController.swift */; };
+		82F53AEE1BFCD985000EA731 /* PurchaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F53AED1BFCD985000EA731 /* PurchaseService.swift */; };
+		82F53AF01BFCD9E8000EA731 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F53AEF1BFCD9E8000EA731 /* StoreKit.framework */; };
 		F0A5AEF61BECDEF500152F26 /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -132,6 +134,8 @@
 		82E154C91BF24A6100A4CEDB /* ShelfObjectEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShelfObjectEntity.swift; sourceTree = "<group>"; };
 		82E154CB1BF6381C00A4CEDB /* CreateFolderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateFolderViewController.swift; sourceTree = "<group>"; };
 		82E154CD1BF68E1100A4CEDB /* ShelfObjectListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShelfObjectListViewController.swift; sourceTree = "<group>"; };
+		82F53AED1BFCD985000EA731 /* PurchaseService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchaseService.swift; sourceTree = "<group>"; };
+		82F53AEF1BFCD9E8000EA731 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -140,6 +144,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82F53AF01BFCD9E8000EA731 /* StoreKit.framework in Frameworks */,
 				820F3F501BB2E93D0019B139 /* libz.dylib in Frameworks */,
 				820F3F4E1BB2E9330019B139 /* libxml2.dylib in Frameworks */,
 				820F3F4C1BB2E9240019B139 /* AudioToolbox.framework in Frameworks */,
@@ -159,6 +164,7 @@
 		820F3EB21BB2E3780019B139 = {
 			isa = PBXGroup;
 			children = (
+				82F53AEF1BFCD9E8000EA731 /* StoreKit.framework */,
 				820F3F4F1BB2E93D0019B139 /* libz.dylib */,
 				820F3F4D1BB2E9330019B139 /* libxml2.dylib */,
 				820F3F4B1BB2E9240019B139 /* AudioToolbox.framework */,
@@ -224,6 +230,7 @@
 		820F3EE51BB2E82E0019B139 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				82F53AED1BFCD985000EA731 /* PurchaseService.swift */,
 				820F3F561BB42DB30019B139 /* Models */,
 				820F3EE71BB2E82E0019B139 /* BookListViewController.swift */,
 				82E154CD1BF68E1100A4CEDB /* ShelfObjectListViewController.swift */,
@@ -462,6 +469,7 @@
 				820F3F0F1BB2E8BD0019B139 /* LodingView.swift in Sources */,
 				820F3F091BB2E82E0019B139 /* OpfManager.swift in Sources */,
 				82E154CA1BF24A6100A4CEDB /* ShelfObjectEntity.swift in Sources */,
+				82F53AEE1BFCD985000EA731 /* PurchaseService.swift in Sources */,
 				820F3EFC1BB2E82E0019B139 /* Constants.swift in Sources */,
 				820F3F0A1BB2E82E0019B139 /* TTAlertController.swift in Sources */,
 				820F3F041BB2E82E0019B139 /* ManifestItem.swift in Sources */,

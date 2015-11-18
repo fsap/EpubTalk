@@ -9,7 +9,7 @@
 import UIKit
 
 protocol ShelfObjectListViewDelegate {
-    func needRedraw(view: UIView)
+    func needRedraw(view: UIView, message: String)
 }
 
 class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UITableViewDataSource, BookServiceDelegate, LoadingViewDelegate {
@@ -68,7 +68,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     
     override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
         LogM("Lotation")
-        self.delegate?.needRedraw(self.parentViewController!.view)
+        self.delegate?.needRedraw(self.parentViewController!.view, message: NSLocalizedString("msg_loading", comment: ""))
     }
     
     override func didReceiveMemoryWarning() {
@@ -112,7 +112,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         LogM("start loading")
         
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.loadingView = LoadingView(parentView: self.parentViewController!.view)
+            self.loadingView = LoadingView(parentView: self.parentViewController!.view, message: NSLocalizedString("msg_loading", comment: ""))
             self.loadingView?.delegate = self
             self.delegate = self.loadingView
             self.loadingView?.start()

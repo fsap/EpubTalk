@@ -9,16 +9,12 @@
 import Foundation
 
 
+// 定数定義
 struct Constants {
-    /*
-        Daisy規格関連
-    */
-    // マルチDAISY情報ファイル
-    static let kMultiDaisyInfoFile: String = "discinfo.html"
-    
-    /*
-        ファイル操作関連
-    */
+
+    /**
+     * ファイル操作関連
+     */
     // 取り込み可能な拡張子
     static let kImportableExtensions: [String] = ["zip", "epub"]
     // 他アプリからエクスポートされたファイルの格納場所
@@ -29,4 +25,8 @@ struct Constants {
     static let kSaveDocumentPath: String = "Library/Books"
 
 
+    /**
+     * 課金関連
+     */
+    static let kInAppPurchaseProductiId = "jp.fsap.epubtalkdev.product";
 }

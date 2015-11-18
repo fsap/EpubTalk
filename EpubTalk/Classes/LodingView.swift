@@ -31,13 +31,13 @@ class LoadingView: UIView, ShelfObjectListViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(parentView: UIView) {
+    convenience init(parentView: UIView, message:String) {
         self.init(frame: parentView.frame)
         
-        createView(parentView)
+        createView(parentView, message: message)
     }
     
-    private func createView(parentView: UIView) {
+    private func createView(parentView: UIView, message: String) {
         
         //
         // ローディングViewの生成
@@ -62,7 +62,8 @@ class LoadingView: UIView, ShelfObjectListViewDelegate {
         msgView.backgroundColor = UIColor.clearColor()
         msgLabel.textColor = UIColor.whiteColor()
         msgLabel.textAlignment = .Center
-        msgLabel.text = NSLocalizedString("msg_loading", comment: "")
+        msgLabel.text = message
+//        msgLabel.text = NSLocalizedString("msg_loading", comment: "")
         msgLabel.sizeToFit()
         msgLabel.center = CGPoint(x: msgView.frame.size.width / 2, y: msgView.frame.size.height / 2)
         
@@ -161,14 +162,14 @@ class LoadingView: UIView, ShelfObjectListViewDelegate {
     }
     
     //
-    // MARK: BookListViewDelegate
+    // MARK: ShelfObjectListViewDelegate
     //
-    func needRedraw(view: UIView) {
+    func needRedraw(view: UIView, message: String) {
         Log(NSString(format: "view x:%f y:%f", view.frame.size.width, view.frame.size.height))
         // ローディング中の画面回転対応
         if activityIndicator.isAnimating() {
             self.clearView()
-            createView(view)
+            createView(view, message: message)
         }
     }
     
