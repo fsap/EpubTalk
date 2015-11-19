@@ -27,6 +27,9 @@ enum TTErrorCode :Int {
     case DuplicateFolderName = 301,
         CannotDeleteFolder,
         FailedToPasteBook
+    // 4xx : 課金に関するエラー
+    case FailedToPurchase = 401,
+        CannotUseInAppPurchase
 }
 
 class TTError {

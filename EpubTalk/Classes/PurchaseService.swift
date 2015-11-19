@@ -9,12 +9,31 @@
 import Foundation
 import StoreKit
 
+// 購入種別
+enum PurchaseStatus: Int {
+    case NotPurcased,
+    Purchased,
+    NeedRestore
+}
+
+// 課金種別
+enum PurchaseType: Int {
+    case Unknown = 0
+    case Payment = 1
+    case Restore = 2
+}
+
 
 //
 // 課金管理クラス
 //
 class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransactionObserver {
     
+    private var purchaseType: PurchaseType
+    private var didPurchaseSuccess: (()->Void)?
+    private var didRestoreSuccess: (()->Void)?
+    private var didPurchaseFailure: ((errorCode: TTErrorCode)->Void)?
+
     
     class var sharedInstance : PurchaseService {
         struct Static {
@@ -24,11 +43,19 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
     }
     
     override init () {
-        
+        self.purchaseType = PurchaseType.Unknown
+        self.didPurchaseSuccess = nil
+        self.didRestoreSuccess = nil
+        self.didPurchaseFailure = nil
     }
     
     deinit {
         
+    }
+    
+    // 課金済みステータスを取得する
+    static func getPurchaseStatus()->PurchaseStatus {
+        return PurchaseStatus(rawValue: PurchaseService.getStatus())!
     }
     
     //
@@ -39,7 +66,19 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
         return SKPaymentQueue.canMakePayments()
     }
     
-    func startPurchase() {
+    //
+    // 購入処理開始
+    //
+    func startPurchase(didSuccess: (()->Void), didFailure: ((errorCode: TTErrorCode)->Void)) {
+        self.purchaseType = PurchaseType.Payment
+        self.didPurchaseSuccess = didSuccess
+        self.didPurchaseFailure = didFailure
+        
+        if !self.enableInAppPurchase() {
+            didFailure(errorCode: .FailedToPurchase)
+            return
+        }
+        
         let set: NSSet = NSSet(object: Constants.kInAppPurchaseProductiId)
         let productRequest: SKProductsRequest = SKProductsRequest(productIdentifiers: set as! Set<String>)
         productRequest.delegate = self
@@ -51,7 +90,24 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
     // MARK: SKProductsRequestDelegate
     //
     @objc func productsRequest(request: SKProductsRequest, didReceiveResponse response: SKProductsResponse) {
+        // 無効なアイテム
+        if response.invalidProductIdentifiers.count > 0 {
+            LogE(NSString(format: "Invalid product id. %@", request))
+            self.didPurchaseFailure!(errorCode: .FailedToPurchase)
+            return
+        }
         
+        SKPaymentQueue.defaultQueue().addTransactionObserver(self)
+        for product: SKProduct in response.products {
+            switch self.purchaseType {
+            case .Payment:
+                SKPaymentQueue.defaultQueue().addPayment(SKPayment(product: product))
+            case .Restore:
+                SKPaymentQueue.defaultQueue().restoreCompletedTransactions()
+            default:
+                break
+            }
+        }
     }
     
     
@@ -60,26 +116,30 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
     //
     func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         
-        for transaction in transactions {
-            if let paymentTransaction = transaction as? SKPaymentTransaction {
+        for transaction: SKPaymentTransaction in transactions {
+            
+            switch transaction.transactionState {
+            case SKPaymentTransactionState.Purchasing:
+                break
                 
-                switch paymentTransaction.transactionState {
-                case SKPaymentTransactionState.Purchasing:
-                    break
-                    
-                case SKPaymentTransactionState.Purchased:
-                    break
-                    
-                case SKPaymentTransactionState.Failed:
-                    break
-                    
-                case SKPaymentTransactionState.Restored:
-                    break
-                    
-                default:
-                    break
+            case SKPaymentTransactionState.Purchased:
+                LogM("Success To Purchase.")
+                // リクエストと合っていれば保存
+                if self.purchaseType == purchaseType {
+                    PurchaseService.saveStatus(PurchaseStatus.Purchased)
+                    queue.finishTransaction(transaction)
                 }
+                break
                 
+            case SKPaymentTransactionState.Failed:
+                self.didPurchaseFailure!(errorCode: .FailedToPurchase)
+                break
+                
+            case SKPaymentTransactionState.Restored:
+                break
+                
+            default:
+                break
             }
         }
     }
@@ -89,4 +149,14 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
     // MARK: Private
     //
     
+    static private func getStatus()->Int {
+        let defaults: NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        return defaults.integerForKey(Constants.kSavePurchaseStatusKey)
+    }
+    
+    static private func saveStatus(status: PurchaseStatus) {
+        let defaults: NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        defaults.setInteger(status.rawValue, forKey: Constants.kSavePurchaseStatusKey)
+        defaults.synchronize()
+    }
 }
