@@ -78,11 +78,22 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
             didFailure(errorCode: .FailedToPurchase)
             return
         }
+        self.startPurchaseRequest()
+    }
+
+    //
+    // リストア処理開始
+    //
+    func startRestore(didSuccess: (()->Void), didFailure: ((errorCode: TTErrorCode)->Void)) {
+        self.purchaseType = PurchaseType.Restore
+        self.didRestoreSuccess = didSuccess
+        self.didPurchaseFailure = didFailure
         
-        let set: NSSet = NSSet(object: Constants.kInAppPurchaseProductiId)
-        let productRequest: SKProductsRequest = SKProductsRequest(productIdentifiers: set as! Set<String>)
-        productRequest.delegate = self
-        productRequest.start()
+        if !self.enableInAppPurchase() {
+            didFailure(errorCode: .FailedToPurchase)
+            return
+        }
+        self.startPurchaseRequest()
     }
     
     
@@ -120,22 +131,27 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
             
             switch transaction.transactionState {
             case SKPaymentTransactionState.Purchasing:
+                LogM("Purchasing...")
                 break
                 
             case SKPaymentTransactionState.Purchased:
                 LogM("Success To Purchase.")
                 // リクエストと合っていれば保存
-                if self.purchaseType == purchaseType {
+                if self.purchaseType == PurchaseType.Payment {
                     PurchaseService.saveStatus(PurchaseStatus.Purchased)
                     queue.finishTransaction(transaction)
                 }
                 break
                 
             case SKPaymentTransactionState.Failed:
-                self.didPurchaseFailure!(errorCode: .FailedToPurchase)
-                break
+                LogE(NSString(format: "Failed to purchase. %@", transaction))
+                self.didPurchaseFailure!(errorCode: .CanceledToPurchase)
+                return
                 
             case SKPaymentTransactionState.Restored:
+                if self.purchaseType == PurchaseType.Restore {
+                    queue.finishTransaction(transaction)
+                }
                 break
                 
             default:
@@ -144,10 +160,33 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
         }
     }
     
+    //
+    // リストア完了
+    //
+    func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
+        LogM("Finish transaction.")
+        didRestoreSuccess!()
+    }
+    
+    //
+    // リストアに失敗
+    //
+    func paymentQueue(queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: NSError) {
+        LogE(NSString(format:"Failed to restore completed. code:%d description:%@", error.code, error.description))
+        didPurchaseFailure!(errorCode: .FailedToRestore)
+    }
+    
     
     //
     // MARK: Private
     //
+ 
+    func startPurchaseRequest() {
+        let set: NSSet = NSSet(object: Constants.kInAppPurchaseProductiId)
+        let productRequest: SKProductsRequest = SKProductsRequest(productIdentifiers: set as! Set<String>)
+        productRequest.delegate = self
+        productRequest.start()
+    }
     
     static private func getStatus()->Int {
         let defaults: NSUserDefaults = NSUserDefaults.standardUserDefaults()

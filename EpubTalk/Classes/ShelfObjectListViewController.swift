@@ -26,6 +26,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
 //    var manager: DataManager = DataManager.sharedInstance
     var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
     let createFolderViewController: CreateFolderViewController = CreateFolderViewController(nibName: nil, bundle: nil)
+    let purchaseConfirmViewController: PurchaseConfirmViewController = PurchaseConfirmViewController(nibName: nil, bundle: nil)
     var loadingView: LoadingView?
     var delegate: ShelfObjectListViewDelegate?
     
@@ -152,13 +153,23 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     }
     
     // フォルダ名入力ダイアログ
-    private func showCreateFolderDialog()->Void {
+    private func showCreateFolderDialog() {
         self.createFolderViewController.show(
             self,
             actionOk: { (inputText) -> Void in
                 self.createFolder(inputText)
             },
             actionCancel: {() -> Void in})
+    }
+    
+    // 課金確認ダイアログ
+    private func showPurchaseDialog() {
+        self.purchaseConfirmViewController.show(self,
+            actionPurchase: { () -> Void in
+                
+            }, actionRestore: { () -> Void in
+                //
+            }, actionCancel: nil)
     }
     
     // フォルダ作成
@@ -207,6 +218,10 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     @IBAction func createNewFolderTapped(sender: AnyObject) {
         LogM("Create New Folder.")
         self.showCreateFolderDialog()
+    }
+    
+    @IBAction func purchaseButtonTapped(sender: AnyObject) {
+        LogM("Purchase Button.")
     }
     
     

@@ -15,10 +15,13 @@
 "dialog_msg_folder_created" = "New folder created.";
 "dialog_msg_copy_done" = "Copy done.";
 "dialog_msg_cut_done" = "Cut done.";
+"dialog_msg_confirm_purchase" = "Purchase UpgradeVersion";
 
 "dialog_ok" = "OK";
 "dialog_cancel" = "Cancel";
 "dialog_create" = "Create";
+"dialog_purchase" = "Purchase";
+"dialog_restore" = "Restore before purchase";
 
 "button_title_cancel_loading" = "Cancel";
 "button_title_canceling" = "Canceling...";
@@ -47,6 +50,11 @@
 "error_msg_301" = "Input name already exists.";
 "error_msg_302" = "Folder not empty.";
 "error_msg_303" = "Failed to move book.";
+
+"error_msg_401" = "In App Purchase disabled.";
+"error_msg_402" = "Failed to purchase.";
+"error_msg_403" = "Failed to restore.";
+"error_msg_404" = "Purchase canceled.";
 
 "msg_import_success" = "Import completed.";
 "msg_loading" = "Loading the book data...";

@@ -57,6 +57,7 @@
 		82F53AEE1BFCD985000EA731 /* PurchaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F53AED1BFCD985000EA731 /* PurchaseService.swift */; };
 		82F53AF01BFCD9E8000EA731 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F53AEF1BFCD9E8000EA731 /* StoreKit.framework */; };
 		F0A5AEF61BECDEF500152F26 /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */; };
+		F0E7327B1BFF67DF005F69F6 /* PurchaseConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E7327A1BFF67DF005F69F6 /* PurchaseConfirmViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +138,7 @@
 		82F53AED1BFCD985000EA731 /* PurchaseService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchaseService.swift; sourceTree = "<group>"; };
 		82F53AEF1BFCD9E8000EA731 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
+		F0E7327A1BFF67DF005F69F6 /* PurchaseConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchaseConfirmViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -235,6 +237,7 @@
 				820F3EE71BB2E82E0019B139 /* BookListViewController.swift */,
 				82E154CD1BF68E1100A4CEDB /* ShelfObjectListViewController.swift */,
 				82E154CB1BF6381C00A4CEDB /* CreateFolderViewController.swift */,
+				F0E7327A1BFF67DF005F69F6 /* PurchaseConfirmViewController.swift */,
 				820F3EE81BB2E82E0019B139 /* Constants.swift */,
 				820F3EEB1BB2E82E0019B139 /* DataManager.swift */,
 				820F3EEC1BB2E82E0019B139 /* DCMetadata.swift */,
@@ -440,6 +443,7 @@
 				820F3F401BB2E8CB0019B139 /* unzip.c in Sources */,
 				820F3F3A1BB2E8CB0019B139 /* LIST.M in Sources */,
 				820F3F011BB2E82E0019B139 /* DiscInfo.swift in Sources */,
+				F0E7327B1BFF67DF005F69F6 /* PurchaseConfirmViewController.swift in Sources */,
 				820F3F0C1BB2E82E0019B139 /* TTError.swift in Sources */,
 				820F3EC11BB2E3780019B139 /* AppDelegate.swift in Sources */,
 				820F3F081BB2E82E0019B139 /* OPF.swift in Sources */,

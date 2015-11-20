@@ -28,8 +28,10 @@ enum TTErrorCode :Int {
         CannotDeleteFolder,
         FailedToPasteBook
     // 4xx : 課金に関するエラー
-    case FailedToPurchase = 401,
-        CannotUseInAppPurchase
+    case CannotUseInAppPurchase = 401,
+        FailedToPurchase,
+        FailedToRestore,
+        CanceledToPurchase
 }
 
 class TTError {

@@ -15,10 +15,13 @@
 "dialog_msg_folder_created" = "フォルダの作成が完了しました";
 "dialog_msg_copy_done" = "コピーしました";
 "dialog_msg_cut_done" = "切り取りました";
+"dialog_msg_confirm_purchase" = "アップグレード版の購入";
 
 "dialog_ok" = "OK";
 "dialog_cancel" = "Cancel";
 "dialog_create" = "作成";
+"dialog_purchase" = "購入する";
+"dialog_restore" = "以前の購入を復元する";
 
 "button_title_cancel_loading" = "中止";
 "button_title_canceling" = "中止しています...";
@@ -48,6 +51,11 @@
 "error_msg_301" = "そのフォルダは既に存在します";
 "error_msg_302" = "フォルダ内が空ではありません";
 "error_msg_303" = "図書の移動に失敗しました";
+
+"error_msg_401" = "アプリ内課金が無効になっています";
+"error_msg_402" = "購入処理に失敗しました";
+"error_msg_403" = "復元処理に失敗しました";
+"error_msg_404" = "購入がキャンセルされました";
 
 "msg_import_success" = "ファイルの取り込みが完了しました";
 "msg_loading" = "図書データの読み込み中";
