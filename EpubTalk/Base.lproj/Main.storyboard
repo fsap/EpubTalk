@@ -102,7 +102,7 @@
                                         <rect key="frame" x="0.0" y="86" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZbA-c9-xLo" id="X4M-JX-YPK">
-                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="567" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -117,7 +117,7 @@
                             <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="500" translatesAutoresizingMaskIntoConstraints="NO" id="Ke8-mR-2h0">
                                 <rect key="frame" x="0.0" y="540" width="600" height="60"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgN-1L-zFt">
+                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgN-1L-zFt">
                                         <rect key="frame" x="447" y="15" width="140" height="30"/>
                                         <animations/>
                                         <state key="normal" title="New Folder"/>
@@ -125,13 +125,48 @@
                                             <action selector="createNewFolderTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="WVo-ZW-YMu"/>
                                         </connections>
                                     </button>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aNH-lC-LGX">
+                                        <rect key="frame" x="22" y="15" width="140" height="30"/>
+                                        <animations/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="140" id="OMW-Q9-spd"/>
+                                        </constraints>
+                                        <state key="normal" title="Paste"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SCZ-HO-vWw">
+                                        <rect key="frame" x="230" y="15" width="140" height="30"/>
+                                        <animations/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="140" id="z4p-hT-KT4"/>
+                                        </constraints>
+                                        <state key="normal" title="Purchase"/>
+                                        <connections>
+                                            <action selector="purchaseButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="FZv-BQ-tU5"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <animations/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="0.25" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstItem="aNH-lC-LGX" firstAttribute="centerY" secondItem="Ke8-mR-2h0" secondAttribute="centerY" id="0UK-CW-OPE"/>
                                     <constraint firstAttribute="height" constant="60" id="3xC-XM-6yJ"/>
+                                    <constraint firstItem="SCZ-HO-vWw" firstAttribute="centerY" secondItem="Ke8-mR-2h0" secondAttribute="centerY" id="6an-h5-wmu"/>
+                                    <constraint firstItem="aNH-lC-LGX" firstAttribute="baseline" secondItem="xgN-1L-zFt" secondAttribute="baseline" id="EsC-69-MDd"/>
                                     <constraint firstAttribute="trailing" secondItem="xgN-1L-zFt" secondAttribute="trailing" constant="13" id="J1c-ep-C8h"/>
+                                    <constraint firstItem="xgN-1L-zFt" firstAttribute="leading" secondItem="SCZ-HO-vWw" secondAttribute="trailing" constant="77" id="Sgf-Nf-UlU"/>
+                                    <constraint firstItem="aNH-lC-LGX" firstAttribute="centerY" secondItem="Ke8-mR-2h0" secondAttribute="centerY" id="cg5-RK-Y2g"/>
+                                    <constraint firstItem="SCZ-HO-vWw" firstAttribute="centerX" secondItem="Ke8-mR-2h0" secondAttribute="centerX" id="hUq-6F-os8"/>
+                                    <constraint firstItem="SCZ-HO-vWw" firstAttribute="baseline" secondItem="aNH-lC-LGX" secondAttribute="baseline" id="j4C-FL-wLe"/>
+                                    <constraint firstItem="xgN-1L-zFt" firstAttribute="centerY" secondItem="Ke8-mR-2h0" secondAttribute="centerY" id="koE-rn-bRs"/>
+                                    <constraint firstItem="aNH-lC-LGX" firstAttribute="leading" secondItem="Ke8-mR-2h0" secondAttribute="leading" constant="22" id="rKM-lA-S9s"/>
                                 </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="EsC-69-MDd"/>
+                                        <exclude reference="j4C-FL-wLe"/>
+                                        <exclude reference="Sgf-Nf-UlU"/>
+                                    </mask>
+                                </variation>
                             </view>
                         </subviews>
                         <animations/>
@@ -151,6 +186,8 @@
                     <connections>
                         <outlet property="ShelfObjectListTableView" destination="u9j-CW-lyT" id="Avm-QP-CXJ"/>
                         <outlet property="createFolderButton" destination="xgN-1L-zFt" id="vRc-wI-YrA"/>
+                        <outlet property="pasteButton" destination="aNH-lC-LGX" id="QiI-1e-9tX"/>
+                        <outlet property="purchaseButton" destination="SCZ-HO-vWw" id="ho6-bX-fTr"/>
                         <segue destination="dOb-tQ-s90" kind="show" identifier="bookListView" id="Pac-Ne-1Vd"/>
                     </connections>
                 </viewController>

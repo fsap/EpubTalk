@@ -616,6 +616,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Shuichi Fujiwara (77Q569439Y)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -628,6 +629,7 @@
 				LIBS_ROOT = "$(SRCROOT)/$(PRODUCT_NAME)/Libs";
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "deacef2f-9879-4224-b19a-bd0ff876ff17";
 				SWIFT_OBJC_BRIDGING_HEADER = BridgeHeader.h;
 				USER_HEADER_SEARCH_PATHS = "$(LIBS_ROOT)";
 			};
@@ -648,6 +650,7 @@
 				LIBRARY_SEARCH_PATHS = "$(LIBS_ROOT)";
 				LIBS_ROOT = "$(SRCROOT)/$(PRODUCT_NAME)/Libs";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "deacef2f-9879-4224-b19a-bd0ff876ff17";
 				SWIFT_OBJC_BRIDGING_HEADER = BridgeHeader.h;
 				USER_HEADER_SEARCH_PATHS = "$(LIBS_ROOT)";
 			};

@@ -20,6 +20,8 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
 
     @IBOutlet weak var ShelfObjectListTableView: UITableView!
     @IBOutlet weak var createFolderButton: UIButton!
+    @IBOutlet weak var pasteButton: UIButton!;
+    @IBOutlet weak var purchaseButton: UIButton!;
     
     let bookService: TTBookService = TTBookService.sharedInstance
     var shelfObjectList :[ShelfObjectEntity] = []
@@ -27,6 +29,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
     let createFolderViewController: CreateFolderViewController = CreateFolderViewController(nibName: nil, bundle: nil)
     let purchaseConfirmViewController: PurchaseConfirmViewController = PurchaseConfirmViewController(nibName: nil, bundle: nil)
+    let purchaseService: PurchaseService = PurchaseService.sharedInstance
     var loadingView: LoadingView?
     var delegate: ShelfObjectListViewDelegate?
     
@@ -51,18 +54,27 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         self.ShelfObjectListTableView.delegate = self
         // create folder
         self.createFolderButton.setTitle(NSLocalizedString("new_folder_button", comment: ""), forState: .Normal)
+        self.createFolderButton.accessibilityLabel = NSLocalizedString("new_folder_button", comment: "")
+        // paste
+        self.pasteButton.setTitle(NSLocalizedString("paste_button", comment: ""), forState: .Normal)
+        self.pasteButton.accessibilityLabel = NSLocalizedString("paste_button", comment: "")
+        // purchase
+        self.purchaseButton.setTitle(NSLocalizedString("purchase_button", comment: ""), forState: .Normal)
+        self.purchaseButton.accessibilityLabel = NSLocalizedString("purchase_button", comment: "")
         
         // ロード中だったらローディング画面へ
         let appDelegate: AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         if appDelegate.loadingFlg {
-            self.startLoading()
+            self.startLoadingImport()
         }
         
         self.bookService.delegate = self
-        
     }
     
     override func viewDidAppear(animated: Bool) {
+        if self.bookService.copiedBook != nil || self.bookService.cutBook != nil {
+            self.pasteButton.hidden = false
+        }
         self.shelfObjectList = bookService.getShelfObjectList()
         self.reload()
     }
@@ -108,12 +120,24 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         self.ShelfObjectListTableView.reloadData()
     }
     
-    // ローディング中の処理
-    private func startLoading()->Void {
+    // 図書インポート中ローディング開始
+    private func startLoadingImport() {
         LogM("start loading")
         
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.loadingView = LoadingView(parentView: self.parentViewController!.view, message: NSLocalizedString("msg_loading", comment: ""))
+            self.loadingView = LoadingView(parentView: self.parentViewController!.view, message: NSLocalizedString("msg_loading_import", comment: ""))
+            self.loadingView?.delegate = self
+            self.delegate = self.loadingView
+            self.loadingView?.start()
+        })
+    }
+    
+    // 課金処理中ローディング開始
+    private func startLoadingPurchase() {
+        LogM("start loading")
+        
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.loadingView = LoadingView(parentView: self.parentViewController!.view, message: NSLocalizedString("msg_loading_purchase", comment: ""))
             self.loadingView?.delegate = self
             self.delegate = self.loadingView
             self.loadingView?.start()
@@ -164,11 +188,36 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     
     // 課金確認ダイアログ
     private func showPurchaseDialog() {
+        if PurchaseService.getPurchaseStatus() == PurchaseStatus.Purchased {
+            self.showMessageDialog(NSLocalizedString("msg_already_purchase", comment: ""), didOk: nil)
+            return
+        }
+        
         self.purchaseConfirmViewController.show(self,
             actionPurchase: { () -> Void in
-                
+                self.startLoadingPurchase()
+                // 購入処理
+                self.purchaseService.startPurchase({ () -> Void in
+                        // 購入完了
+                        self.showMessageDialog(NSLocalizedString("msg_complete_purchase", comment: ""), didOk: nil)
+                        self.stopLoading()
+                    }, didFailure: { (errorCode) -> Void in
+                        // 購入に失敗またはキャンセル
+                        self.showMessageDialog(TTError.getErrorMessage(errorCode), didOk: nil)
+                        self.stopLoading()
+                })
             }, actionRestore: { () -> Void in
-                //
+                self.startLoadingPurchase()
+                // 復元処理
+                self.purchaseService.startRestore({ () -> Void in
+                        // リストア完了
+                        self.showMessageDialog(NSLocalizedString("msg_complete_restore", comment: ""), didOk: nil)
+                    self.stopLoading()
+                    }, didFailure: { (errorCode) -> Void in
+                        // リストアに失敗またはキャンセル
+                        self.showMessageDialog(TTError.getErrorMessage(errorCode), didOk: nil)
+                        self.stopLoading()
+                })
             }, actionCancel: nil)
     }
     
@@ -222,6 +271,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     
     @IBAction func purchaseButtonTapped(sender: AnyObject) {
         LogM("Purchase Button.")
+        self.showPurchaseDialog()
     }
     
     
@@ -421,7 +471,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         LogM("import started.")
         
 //        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.startLoading()
+            self.startLoadingImport()
 //        })
     }
     

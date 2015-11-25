@@ -11,8 +11,8 @@ import StoreKit
 
 // 購入種別
 enum PurchaseStatus: Int {
-    case NotPurcased,
-    Purchased,
+    case NotPurcased,   // 未課金
+    Purchased,          // 課金済み
     NeedRestore
 }
 
@@ -101,9 +101,10 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
     // MARK: SKProductsRequestDelegate
     //
     @objc func productsRequest(request: SKProductsRequest, didReceiveResponse response: SKProductsResponse) {
+        Log(NSString(format: "products:%@", response.products))
         // 無効なアイテム
         if response.invalidProductIdentifiers.count > 0 {
-            LogE(NSString(format: "Invalid product id. %@", request))
+            LogE(NSString(format: "Invalid product id. %@", response.invalidProductIdentifiers))
             self.didPurchaseFailure!(errorCode: .FailedToPurchase)
             return
         }
@@ -126,6 +127,7 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
     // MARK: SKPaymentTransactionObserver
     //
     func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        Log(NSString(format: "transactions:%@", transactions))
         
         for transaction: SKPaymentTransaction in transactions {
             

@@ -28,6 +28,8 @@
 "button_title_help" = "ヘルプ";
 
 "new_folder_button" = "新規フォルダ作成";
+"paste_button" = "貼り付け";
+"purchase_button" = "購入";
 
 "cell_action_titile_delete" = "削除";
 "cell_action_titile_copy" = "コピー";
@@ -58,7 +60,11 @@
 "error_msg_404" = "購入がキャンセルされました";
 
 "msg_import_success" = "ファイルの取り込みが完了しました";
-"msg_loading" = "図書データの読み込み中";
+"msg_loading_import" = "図書データの読み込み中";
+"msg_loading_purchase" = "購入処理中";
+"msg_complete_purchase" = "購入処理が完了しました";
+"msg_complete_restore" = "復元処理が完了しました";
+"msg_already_purchase" = "購入済みです";
 
 "row_action_delete" = "削除";
 

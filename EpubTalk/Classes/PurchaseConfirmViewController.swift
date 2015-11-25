@@ -9,7 +9,7 @@
 import UIKit
 
 enum PurchaseButtonIndex: Int {
-    case Purchase = 0,
+    case Purchase = 1,
     Restore
 }
 
