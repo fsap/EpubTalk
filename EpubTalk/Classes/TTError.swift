@@ -26,7 +26,8 @@ enum TTErrorCode :Int {
     // 3xx : フォルダ作成に関するエラー
     case DuplicateFolderName = 301,
         CannotDeleteFolder,
-        FailedToPasteBook
+        FailedToPasteBook,
+        DuplicateBook
     // 4xx : 課金に関するエラー
     case CannotUseInAppPurchase = 401,
         FailedToPurchase,

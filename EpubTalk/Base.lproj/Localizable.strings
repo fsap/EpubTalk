@@ -52,6 +52,7 @@
 "error_msg_301" = "Input name already exists.";
 "error_msg_302" = "Folder not empty.";
 "error_msg_303" = "Failed to move book.";
+"error_msg_304" = "Same book already exists.";
 
 "error_msg_401" = "In App Purchase disabled.";
 "error_msg_402" = "Failed to purchase.";

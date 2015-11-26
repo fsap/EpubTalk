@@ -15,6 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var loadingFlg: Bool = false
     var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
+    let dataManager: DataManager = DataManager.sharedInstance
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {

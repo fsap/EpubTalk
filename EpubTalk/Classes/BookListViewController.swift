@@ -45,18 +45,19 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         // edit
         self.navigationItem.rightBarButtonItem = self.editButtonItem()
         self.bookListTableView.delegate = self
-        
-        self.bookList = bookService.getBooksInFolder(folder!.folder_id)!
+        // paste
+        self.pasteButton.setTitle(NSLocalizedString("paste_button", comment: ""), forState: .Normal)
+        self.pasteButton.accessibilityLabel = NSLocalizedString("paste_button", comment: "")
         
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-//        if self.bookService.copiedBook != nil {
         if self.bookService.clipboard != nil {
             Log(NSString(format: "copied book:%@", self.bookService.clipboard!))
             self.pasteButton.hidden = false
         }
+        self.reload()
     }
     
     override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -81,6 +82,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     
     // 再読み込み
     private func reload()->Void {
+        self.bookList = bookService.getBooksInFolder(folder!.folder_id)!
         self.bookListTableView.reloadData()
     }
     
@@ -117,11 +119,9 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         LogM("Paste book.")
         let result = self.bookService.pasteBook(self.folder!)
         if result == TTErrorCode.Normal {
-            self.bookService.copyBook(nil)
-            self.bookService.cutBook(nil)
+            self.bookService.clearClipboard()
             self.pasteButton.hidden = true
             
-            self.bookList = self.bookService.getBooksInFolder(folder!.folder_id)!
             self.reload()
         } else {
             self.showErrorDialog(result, didOk: nil)
@@ -200,7 +200,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         // 共通
         let deleteAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_delete", comment: "")) { (action, indexPath) -> Void in
             LogM("delete.")
-            var actionOk: (() -> Void) = {
+            let actionOk: (() -> Void) = {
                 let result: TTErrorCode = self.bookService.deleteBook(book)
                 if result == TTErrorCode.Normal {
                     self.bookList.removeAtIndex(indexPath.row)
@@ -228,7 +228,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
             // コピーする
             self.bookService.copyBook(book)
             
-            self.showMessageDialog(NSLocalizedString("dialog_msg_copy_done", comment: ""), didOk: nil)
+            tableView.setEditing(false, animated: true)
         }
         copyAction.backgroundColor = UIColor.greenColor()
         actions.append(copyAction)
@@ -239,7 +239,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
             // カットする
             self.bookService.cutBook(book)
             
-            self.showMessageDialog(NSLocalizedString("dialog_msg_cut_done", comment: ""), didOk: nil)
+            tableView.setEditing(false, animated: true)
         }
         cutAction.backgroundColor = UIColor.greenColor()
         actions.append(cutAction)

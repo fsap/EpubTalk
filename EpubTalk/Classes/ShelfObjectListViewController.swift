@@ -15,6 +15,7 @@ protocol ShelfObjectListViewDelegate {
 class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UITableViewDataSource, BookServiceDelegate, LoadingViewDelegate {
     
     struct Const {
+        static let kKeyValueObserverPath: String = "ChangeShelfObjectList"
         static let kBookListViewLineHeight :CGFloat = 64.0
     }
 
@@ -69,15 +70,15 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         }
         
         self.bookService.delegate = self
+        
+//        self.addObserver(self, forKeyPath: Const.kKeyValueObserverPath, options: .New, context: nil)
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-//        if self.bookService.copiedBook != nil || self.bookService.cutBook != nil {
         if self.bookService.clipboard != nil {
             self.pasteButton.hidden = false
         }
-        self.shelfObjectList = bookService.getShelfObjectList()
         self.reload()
     }
     
@@ -119,6 +120,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     
     // 再読み込み
     private func reload()->Void {
+        self.shelfObjectList = self.bookService.getShelfObjectList()
         self.ShelfObjectListTableView.reloadData()
     }
     
@@ -229,8 +231,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         if ret == TTErrorCode.Normal {
             // ToDo: ダイアログいるか確認
             self.showMessageDialog(NSLocalizedString("dialog_msg_folder_created", comment: ""), didOk: {() -> Void in
-                self.shelfObjectList = self.bookService.getShelfObjectList()
-                self.ShelfObjectListTableView.reloadData()
+                self.reload()
             })
             
         } else {
@@ -270,22 +271,19 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         LogM("Create New Folder.")
         self.showCreateFolderDialog()
     }
-#if false
+
     @IBAction func paseteBookTapped(sender: AnyObject) {
         LogM("Paste book.")
-        let result = self.bookService.pasteBook(self.folder!)
+        let result = self.bookService.pasteBook(nil)
         if result == TTErrorCode.Normal {
-            self.bookService.copyBook(nil)
-            self.bookService.cutBook(nil)
+            self.bookService.clearClipboard()
             self.pasteButton.hidden = true
             
-            self.bookList = self.bookService.getBooksInFolder(folder!.folder_id)!
             self.reload()
         } else {
             self.showErrorDialog(result, didOk: nil)
         }
     }
-#endif
 
     @IBAction func purchaseButtonTapped(sender: AnyObject) {
         LogM("Purchase Button.")
@@ -305,6 +303,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     
     // セクションあたり行数
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        Log(NSString(format: "rows[%d]", self.shelfObjectList.count))
         return shelfObjectList.count
     }
     
@@ -431,7 +430,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
                 // コピーする
                 self.bookService.copyBook(self.bookService.getBookById(shelfObject.target_id)!)
                 
-                self.showMessageDialog(NSLocalizedString("dialog_msg_copy_done", comment: ""), didOk: nil)
+                tableView.setEditing(false, animated: true)
             }
             copyAction.backgroundColor = UIColor.greenColor()
             actions.append(copyAction)
@@ -440,9 +439,9 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
             let cutAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_cut", comment: "")) { (action, indexPath) -> Void in
                 LogM("cut book.")
                 // カットする
-                self.bookService.copyBook(self.bookService.getBookById(shelfObject.target_id)!)
+                self.bookService.cutBook(self.bookService.getBookById(shelfObject.target_id)!)
                 
-                self.showMessageDialog(NSLocalizedString("dialog_msg_cut_done", comment: ""), didOk: nil)
+                tableView.setEditing(false, animated: true)
             }
             cutAction.backgroundColor = UIColor.greenColor()
             actions.append(cutAction)
@@ -498,8 +497,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             self.stopLoading()
             self.view.backgroundColor = UIColor.whiteColor()
-            self.shelfObjectList = TTBookService.sharedInstance.getShelfObjectList()
-            self.ShelfObjectListTableView.reloadData()
+            self.reload()
         })
     }
     
@@ -516,5 +514,15 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     func cancelLoad() {
         let bookService: TTBookService = TTBookService.sharedInstance
         bookService.cancelImport()
+    }
+    
+    //
+    // MARK: KVO
+    //
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        Log(NSString(format: "keyPath:%@", (keyPath != nil) ? keyPath! : "None"))
+        if keyPath != nil && keyPath == Const.kKeyValueObserverPath {
+            self.reload()
+        }
     }
 }

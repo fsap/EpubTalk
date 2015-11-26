@@ -28,7 +28,7 @@
                                         <rect key="frame" x="0.0" y="92" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jTp-DN-ABh" id="Xht-5P-Tum">
-                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="567" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -43,9 +43,12 @@
                             <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="500" translatesAutoresizingMaskIntoConstraints="NO" id="Lmx-aK-6Yb">
                                 <rect key="frame" x="0.0" y="540" width="600" height="60"/>
                                 <subviews>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" restorationIdentifier="new_folder_button" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pig-jN-qXx">
-                                        <rect key="frame" x="497" y="15" width="90" height="30"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" restorationIdentifier="new_folder_button" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pig-jN-qXx">
+                                        <rect key="frame" x="8" y="22" width="90" height="30"/>
                                         <animations/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="90" id="3rS-NT-s1i"/>
+                                        </constraints>
                                         <state key="normal" title="Paste"/>
                                         <connections>
                                             <action selector="pasteBookTapped:" destination="dOb-tQ-s90" eventType="touchUpInside" id="xw5-du-cJJ"/>
@@ -55,8 +58,9 @@
                                 <animations/>
                                 <color key="backgroundColor" white="0.66666666669999997" alpha="0.25" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="pig-jN-qXx" secondAttribute="trailing" constant="13" id="BmV-ND-G5r"/>
                                     <constraint firstAttribute="height" constant="60" id="NZY-eI-OHB"/>
+                                    <constraint firstItem="pig-jN-qXx" firstAttribute="leading" secondItem="Lmx-aK-6Yb" secondAttribute="leadingMargin" id="hMK-oG-u1o"/>
+                                    <constraint firstItem="pig-jN-qXx" firstAttribute="bottom" secondItem="Lmx-aK-6Yb" secondAttribute="bottomMargin" id="mya-ep-IeH"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -117,21 +121,13 @@
                             <view contentMode="scaleToFill" horizontalHuggingPriority="500" horizontalCompressionResistancePriority="500" translatesAutoresizingMaskIntoConstraints="NO" id="Ke8-mR-2h0">
                                 <rect key="frame" x="0.0" y="540" width="600" height="60"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgN-1L-zFt">
+                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xgN-1L-zFt">
                                         <rect key="frame" x="447" y="15" width="140" height="30"/>
                                         <animations/>
                                         <state key="normal" title="New Folder"/>
                                         <connections>
                                             <action selector="createNewFolderTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="WVo-ZW-YMu"/>
                                         </connections>
-                                    </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aNH-lC-LGX">
-                                        <rect key="frame" x="22" y="15" width="140" height="30"/>
-                                        <animations/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="140" id="OMW-Q9-spd"/>
-                                        </constraints>
-                                        <state key="normal" title="Paste"/>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SCZ-HO-vWw">
                                         <rect key="frame" x="230" y="15" width="140" height="30"/>
@@ -142,6 +138,17 @@
                                         <state key="normal" title="Purchase"/>
                                         <connections>
                                             <action selector="purchaseButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="FZv-BQ-tU5"/>
+                                        </connections>
+                                    </button>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aNH-lC-LGX">
+                                        <rect key="frame" x="8" y="15" width="140" height="30"/>
+                                        <animations/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="140" id="OMW-Q9-spd"/>
+                                        </constraints>
+                                        <state key="normal" title="Paste"/>
+                                        <connections>
+                                            <action selector="paseteBookTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mMS-FA-nEJ"/>
                                         </connections>
                                     </button>
                                 </subviews>
