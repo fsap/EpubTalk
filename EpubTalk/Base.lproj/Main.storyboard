@@ -48,7 +48,7 @@
                                         <animations/>
                                         <state key="normal" title="Paste"/>
                                         <connections>
-                                            <action selector="paseteBookTapped:" destination="dOb-tQ-s90" eventType="touchUpInside" id="Eih-yC-1St"/>
+                                            <action selector="pasteBookTapped:" destination="dOb-tQ-s90" eventType="touchUpInside" id="xw5-du-cJJ"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -102,7 +102,7 @@
                                         <rect key="frame" x="0.0" y="86" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZbA-c9-xLo" id="X4M-JX-YPK">
-                                            <rect key="frame" x="0.0" y="0.0" width="567" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <animations/>
                                         </tableViewCellContentView>

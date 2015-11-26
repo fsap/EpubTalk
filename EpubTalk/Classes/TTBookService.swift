@@ -15,6 +15,12 @@ protocol BookServiceDelegate {
 }
 
 
+enum BookCommand: Int {
+    case None = -1
+    case Copy = 1,
+    Cut
+}
+
 //
 // ブックファイル管理クラス
 //
@@ -25,8 +31,10 @@ class TTBookService {
     
     var delegate: BookServiceDelegate?
     
-    var copiedBook: BookEntity?
-    var cutBook: BookEntity?
+    var bookCommand: BookCommand
+    var clipboard: BookEntity?
+//    var copiedBook: BookEntity?
+//    var cutBook: BookEntity?
     
     private var keepLoading: Bool
     
@@ -39,6 +47,8 @@ class TTBookService {
     
     init () {
         self.keepLoading = true
+        self.clipboard = nil
+        self.bookCommand = .None
     }
     
     deinit {
@@ -454,20 +464,25 @@ class TTBookService {
     
     // 図書をコピー
     func copyBook(book: BookEntity?) {
-        self.copiedBook = book
+//        self.copiedBook = book
+        self.clipboard = book
+        self.bookCommand = .Copy
     }
     
     // 図書を切り取り
     func cutBook(book: BookEntity?) {
-        self.cutBook = book
+//        self.cutBook = book
+        self.bookCommand = .Cut
+        self.clipboard = book
     }
     
     // 図書をペースト
-    func pasteBook(folder: FolderEntity)->TTErrorCode {
-        if self.cutBook == nil && self.copiedBook == nil {
+    func pasteBook(folder: FolderEntity?)->TTErrorCode {
+//        if self.cutBook == nil && self.copiedBook == nil {
+        if self.clipboard == nil {
             return TTErrorCode.FailedToPasteBook
         }
-        
+        #if false
         var book: BookEntity?
         if self.copiedBook != nil {
             book = self.copiedBook!
@@ -478,13 +493,68 @@ class TTBookService {
         Log(NSString(format: "source book:%@", book!))
 //        let oldFolderId: String = book!.folder_id
         
-        book!.folder_id = folder.folder_id
+        if folder != nil {
+            book!.folder_id = folder!.folder_id
+        }
         
         let shelfObject: ShelfObjectEntity? = self.getShelfObjectByName(ShelfObjectTypes.Book.rawValue, name: book!.title)
         if shelfObject == nil {
             return self.dataManager.save()
         }
         return self.dataManager.remove(shelfObject!)
+        #endif
+        
+        Log(NSString(format: "source book:%@", self.clipboard!))
+        switch self.bookCommand {
+        case .Copy:
+            if folder != nil {
+                let newBookEntity: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
+                newBookEntity.folder_id = folder!.folder_id
+                newBookEntity.book_id = DataManager.createUUID()
+                newBookEntity.title = self.clipboard!.title
+                newBookEntity.language = self.clipboard!.language
+                // ToDo
+                newBookEntity.filename = self.clipboard!.filename
+                
+                let shelfObject: ShelfObjectEntity? = self.getShelfObjectByName(ShelfObjectTypes.Book.rawValue, name: self.clipboard!.title)
+                if shelfObject != nil {
+                    self.dataManager.remove(shelfObject!)
+                }
+            } else {
+                // 表示オブジェクトとして登録
+                let newShelfObject: ShelfObjectEntity = self.dataManager.getEntity(DataManager.Const.kShelfObjectEntityName) as! ShelfObjectEntity
+                newShelfObject.type = ShelfObjectTypes.Book.rawValue
+                newShelfObject.target_id = self.clipboard!.book_id
+                newShelfObject.name = self.clipboard!.title
+                newShelfObject.sort_num = 1
+                newShelfObject.create_time = NSDate()
+            }
+            
+            break
+            
+        case .Cut:
+            if folder != nil {
+                let bookEntity: BookEntity = self.clipboard!
+                bookEntity.folder_id = folder!.folder_id
+                let shelfObject: ShelfObjectEntity? = self.getShelfObjectByName(ShelfObjectTypes.Book.rawValue, name: self.clipboard!.title)
+                if shelfObject != nil {
+                    self.dataManager.remove(shelfObject!)
+                }
+            } else {
+                // 表示オブジェクトとして登録
+                let newShelfObject: ShelfObjectEntity = self.dataManager.getEntity(DataManager.Const.kShelfObjectEntityName) as! ShelfObjectEntity
+                newShelfObject.type = ShelfObjectTypes.Book.rawValue
+                newShelfObject.target_id = self.clipboard!.book_id
+                newShelfObject.name = self.clipboard!.title
+                newShelfObject.sort_num = 1
+                newShelfObject.create_time = NSDate()
+            }
+            break
+            
+        default:
+            return .FailedToPasteBook
+        }
+        return self.dataManager.save()
     }
     
     

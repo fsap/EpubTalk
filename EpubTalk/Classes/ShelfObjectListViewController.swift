@@ -72,7 +72,9 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     }
     
     override func viewDidAppear(animated: Bool) {
-        if self.bookService.copiedBook != nil || self.bookService.cutBook != nil {
+        super.viewDidAppear(animated)
+//        if self.bookService.copiedBook != nil || self.bookService.cutBook != nil {
+        if self.bookService.clipboard != nil {
             self.pasteButton.hidden = false
         }
         self.shelfObjectList = bookService.getShelfObjectList()
@@ -268,7 +270,23 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         LogM("Create New Folder.")
         self.showCreateFolderDialog()
     }
-    
+#if false
+    @IBAction func paseteBookTapped(sender: AnyObject) {
+        LogM("Paste book.")
+        let result = self.bookService.pasteBook(self.folder!)
+        if result == TTErrorCode.Normal {
+            self.bookService.copyBook(nil)
+            self.bookService.cutBook(nil)
+            self.pasteButton.hidden = true
+            
+            self.bookList = self.bookService.getBooksInFolder(folder!.folder_id)!
+            self.reload()
+        } else {
+            self.showErrorDialog(result, didOk: nil)
+        }
+    }
+#endif
+
     @IBAction func purchaseButtonTapped(sender: AnyObject) {
         LogM("Purchase Button.")
         self.showPurchaseDialog()

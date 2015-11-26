@@ -51,10 +51,10 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func viewDidAppear(animated: Bool) {
-        if self.bookService.copiedBook != nil {
-            Log(NSString(format: "copied book:%@", self.bookService.copiedBook!))
-        }
-        if self.bookService.copiedBook != nil || self.bookService.cutBook != nil {
+        super.viewDidAppear(animated)
+//        if self.bookService.copiedBook != nil {
+        if self.bookService.clipboard != nil {
+            Log(NSString(format: "copied book:%@", self.bookService.clipboard!))
             self.pasteButton.hidden = false
         }
     }
@@ -113,7 +113,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // MARK: IBAction
     //
     // ペースト
-    @IBAction func paseteBookTapped(sender: AnyObject) {
+    @IBAction func pasteBookTapped(sender: AnyObject) {
         LogM("Paste book.")
         let result = self.bookService.pasteBook(self.folder!)
         if result == TTErrorCode.Normal {
