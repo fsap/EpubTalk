@@ -63,6 +63,12 @@
 "error_msg_403" = "Failed to restore.";
 "error_msg_404" = "Purchase canceled.";
 
+"error_msg_501" = "Input is invalid.";
+"error_msg_502" = "Invalid ID.";
+"error_msg_503" = "Cannot use blank name.";
+"error_msg_504" = "Too long name.";
+"error_msg_505" = "Input is invalid.";
+
 "msg_import_success" = "Import completed.";
 "msg_loading_import" = "Loading the book data...";
 "msg_loading_purchase" = "Purchasing...";

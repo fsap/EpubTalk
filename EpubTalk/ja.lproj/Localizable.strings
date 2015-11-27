@@ -64,6 +64,12 @@
 "error_msg_403" = "復元処理に失敗しました";
 "error_msg_404" = "購入がキャンセルされました";
 
+"error_msg_501" = "入力内容が不正です";
+"error_msg_502" = "不正なIDです";
+"error_msg_503" = "名前が空白です";
+"error_msg_504" = "名前が長すぎます";
+"error_msg_505" = "入力内容が不正です";
+
 "msg_import_success" = "ファイルの取り込みが完了しました";
 "msg_loading_import" = "図書データの読み込み中";
 "msg_loading_purchase" = "購入処理中";
