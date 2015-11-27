@@ -57,6 +57,7 @@
 		82F53AEE1BFCD985000EA731 /* PurchaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F53AED1BFCD985000EA731 /* PurchaseService.swift */; };
 		82F53AF01BFCD9E8000EA731 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F53AEF1BFCD9E8000EA731 /* StoreKit.framework */; };
 		F0A5AEF61BECDEF500152F26 /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */; };
+		F0B7CD821C089C8C00AA5AEB /* Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B7CD811C089C8C00AA5AEB /* Validator.swift */; };
 		F0E7327B1BFF67DF005F69F6 /* PurchaseConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E7327A1BFF67DF005F69F6 /* PurchaseConfirmViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -138,6 +139,7 @@
 		82F53AED1BFCD985000EA731 /* PurchaseService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchaseService.swift; sourceTree = "<group>"; };
 		82F53AEF1BFCD9E8000EA731 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F0A5AEF51BECDEF500152F26 /* NavigationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
+		F0B7CD811C089C8C00AA5AEB /* Validator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Validator.swift; sourceTree = "<group>"; };
 		F0E7327A1BFF67DF005F69F6 /* PurchaseConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchaseConfirmViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -248,6 +250,7 @@
 				820F3EF51BB2E82E0019B139 /* OpfManager.swift */,
 				820F3EF61BB2E82E0019B139 /* TTAlertController.swift */,
 				820F3EF71BB2E82E0019B139 /* TTBookService.swift */,
+				F0B7CD811C089C8C00AA5AEB /* Validator.swift */,
 				820F3EF91BB2E82E0019B139 /* Util.swift */,
 			);
 			path = Classes;
@@ -437,6 +440,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0B7CD821C089C8C00AA5AEB /* Validator.swift in Sources */,
 				820F3EC61BB2E3780019B139 /* ViewController.swift in Sources */,
 				82E154CC1BF6381C00A4CEDB /* CreateFolderViewController.swift in Sources */,
 				820F3F5C1BB432150019B139 /* EpubTalk.xcdatamodeld in Sources */,

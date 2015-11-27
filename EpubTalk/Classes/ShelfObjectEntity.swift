@@ -22,4 +22,14 @@ class ShelfObjectEntity: NSManagedObject {
     @NSManaged var sort_num: NSNumber
     @NSManaged var create_time: NSDate
 
+    
+    func trace() {
+        Log(NSString(format: "***** shelf object.\n  type:%@\n  target_id:%@\n  name:%@\n  sort:%@\n  create_time:%@",
+            self.type,
+            self.target_id,
+            self.name,
+            self.sort_num,
+            self.create_time
+        ))
+    }
 }

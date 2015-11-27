@@ -180,12 +180,23 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         })
     }
     
-    // フォルダ名入力ダイアログ
+    // フォルダ名入力ダイアログ(新規)
     private func showCreateFolderDialog() {
-        self.createFolderViewController.show(
+        self.createFolderViewController.showCreate(
             self,
             actionOk: { (inputText) -> Void in
                 self.createFolder(inputText)
+            },
+            actionCancel: {() -> Void in})
+    }
+
+    // フォルダ名入力ダイアログ(編集)
+    private func showEditFolderDialog(folderId: String, name: String) {
+        self.createFolderViewController.showEdit(
+            self,
+            name: name,
+            actionOk: { (inputText) -> Void in
+                self.updateFolder(folderId, newFolderName: inputText)
             },
             actionCancel: {() -> Void in})
     }
@@ -227,10 +238,23 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     
     // フォルダ作成
     private func createFolder(newFolderName: String?) {
-        let ret = self.bookService.createFolder(newFolderName!)
+        let ret = self.bookService.createFolder(newFolderName)
         if ret == TTErrorCode.Normal {
             // ToDo: ダイアログいるか確認
             self.showMessageDialog(NSLocalizedString("dialog_msg_folder_created", comment: ""), didOk: {() -> Void in
+                self.reload()
+            })
+            
+        } else {
+            self.showErrorDialog(ret, didOk: nil)
+        }
+    }
+    
+    private func updateFolder(folderId: String, newFolderName: String?) {
+        let ret = self.bookService.updateFolder(folderId, folderName: newFolderName)
+        if ret == TTErrorCode.Normal {
+            // ToDo: ダイアログいるか確認
+            self.showMessageDialog(NSLocalizedString("dialog_msg_folder_edited", comment: ""), didOk: {() -> Void in
                 self.reload()
             })
             
@@ -418,7 +442,10 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
             // フォルダ名変更
             let changeTitleAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_change_title", comment: "")) { (action, indexPath) -> Void in
                 LogM("change title.")
-                self.showCreateFolderDialog()
+                let folder: FolderEntity = self.bookService.getFolderById(shelfObject.target_id)!
+                self.showEditFolderDialog(folder.folder_id, name: folder.name)
+
+                tableView.setEditing(false, animated: true)
             }
             changeTitleAction.backgroundColor = UIColor.greenColor()
             actions.append(changeTitleAction)

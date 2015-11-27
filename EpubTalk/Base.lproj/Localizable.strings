@@ -9,10 +9,13 @@
 "dialog_title_error" = "Error";
 "dialog_title_notice" = "Confirm";
 "dialog_title_create_folder" = "Create New Folder";
+"dialog_title_edit_folder" = "Edit Folder";
 
 "dialog_msg_delete" = "Delete book?";
 "dialog_msg_create_new_folder" = "Input new folder name.";
+"dialog_msg_edit_folder" = "Input folder name.";
 "dialog_msg_folder_created" = "New folder created.";
+"dialog_msg_folder_edited" = "Folder edited.";
 "dialog_msg_copy_done" = "Copy done.";
 "dialog_msg_cut_done" = "Cut done.";
 "dialog_msg_confirm_purchase" = "Purchase UpgradeVersion";
@@ -20,6 +23,7 @@
 "dialog_ok" = "OK";
 "dialog_cancel" = "Cancel";
 "dialog_create" = "Create";
+"dialog_edit" = "Edit Complete";
 "dialog_purchase" = "Purchase";
 "dialog_restore" = "Restore before purchase";
 

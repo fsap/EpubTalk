@@ -33,6 +33,12 @@ enum TTErrorCode :Int {
         FailedToPurchase,
         FailedToRestore,
         CanceledToPurchase
+    // 5xx 入力チェック系
+    case InvalidParameter = 501,
+        InvalidId,
+        BlankString,
+        StringTooLong,
+        InvalidString
 }
 
 class TTError {

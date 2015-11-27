@@ -9,9 +9,20 @@
 import Foundation
 import CoreData
 
+enum SystemFolderID: String {
+    case Root = "root"
+}
+
 class FolderEntity: NSManagedObject {
 
     @NSManaged var folder_id: String
     @NSManaged var name: String
 
+    
+    func trace() {
+        Log(NSString(format: "***** folder.\n  folder_id:%@\n  name:%@\n",
+            self.folder_id,
+            self.name
+        ))
+    }
 }
