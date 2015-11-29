@@ -18,16 +18,20 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         static let kBookListViewLineHeight :CGFloat = 64.0
     }
 
+    // Property
     @IBOutlet weak var bookListTableView: UITableView!
     @IBOutlet weak var pasteButton: UIButton!
-    
-    let bookService: TTBookService = TTBookService.sharedInstance
-    var bookList :[BookEntity] = []
-    var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
-    var loadingView: LoadingView?
     var delegate: BookListViewDelegate?
+    var loadingView: LoadingView?
     
     var folder: FolderEntity?
+    var shelfObjectList :[ShelfObjectEntity] = []
+
+    // Service
+    let bookService: TTBookService = TTBookService.sharedInstance
+    
+    // Alert
+    var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
     
     
     required init?(coder aDecoder: NSCoder) {
@@ -80,12 +84,26 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // MARK: Private
     //
     
+    // MARK: UI Operation
+    
+    // 貼り付けボタンの有効化
+    private func enablePasteButton() {
+        if self.bookService.clipboard != nil {
+            self.pasteButton.hidden = false
+        }
+    }
+
+    // MARK: Action
+
     // 再読み込み
     private func reload()->Void {
-        self.bookList = bookService.getBooksInFolder(folder!.folder_id)!
+        self.shelfObjectList = bookService.getShelfObjectsByFolder(.Book, folderId: folder!.folder_id)
         self.bookListTableView.reloadData()
+        self.enablePasteButton()
     }
     
+    // MARK: Dialog
+
     // メッセージダイアログ
     private func showMessageDialog(message: String, didOk:(()->Void)?)->Void {
         alertController.show(
@@ -117,7 +135,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // ペースト
     @IBAction func pasteBookTapped(sender: AnyObject) {
         LogM("Paste book.")
-        let result = self.bookService.pasteBook(self.folder!)
+        let result = self.bookService.pasteBook(self.folder!.folder_id)
         if result == TTErrorCode.Normal {
             self.bookService.clearClipboard()
             self.pasteButton.hidden = true
@@ -141,7 +159,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     
     // セクションあたり行数
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.bookList.count
+        return self.shelfObjectList.count
     }
     
     // 行の高さ
@@ -152,8 +170,8 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // セルの設定
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "Cell")
-        let book = self.bookList[indexPath.row]
-        cell.textLabel?.text = book.title
+        let object = self.shelfObjectList[indexPath.row]
+        cell.textLabel?.text = object.name
 
         return cell
     }
@@ -161,8 +179,12 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // セルが選択された
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        let book: BookEntity = self.bookList[indexPath.row]
-        Log(NSString(format: "--- selected book. title:%@ file:%@", book.title, book.filename))
+        let object: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
+        Log(NSString(format: "--- selected book. name:%@", object.name))
+        
+        // 図書を取得
+        let book: BookEntity = self.bookService.getBookById(object.object_id)!
+        book.trace()
     }
     
     // 編集可否の設定
@@ -173,20 +195,6 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     
     // 編集時のスタイル(このメソッドを定義するとスワイプで編集メニューが無効になる)
     func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
-/*
-        Log(NSString(format: "section:%d row:%d", indexPath.section, indexPath.row))
-        if (self.editing) {
-            let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
-            switch shelfObject.type {
-            case ShelfObjectTypes.Folder.rawValue:
-                return .Insert
-            case ShelfObjectTypes.Book.rawValue:
-                return .Delete
-            default:
-                return .None
-            }
-        }
-*/
         return .Delete
     }
     
@@ -194,18 +202,18 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // 編集アクション
     @available(iOS 8.0, *)
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
-        let book: BookEntity = self.bookList[indexPath.row]
+        let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
         var actions: [UITableViewRowAction] = []
         
         // 共通
         let deleteAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_delete", comment: "")) { (action, indexPath) -> Void in
             LogM("delete.")
             let actionOk: (() -> Void) = {
-                let result: TTErrorCode = self.bookService.deleteBook(book)
+                let result: TTErrorCode = self.bookService.deleteShelfObject(shelfObject)
                 if result == TTErrorCode.Normal {
-                    self.bookList.removeAtIndex(indexPath.row)
+                    self.shelfObjectList.removeAtIndex(indexPath.row)
                     self.bookListTableView?.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Left)
-                    self.bookService.refreshSort(self.bookList)
+                    self.bookService.refreshSort(self.shelfObjectList)
                     self.reload()
                 } else {
                     self.alertController.show(self,
@@ -214,6 +222,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
                 }
             }
             
+            tableView.setEditing(false, animated: true)
             self.alertController.show(self,
                 title: NSLocalizedString("dialog_title_notice", comment: ""),
                 message: NSLocalizedString("dialog_msg_delete", comment: ""),
@@ -226,7 +235,8 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         let copyAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_copy", comment: "")) { (action, indexPath) -> Void in
             LogM("copy book.")
             // コピーする
-            self.bookService.copyBook(book)
+            self.bookService.copyObject(shelfObject)
+            self.enablePasteButton()
             
             tableView.setEditing(false, animated: true)
         }
@@ -237,7 +247,8 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
         let cutAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_cut", comment: "")) { (action, indexPath) -> Void in
             LogM("cut book.")
             // カットする
-            self.bookService.cutBook(book)
+            self.bookService.cutObject(shelfObject)
+            self.enablePasteButton()
             
             tableView.setEditing(false, animated: true)
         }
@@ -266,10 +277,10 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     // 移動の確定タイミングで呼ばれる
     func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
 
-        let sourceBook: BookEntity = self.bookList[sourceIndexPath.row]
-        self.bookList.removeAtIndex(sourceIndexPath.row)
-        self.bookList.insert(sourceBook, atIndex: destinationIndexPath.row)
-        bookService.refreshSort(self.bookList)
+        let sourceObject: ShelfObjectEntity = self.shelfObjectList[sourceIndexPath.row]
+        self.shelfObjectList.removeAtIndex(sourceIndexPath.row)
+        self.shelfObjectList.insert(sourceObject, atIndex: destinationIndexPath.row)
+        bookService.refreshSort(self.shelfObjectList)
     }
     
 }

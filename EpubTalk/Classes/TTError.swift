@@ -39,6 +39,8 @@ enum TTErrorCode :Int {
         BlankString,
         StringTooLong,
         InvalidString
+    // 9xx Internal Error
+    case InternalError = 999
 }
 
 class TTError {

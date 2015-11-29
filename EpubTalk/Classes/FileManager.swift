@@ -417,6 +417,7 @@ class FileManager: NSObject {
 
     // 指定ファイルを削除
     func removeFile(path:String)->TTErrorCode {
+        Log(NSString(format: "remove file:%@", path))
         do {
             try self.fileManager.removeItemAtPath(path)
         } catch let error as NSError {

@@ -12,7 +12,7 @@ import CoreData
 class BookEntity: NSManagedObject {
 
     @NSManaged var book_id: String
-    @NSManaged var folder_id: String    // 親フォルダID
+//    @NSManaged var folder_id: String    // 親フォルダID
     @NSManaged var title: String
     @NSManaged var sort_num: NSNumber   // フォルダ内での並び順
     // Epub Meta Data
@@ -27,9 +27,9 @@ class BookEntity: NSManagedObject {
 
     
     func trace() {
-        Log(NSString(format: "***** book.\n  book_id:%@\n  folder_id:%@\n  title:%@\n  laguage:%@\n  filename:%@\n  sort:%@",
+        Log(NSString(format: "***** book.\n  book_id:%@\n  title:%@\n  laguage:%@\n  filename:%@\n  sort:%@",
             self.book_id,
-            self.folder_id,
+//            self.folder_id,
             self.title,
             self.language,
             self.filename,

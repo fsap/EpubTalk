@@ -32,9 +32,7 @@ class TTBookService {
     var delegate: BookServiceDelegate?
     
     var bookCommand: BookCommand
-    var clipboard: BookEntity?
-//    var copiedBook: BookEntity?
-//    var cutBook: BookEntity?
+    var clipboard: ShelfObjectEntity?
     
     private var keepLoading: Bool
     
@@ -54,6 +52,10 @@ class TTBookService {
     deinit {
         
     }
+    
+    //
+    // MARK: File Operation
+    //
     
     //
     // ファイル形式の検証
@@ -165,16 +167,6 @@ class TTBookService {
                     }
                     
                     // 図書情報をDBに保存
-                    /*
-                    let book: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
-                    book.title = epub.metadata.title
-                    book.language = epub.metadata.language
-                    let saveFileUrl: NSURL = NSURL(fileURLWithPath: saveFilePath)
-                    book.filename = saveFileUrl.URLByDeletingPathExtension!.lastPathComponent!
-                    book.sort_num = self.getBookList().count
-                    book.book_id = self.getBookList().count
-                    let ret = self.dataManager.save()
-                    */
                     let ret = self.saveBook(epub, saveFileUrl: NSURL(fileURLWithPath: saveFilePath))
                     if ret != TTErrorCode.Normal {
                         self.deInitImport([sourcePath, expandPath], errorCode: ret, didSuccess: didSuccess, didFailure: didFailure)
@@ -194,59 +186,6 @@ class TTBookService {
             LogE(NSString(format: "[%d]Invalid directory format. dir:%@", errorCode.rawValue, expandPath))
             self.deInitImport([sourcePath, expandPath], errorCode: errorCode, didSuccess: didSuccess, didFailure: didFailure)
         })
-        
-    }
-    
-    func saveBook(epub: Epub, saveFileUrl: NSURL)->TTErrorCode {
-        // 表示オブジェクトの並び順更新
-        for shelfObject in self.getShelfObjectList() {
-            let sort: Int = shelfObject.sort_num.integerValue
-            shelfObject.sort_num = sort+1
-            shelfObject.trace()
-//            Log(NSString(format: "***** shelf object updated. type:%@ target_id:%@ name:%@ sort:%@ create_time:%@",
-//                shelfObject.type,
-//                shelfObject.target_id,
-//                shelfObject.name,
-//                shelfObject.sort_num,
-//                shelfObject.create_time
-//            ))
-        }
-        
-        // 図書本体の登録
-        let book: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
-        book.book_id = DataManager.createUUID()
-        book.title = epub.metadata.title
-        book.language = epub.metadata.language
-        book.filename = saveFileUrl.URLByDeletingPathExtension!.lastPathComponent!
-        book.folder_id = SystemFolderID.Root.rawValue
-//        book.sort_num = nil
-        book.trace()
-        
-        // 表示オブジェクトとして登録
-        let newShelfObject: ShelfObjectEntity = self.dataManager.getEntity(DataManager.Const.kShelfObjectEntityName) as! ShelfObjectEntity
-        newShelfObject.type = ShelfObjectTypes.Book.rawValue
-        newShelfObject.target_id = book.book_id
-        newShelfObject.name = book.title
-        newShelfObject.sort_num = 1
-        newShelfObject.create_time = NSDate()
-        newShelfObject.trace()
-        
-        let ret = self.dataManager.save()
-//        Log(NSString(format: "***** book saved. id:%@ title:%@ lang:%@ filename:%@",
-//            book.book_id,
-//            book.title,
-//            book.language,
-//            book.filename
-//        ))
-//        Log(NSString(format: "***** shelf object saved. type:%@ target_id:%@ name:%@ sort:%@ create_time:%@",
-//            newShelfObject.type,
-//            newShelfObject.target_id,
-//            newShelfObject.name,
-//            newShelfObject.sort_num,
-//            newShelfObject.create_time
-//        ))
-        
-        return ret
     }
     
     //
@@ -289,16 +228,69 @@ class TTBookService {
     //
     // 本棚に表示するオブジェクト一覧を取得
     //
-    func getShelfObjectList()->[ShelfObjectEntity] {
+    func getRootShelfObjects()->[ShelfObjectEntity] {
+        let predicate: NSPredicate = NSPredicate(format: "folder_id = %@", SystemFolderID.Root.rawValue)
         let sortDescriptor = NSSortDescriptor(key: "sort_num", ascending: true)
-        let results: [ShelfObjectEntity] = self.dataManager.find(
+        let results: [ShelfObjectEntity]? = self.dataManager.find(
             DataManager.Const.kShelfObjectEntityName,
-            condition: nil,
+            condition: predicate,
             sort: [sortDescriptor],
             limit: nil
-        ) as! [ShelfObjectEntity]
+        ) as! [ShelfObjectEntity]?
 
-        return results
+        if results == nil {
+            return []
+        }
+        Log(NSString(format: "results:%@", results!))
+        return results!
+    }
+    
+    // オブジェクト一覧を取得
+    func getShelfObjectsByFolder(type: ShelfObjectTypes, folderId: String)->[ShelfObjectEntity] {
+        // validation
+        let ret: TTErrorCode = Validator.validateId(folderId)
+        if ret != .Normal {
+            Log(NSString(format: "Invalid id:%@", folderId))
+            return []
+        }
+        
+        let predicate: NSPredicate = NSPredicate(format: "type = %@ AND folder_id = %@", type.rawValue, folderId)
+        let sortDescriptor = NSSortDescriptor(key: "sort_num", ascending: true)
+        let results: [ShelfObjectEntity]? = self.dataManager.find(
+            DataManager.Const.kShelfObjectEntityName,
+            condition: predicate,
+            sort: [sortDescriptor],
+            limit: nil
+            ) as! [ShelfObjectEntity]?
+        
+        if results == nil {
+            return []
+        }
+        Log(NSString(format: "results:%@", results!))
+        return results!
+    }
+    
+    // オブジェクトをIDで検索
+    func getShelfObjectsByObjectId(type: ShelfObjectTypes, objectId: String)->[ShelfObjectEntity]? {
+        // validation
+        let ret: TTErrorCode = Validator.validateId(objectId)
+        if ret != .Normal {
+            return []
+        }
+
+        let predicate: NSPredicate = NSPredicate(format: "type = %@ AND object_id = %@", type.rawValue, objectId)
+        let results: [ShelfObjectEntity]? = self.dataManager.find(
+            DataManager.Const.kShelfObjectEntityName,
+            condition: predicate,
+            sort: nil,
+            limit: nil
+            ) as! [ShelfObjectEntity]?
+        
+        if results == nil {
+            return []
+        }
+        Log(NSString(format: "results:%@", results!))
+        return results!
     }
     
     // フォルダを名前で検索
@@ -310,22 +302,6 @@ class TTBookService {
             sort: nil,
             limit: 1
             ) as! [FolderEntity]?
-        
-        if results == nil {
-            return nil
-        }
-        return results!.first
-    }
-    
-    // 本棚オブジェクトをIDで検索
-    func getShelfObjectById(type: String, targetId: String)->ShelfObjectEntity? {
-        let predicate: NSPredicate = NSPredicate(format: "type = %@ AND target_id = %@", type, targetId)
-        let results: [ShelfObjectEntity]? = self.dataManager.find(
-            DataManager.Const.kShelfObjectEntityName,
-            condition: predicate,
-            sort: nil,
-            limit: 1
-            ) as! [ShelfObjectEntity]?
         
         if results == nil {
             return nil
@@ -366,22 +342,40 @@ class TTBookService {
         return results!.first
     }
     
-    // フォルダ内図書を検索
-    func getBooksInFolder(folderId: String)->[BookEntity]? {
-        let predicate = NSPredicate(format: "folder_id = %@", folderId)
-        let sortDescriptor = NSSortDescriptor(key: "sort_num", ascending: true)
-        let results: [BookEntity]? = self.dataManager.find(
-            DataManager.Const.kBookEntityName,
-            condition: predicate,
-            sort: [sortDescriptor],
-            limit: nil
-            ) as! [BookEntity]?
-        Log(NSString(format: "result books:%@", (results != nil) ? results! : "None"))
-        
-        return results
-    }
     
     // MARK: Create
+    
+    // 図書を作成
+    func saveBook(epub: Epub, saveFileUrl: NSURL)->TTErrorCode {
+        // 表示オブジェクトの並び順更新
+        for shelfObject in self.getRootShelfObjects() {
+            let sort: Int = shelfObject.sort_num.integerValue
+            shelfObject.sort_num = sort+1
+            shelfObject.trace()
+        }
+        
+        // 図書本体の登録
+        let book: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
+        book.book_id = DataManager.createUUID()
+//        book.folder_id = SystemFolderID.Root.rawValue
+        book.title = epub.metadata.title
+        book.language = epub.metadata.language
+        book.filename = saveFileUrl.URLByDeletingPathExtension!.lastPathComponent!
+//        book.sort_num = nil
+        book.trace()
+        
+        // 表示オブジェクトとして登録
+        let newShelfObject: ShelfObjectEntity = self.dataManager.getEntity(DataManager.Const.kShelfObjectEntityName) as! ShelfObjectEntity
+        newShelfObject.type = ShelfObjectTypes.Book.rawValue
+        newShelfObject.folder_id = SystemFolderID.Root.rawValue
+        newShelfObject.object_id = book.book_id
+        newShelfObject.name = book.title
+        newShelfObject.sort_num = 1
+        newShelfObject.create_time = NSDate()
+        newShelfObject.trace()
+        
+        return self.dataManager.save()
+    }
     
     // フォルダを作成
     func createFolder(folderName: String?)->TTErrorCode {
@@ -407,27 +401,14 @@ class TTBookService {
         // 表示オブジェクトとして登録
         let newShelfObject: ShelfObjectEntity = self.dataManager.getEntity(DataManager.Const.kShelfObjectEntityName) as! ShelfObjectEntity
         newShelfObject.type = ShelfObjectTypes.Folder.rawValue
-        newShelfObject.target_id = newFolder.folder_id
+        newShelfObject.folder_id = SystemFolderID.Root.rawValue
+        newShelfObject.object_id = newFolder.folder_id
         newShelfObject.name = newFolder.name
-        newShelfObject.sort_num = self.getShelfObjectList().count + 1
+        newShelfObject.sort_num = self.getRootShelfObjects().count + 1
         newShelfObject.create_time = NSDate()
         newShelfObject.trace()
         
-        let ret = self.dataManager.save()
-//        Log(NSString(format: "***** folder saved. id:%@ name:%@",
-//            newFolder.folder_id,
-//            newFolder.name
-//            ))
-//        
-//        Log(NSString(format: "***** shelf object saved. type:%@ target_id:%@ name:%@ sort:%@ create_time:%@",
-//            newShelfObject.type,
-//            newShelfObject.target_id,
-//            newShelfObject.name,
-//            newShelfObject.sort_num,
-//            newShelfObject.create_time
-//            ))
-        
-        return ret
+        return self.dataManager.save()
     }
     
     // フォルダを更新
@@ -450,9 +431,11 @@ class TTBookService {
         folder.trace()
         
         // 表示オブジェクトの更新
-        let shelfObject: ShelfObjectEntity = self.getShelfObjectById(ShelfObjectTypes.Folder.rawValue, targetId: folderId)!
-        shelfObject.name = folderName!
-        shelfObject.trace()
+        let shelfObjects: [ShelfObjectEntity] = self.getShelfObjectsByObjectId(ShelfObjectTypes.Folder, objectId: folderId)!
+        for shelfObject: ShelfObjectEntity in shelfObjects {
+            shelfObject.name = folderName!
+            shelfObject.trace()
+        }
         
         return self.dataManager.save()
     }
@@ -483,199 +466,152 @@ class TTBookService {
     
     // 本棚表示オブジェクトを削除
     func deleteShelfObject(shelfObject: ShelfObjectEntity)->TTErrorCode {
-        let dbResult: TTErrorCode = self.dataManager.remove(shelfObject)
         
-        return dbResult
-    }
-    
-    // 図書ファイルを削除
-    func deleteBook(book: BookEntity)->TTErrorCode {
-        // ファイル削除
-        let fileUrl: NSURL = FileManager.getImportDir(book.filename)
-        let fileResult: TTErrorCode = self.fileManager.removeFile(fileUrl.path!)
-        Log(NSString(format: "remove file:%@", fileUrl.path!))
-        if fileResult != TTErrorCode.Normal {
-            return fileResult
+        var ret: TTErrorCode
+        switch shelfObject.type {
+            // フォルダ削除
+        case ShelfObjectTypes.Folder.rawValue:
+            ret = self.deleteFolder(shelfObject)
+            break
+            
+            // 図書削除
+        case ShelfObjectTypes.Book.rawValue:
+            ret = self.deleteBook(shelfObject)
+            break
+            
+        default:
+            ret = .InternalError
+            break
         }
         
-        // 完了したらDBからも削除
-        let dbResult: TTErrorCode = self.dataManager.remove(book)
-        
-        return dbResult
+        if ret != .Normal {
+            return ret
+        }
+        return self.dataManager.save()
     }
     
     // フォルダを削除
-    func deleteFolder(folder: FolderEntity)->TTErrorCode {
-        let books: [BookEntity]? = self.getBooksInFolder(folder.folder_id)
-        // 中が空でない
-        if books != nil && books?.count > 0 {
+    private func deleteFolder(shelfObject: ShelfObjectEntity)->TTErrorCode {
+        // フォルダ内オブジェクト
+        let bookObjects: [ShelfObjectEntity] = self.getShelfObjectsByFolder(.Book, folderId: shelfObject.object_id)
+        if bookObjects.count > 0 {
+            // 中身が空でなければ消せない
             return TTErrorCode.CannotDeleteFolder
         }
         
-        let dbResult: TTErrorCode = self.dataManager.remove(folder)
+        // フォルダを削除
+        let folder: FolderEntity = self.getFolderById(shelfObject.object_id)!
+        let result: TTErrorCode = self.dataManager.remove(folder)
+        if result != .Normal {
+            return result
+        }
         
-        return dbResult
+        return self.dataManager.remove(shelfObject)
     }
     
-    // 図書をコピー
-    func copyBook(book: BookEntity?) {
-//        self.copiedBook = book
-        self.clipboard = book
+    // 図書を削除
+    private func deleteBook(shelfObject: ShelfObjectEntity)->TTErrorCode {
+        // 複数ある場合はエイリアス削除のみ
+        let bookObjects: [ShelfObjectEntity] = self.getShelfObjectsByObjectId(.Book, objectId: shelfObject.object_id)!
+        if bookObjects.count > 1 {
+            return self.dataManager.remove(shelfObject)
+        }
+        
+        // 図書本体を削除
+        let book: BookEntity = self.getBookById(shelfObject.object_id)!
+        
+        // ファイルから削除する
+        var result: TTErrorCode = self.fileManager.removeFile(FileManager.getImportDir(book.filename).path!)
+        if result != TTErrorCode.Normal {
+            return result
+        }
+
+        // DBからも削除
+        result = self.dataManager.remove(book)
+        if result != TTErrorCode.Normal {
+            return result
+        }
+        
+        return self.dataManager.remove(shelfObject)
+    }
+    
+
+    //
+    // MARK: Book Operation
+    //
+    
+    // オブジェクトをコピー
+    func copyObject(object: ShelfObjectEntity?) {
+        self.clipboard = object
         self.bookCommand = .Copy
     }
     
-    // 図書を切り取り
-    func cutBook(book: BookEntity?) {
-//        self.cutBook = book
+    // オブジェクトを切り取り
+    func cutObject(object: ShelfObjectEntity?) {
+        self.clipboard = object
         self.bookCommand = .Cut
-        self.clipboard = book
     }
-    
+
+    // クリップボードをクリア
     func clearClipboard() {
         self.bookCommand = .None
         self.clipboard = nil
     }
     
-    
-    //
-    // MARK: Book Operation
-    //
-    
     // 図書をペースト
-    func pasteBook(folder: FolderEntity?)->TTErrorCode {
+    func pasteBook(folderId: String)->TTErrorCode {
         if self.clipboard == nil {
             return TTErrorCode.FailedToPasteBook
         }
         
         Log(NSString(format: "source book:%@", self.clipboard!))
-        var retCode: TTErrorCode?
+        var ret: TTErrorCode?
         switch self.bookCommand {
         case .Copy:
-            // フォルダへのコピー
-            if folder != nil {
-                retCode = self.moveBookToFolder(self.clipboard!, folder: folder!, copyFlg: true)
-            // 本棚へのコピー
-            } else {
-                retCode = self.moveBookToShelf(self.clipboard!, copyFlg: true)
-            }
+            ret = self.moveBookToFolder(self.clipboard!, folderId: folderId, copyFlg: true)
+            break
             
         case .Cut:
-            // フォルダへの移動
-            if folder != nil {
-                retCode = self.moveBookToFolder(self.clipboard!, folder: folder!, copyFlg: false)
-            // 本棚への移動
-            } else {
-                retCode = self.moveBookToShelf(self.clipboard!, copyFlg: false)
-            }
+            ret = self.moveBookToFolder(self.clipboard!, folderId: folderId, copyFlg: false)
+            break
             
         default:
-            retCode = .FailedToPasteBook
+            ret = .FailedToPasteBook
             break
         }
-        return retCode!
+        return ret!
     }
     
-    func moveBookToFolder(fromBook: BookEntity, folder: FolderEntity, copyFlg: Bool)->TTErrorCode {
+    func moveBookToFolder(fromObject: ShelfObjectEntity, folderId: String, copyFlg: Bool)->TTErrorCode {
         
         // 重複チェック
-        var booksInFolder: [BookEntity]? = self.getBooksInFolder(folder.folder_id)
-        if booksInFolder != nil {
-            for book: BookEntity in booksInFolder! {
-                if book.book_id == fromBook.book_id {
-                    return .DuplicateBook
-                }
-            }
-        }
-        
-        if copyFlg {
-            let newBookEntity: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
-            newBookEntity.folder_id = folder.folder_id
-            newBookEntity.book_id = DataManager.createUUID()
-            newBookEntity.title = fromBook.title
-            newBookEntity.language = fromBook.language
-            newBookEntity.sort_num = 1
-            // ToDo
-            newBookEntity.filename = fromBook.filename
-            newBookEntity.trace()
-            
-            if booksInFolder != nil {
-                booksInFolder!.insert(newBookEntity, atIndex: 0)
-            }
-            
-        } else {
-            fromBook.folder_id = folder.folder_id
-            fromBook.sort_num = 1
-            fromBook.trace()
-            
-            // 移動元の表示オブジェクトがあれば消す
-            let shelfObject: ShelfObjectEntity? = self.getShelfObjectById(ShelfObjectTypes.Book.rawValue, targetId: fromBook.book_id)
-            if shelfObject != nil {
-                shelfObject!.trace()
-                self.dataManager.remove(shelfObject!)
-            }
-
-            if booksInFolder != nil {
-                booksInFolder!.insert(fromBook, atIndex: 0)
-            }
-        }
-        
-        // 並べ替え
-        if booksInFolder!.count > 1 {
-            return self.refreshSort(booksInFolder!)
-        }
-        
-        return self.dataManager.save()
-    }
-    
-    func moveBookToShelf(fromBook: BookEntity, copyFlg: Bool)->TTErrorCode {
-        
-        // 重複チェック
-        var shelfObjects: [ShelfObjectEntity]? = self.getShelfObjectList()
-        if shelfObjects != nil {
-            for shelfObject: ShelfObjectEntity in shelfObjects! {
-                if shelfObject.type == ShelfObjectTypes.Book.rawValue && shelfObject.target_id == fromBook.book_id {
-                    return .DuplicateBook
-                }
+        var objectsInFolder: [ShelfObjectEntity] = self.getShelfObjectsByFolder(.Book, folderId: folderId)
+        for object: ShelfObjectEntity in objectsInFolder {
+            if object.object_id == fromObject.object_id {
+                return .DuplicateBook
             }
         }
         
         let newShelfObject: ShelfObjectEntity = self.dataManager.getEntity(DataManager.Const.kShelfObjectEntityName) as! ShelfObjectEntity
-        if copyFlg {
-            
-            let newBookEntity: BookEntity = self.dataManager.getEntity(DataManager.Const.kBookEntityName) as! BookEntity
-            newBookEntity.book_id = DataManager.createUUID()
-            newBookEntity.folder_id = SystemFolderID.Root.rawValue
-            newBookEntity.title = fromBook.title
-            newBookEntity.language = fromBook.language
-            newBookEntity.sort_num = 1
-            // ToDo
-            newBookEntity.filename = fromBook.filename
-            newBookEntity.trace()
-            
-            // 表示オブジェクトとして登録
-            newShelfObject.type = ShelfObjectTypes.Book.rawValue
-            newShelfObject.target_id = fromBook.book_id
-            newShelfObject.name = fromBook.title
-            newShelfObject.sort_num = 1
-            newShelfObject.create_time = NSDate()
-
-        } else {
-            fromBook.folder_id = SystemFolderID.Root.rawValue
-            fromBook.sort_num = 1
-            fromBook.trace()
-            
-            newShelfObject.type = ShelfObjectTypes.Book.rawValue
-            newShelfObject.target_id = fromBook.book_id
-            newShelfObject.name = fromBook.title
-            newShelfObject.sort_num = 1
-            newShelfObject.create_time = NSDate()
-        }
+        newShelfObject.type = ShelfObjectTypes.Book.rawValue
+        newShelfObject.folder_id = folderId
+        newShelfObject.object_id = fromObject.object_id
+        newShelfObject.name = fromObject.name
+        newShelfObject.sort_num = 1
+        newShelfObject.create_time = NSDate()
         newShelfObject.trace()
         
+        objectsInFolder.insert(newShelfObject, atIndex: 0)
+
+        // 移動
+        if !copyFlg {
+            // 移動元の表示オブジェクトを消す
+            self.dataManager.remove(fromObject)
+        }
+        
         // 並べ替え
-        if shelfObjects != nil {
-            shelfObjects!.insert(newShelfObject, atIndex: 1)
-            return self.refreshSort(shelfObjects!)
+        if objectsInFolder.count > 1 {
+            return self.refreshSort(objectsInFolder)
         }
         
         return self.dataManager.save()

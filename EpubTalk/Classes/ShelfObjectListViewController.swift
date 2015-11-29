@@ -15,24 +15,26 @@ protocol ShelfObjectListViewDelegate {
 class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UITableViewDataSource, BookServiceDelegate, LoadingViewDelegate {
     
     struct Const {
-        static let kKeyValueObserverPath: String = "ChangeShelfObjectList"
+//        static let kKeyValueObserverPath: String = "ChangeShelfObjectList"
         static let kBookListViewLineHeight :CGFloat = 64.0
     }
 
+    // Property
     @IBOutlet weak var ShelfObjectListTableView: UITableView!
     @IBOutlet weak var createFolderButton: UIButton!
     @IBOutlet weak var pasteButton: UIButton!;
     @IBOutlet weak var purchaseButton: UIButton!;
-    
-    let bookService: TTBookService = TTBookService.sharedInstance
     var shelfObjectList :[ShelfObjectEntity] = []
-//    var manager: DataManager = DataManager.sharedInstance
+    var loadingView: LoadingView?
+    var delegate: ShelfObjectListViewDelegate?
+
+    // Service
+    let bookService: TTBookService = TTBookService.sharedInstance
+    let purchaseService: PurchaseService = PurchaseService.sharedInstance
+    // Alert View
     var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
     let createFolderViewController: CreateFolderViewController = CreateFolderViewController(nibName: nil, bundle: nil)
     let purchaseConfirmViewController: PurchaseConfirmViewController = PurchaseConfirmViewController(nibName: nil, bundle: nil)
-    let purchaseService: PurchaseService = PurchaseService.sharedInstance
-    var loadingView: LoadingView?
-    var delegate: ShelfObjectListViewDelegate?
     
     
     override func viewDidLoad() {
@@ -76,9 +78,8 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        if self.bookService.clipboard != nil {
-            self.pasteButton.hidden = false
-        }
+        
+        self.enablePasteButton()
         self.reload()
     }
     
@@ -109,19 +110,18 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         }
     }
     
+    
     //
-    // MARK: Private
+    // MARK: --- Private ---
     //
     
-    // help
-    func leftBarButtonTapped(button: UIButton) {
-        UIApplication.sharedApplication().openURL(NSURL(string: NSLocalizedString("link_help", comment: ""))!)
-    }
+    // MARK: UI Operation
     
-    // 再読み込み
-    private func reload()->Void {
-        self.shelfObjectList = self.bookService.getShelfObjectList()
-        self.ShelfObjectListTableView.reloadData()
+    // 貼り付けボタンの有効化
+    private func enablePasteButton() {
+        if self.bookService.clipboard != nil {
+            self.pasteButton.hidden = false
+        }
     }
     
     // 図書インポート中ローディング開始
@@ -156,6 +156,8 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         })
     }
     
+    // MARK: Dialog
+    
     // メッセージダイアログ
     private func showMessageDialog(message: String, didOk:(()->Void)?)->Void {
         alertController.show(
@@ -180,6 +182,13 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         })
     }
     
+    // MARK: Action
+    
+    // help
+    func leftBarButtonTapped(button: UIButton) {
+        UIApplication.sharedApplication().openURL(NSURL(string: NSLocalizedString("link_help", comment: ""))!)
+    }
+    
     // フォルダ名入力ダイアログ(新規)
     private func showCreateFolderDialog() {
         self.createFolderViewController.showCreate(
@@ -189,7 +198,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
             },
             actionCancel: {() -> Void in})
     }
-
+    
     // フォルダ名入力ダイアログ(編集)
     private func showEditFolderDialog(folderId: String, name: String) {
         self.createFolderViewController.showEdit(
@@ -213,9 +222,9 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
                 self.startLoadingPurchase()
                 // 購入処理
                 self.purchaseService.startPurchase({ () -> Void in
-                        // 購入完了
-                        self.showMessageDialog(NSLocalizedString("msg_complete_purchase", comment: ""), didOk: nil)
-                        self.stopLoading()
+                    // 購入完了
+                    self.showMessageDialog(NSLocalizedString("msg_complete_purchase", comment: ""), didOk: nil)
+                    self.stopLoading()
                     }, didFailure: { (errorCode) -> Void in
                         // 購入に失敗またはキャンセル
                         self.showMessageDialog(TTError.getErrorMessage(errorCode), didOk: nil)
@@ -225,8 +234,8 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
                 self.startLoadingPurchase()
                 // 復元処理
                 self.purchaseService.startRestore({ () -> Void in
-                        // リストア完了
-                        self.showMessageDialog(NSLocalizedString("msg_complete_restore", comment: ""), didOk: nil)
+                    // リストア完了
+                    self.showMessageDialog(NSLocalizedString("msg_complete_restore", comment: ""), didOk: nil)
                     self.stopLoading()
                     }, didFailure: { (errorCode) -> Void in
                         // リストアに失敗またはキャンセル
@@ -235,6 +244,15 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
                 })
             }, actionCancel: nil)
     }
+    
+    // 再読み込み
+    private func reload()->Void {
+        self.shelfObjectList = self.bookService.getRootShelfObjects()
+        self.ShelfObjectListTableView.reloadData()
+        self.enablePasteButton()
+    }
+    
+    // MARK: Data Operation
     
     // フォルダ作成
     private func createFolder(newFolderName: String?) {
@@ -250,6 +268,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         }
     }
     
+    // フォルダ更新
     private func updateFolder(folderId: String, newFolderName: String?) {
         let ret = self.bookService.updateFolder(folderId, folderName: newFolderName)
         if ret == TTErrorCode.Normal {
@@ -263,28 +282,9 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         }
     }
     
-    // 図書削除
-    private func deleteBook(shelfObject: ShelfObjectEntity)->TTErrorCode {
-        let book: BookEntity = self.bookService.getBookById(shelfObject.target_id)!
-        var result: TTErrorCode = self.bookService.deleteBook(book)
-        if result != TTErrorCode.Normal {
-            return result
-        }
-        
-        result = self.bookService.deleteShelfObject(shelfObject)
-        return result
-    }
-    
-    // フォルダ削除
-    private func deleteFolder(shelfObject: ShelfObjectEntity)->TTErrorCode {
-        let folder: FolderEntity = self.bookService.getFolderById(shelfObject.target_id)!
-        var result: TTErrorCode = self.bookService.deleteFolder(folder)
-        if result != TTErrorCode.Normal {
-            return result
-        }
-
-        result = self.bookService.deleteShelfObject(shelfObject)
-        return result
+    // オブジェクト削除
+    private func deleteObject(shelfObject: ShelfObjectEntity)->TTErrorCode {
+        return self.bookService.deleteShelfObject(shelfObject)
     }
     
     
@@ -298,7 +298,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
 
     @IBAction func paseteBookTapped(sender: AnyObject) {
         LogM("Paste book.")
-        let result = self.bookService.pasteBook(nil)
+        let result = self.bookService.pasteBook(SystemFolderID.Root.rawValue)
         if result == TTErrorCode.Normal {
             self.bookService.clearClipboard()
             self.pasteButton.hidden = true
@@ -342,7 +342,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         let shelfObject = shelfObjectList[indexPath.row]
         cell.textLabel?.text = shelfObject.name
         if shelfObject.type == ShelfObjectTypes.Folder.rawValue {
-            cell.detailTextLabel?.text = "(フォルダ)"
+            cell.detailTextLabel?.text = NSLocalizedString("label_folder", comment: "")
         }
 
         return cell
@@ -351,17 +351,19 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     // セルが選択された
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
-        Log(NSString(format: "--- selected shelf object. title:%@ target_id:%@", shelfObject.name, shelfObject.target_id))
+        let object: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
+        Log(NSString(format: "--- selected shelf object. title:%@ type:%@ object_id:%@", object.name, object.type, object.object_id))
         
-        if shelfObject.type == ShelfObjectTypes.Folder.rawValue {
-            self.performSegueWithIdentifier("bookListView", sender: shelfObject.target_id)
+        // フォルダ選択(フォルダ内図書一覧へ)
+        if object.type == ShelfObjectTypes.Folder.rawValue {
+            object.trace()
+            self.performSegueWithIdentifier("bookListView", sender: object.object_id)
         }
-        
-//        // Debug
-//        let fileManager: NSFileManager = NSFileManager.defaultManager()
-//        let attr = try! fileManager.attributesOfItemAtPath(NSString(format: "%@/%@.tdv", FileManager.getImportDir(book.filename).path!, book.filename) as String)
-//        Log(NSString(format: "--- selected book. file:%@ attr:%@", book.filename, attr))
+        // 図書を選択(朗読画面へ)
+        if object.type == ShelfObjectTypes.Book.rawValue {
+            let book: BookEntity = self.bookService.getBookById(object.object_id)!
+            book.trace()
+        }
     }
     
     // 編集可否の設定
@@ -372,20 +374,6 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     
     // 編集時のスタイル(このメソッドを定義するとスワイプで編集メニューが無効になる)
     func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
-/*
-        Log(NSString(format: "section:%d row:%d", indexPath.section, indexPath.row))
-        if (self.editing) {
-            let shelfObject: ShelfObjectEntity = self.shelfObjectList[indexPath.row]
-            switch shelfObject.type {
-            case ShelfObjectTypes.Folder.rawValue:
-                return .Insert
-            case ShelfObjectTypes.Book.rawValue:
-                return .Delete
-            default:
-                return .None
-            }
-        }
-*/
         return .Delete
     }
     
@@ -399,6 +387,21 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
         // 共通
         let deleteAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_delete", comment: "")) { (action, indexPath) -> Void in
             LogM("delete.")
+            
+            let actionOk: (() -> Void) = {
+                let result: TTErrorCode = self.deleteObject(shelfObject)
+                if result == TTErrorCode.Normal {
+                    self.shelfObjectList.removeAtIndex(indexPath.row)
+                    self.ShelfObjectListTableView?.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Left)
+                    self.reload()
+                } else {
+                    self.alertController.show(self,
+                        title: NSLocalizedString("dialog_title_error", comment: ""),
+                        message: TTError.getErrorMessage(result), actionOk: { () -> Void in})
+                }
+            }
+            
+            #if false
             var actionOk: (() -> Void) = {}
             if shelfObject.type == ShelfObjectTypes.Book.rawValue {
                 actionOk = {
@@ -429,6 +432,9 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
                 }
             }
             
+            #endif
+            
+            tableView.setEditing(false, animated: true)
             self.alertController.show(self,
                 title: NSLocalizedString("dialog_title_notice", comment: ""),
                 message: NSLocalizedString("dialog_msg_delete", comment: ""),
@@ -442,8 +448,9 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
             // フォルダ名変更
             let changeTitleAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_change_title", comment: "")) { (action, indexPath) -> Void in
                 LogM("change title.")
-                let folder: FolderEntity = self.bookService.getFolderById(shelfObject.target_id)!
-                self.showEditFolderDialog(folder.folder_id, name: folder.name)
+//                let folder: FolderEntity = self.bookService.getFolderById(shelfObject.target_id)!
+//                self.showEditFolderDialog(folder.folder_id, name: folder.name)
+                self.showEditFolderDialog(shelfObject.object_id, name: shelfObject.name)
 
                 tableView.setEditing(false, animated: true)
             }
@@ -455,7 +462,8 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
             let copyAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_copy", comment: "")) { (action, indexPath) -> Void in
                 LogM("copy book.")
                 // コピーする
-                self.bookService.copyBook(self.bookService.getBookById(shelfObject.target_id)!)
+                self.bookService.copyObject(shelfObject)
+                self.enablePasteButton()
                 
                 tableView.setEditing(false, animated: true)
             }
@@ -466,7 +474,8 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
             let cutAction = UITableViewRowAction(style: .Normal, title: NSLocalizedString("cell_action_titile_cut", comment: "")) { (action, indexPath) -> Void in
                 LogM("cut book.")
                 // カットする
-                self.bookService.cutBook(self.bookService.getBookById(shelfObject.target_id)!)
+                self.bookService.cutObject(shelfObject)
+                self.enablePasteButton()
                 
                 tableView.setEditing(false, animated: true)
             }
@@ -514,9 +523,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     func importStarted() {
         LogM("import started.")
         
-//        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.startLoadingImport()
-//        })
+        self.startLoadingImport()
     }
     
     func importCompleted() {
@@ -530,9 +537,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     
     func importFailed() {
         LogM("import failed.")
-//        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.stopLoading()
-//        })
+        self.stopLoading()
     }
     
     //
@@ -546,10 +551,10 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     //
     // MARK: KVO
     //
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        Log(NSString(format: "keyPath:%@", (keyPath != nil) ? keyPath! : "None"))
-        if keyPath != nil && keyPath == Const.kKeyValueObserverPath {
-            self.reload()
-        }
-    }
+//    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+//        Log(NSString(format: "keyPath:%@", (keyPath != nil) ? keyPath! : "None"))
+//        if keyPath != nil && keyPath == Const.kKeyValueObserverPath {
+//            self.reload()
+//        }
+//    }
 }
