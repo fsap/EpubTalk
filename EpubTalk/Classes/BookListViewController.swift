@@ -28,7 +28,7 @@ class BookListViewController : UIViewController, UITableViewDelegate, UITableVie
     var shelfObjectList :[ShelfObjectEntity] = []
 
     // Service
-    let bookService: TTBookService = TTBookService.sharedInstance
+    let bookService: BookService = BookService.sharedInstance
     
     // Alert
     var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)

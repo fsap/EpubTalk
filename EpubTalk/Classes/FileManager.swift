@@ -257,16 +257,11 @@ class FileManager: NSObject {
         var headInfo: TDV_HEAD = TDV_HEAD()
         memset(&headInfo, 0x00, sizeof(TDV_HEAD))
         // メタ情報の設定
-        switch metadata.language.lowercaseString {
-        case Languages.ja.langString():
-            headInfo.VoiceGengo = Languages.ja.rawValue
-            break
-        case Languages.en_us.langString():
-            headInfo.VoiceGengo = Languages.en_us.rawValue
-            break
-        default:
-            break
+        headInfo.VoiceGengo = Constants.MetaLanguageDefaultId
+        if Constants.MetaLanguageId[metadata.language] != nil {
+            headInfo.VoiceGengo = Constants.MetaLanguageId[metadata.language]!
         }
+        Log(NSString(format: "lang:%d", headInfo.VoiceGengo))
         
         for (index,xml) in xmlFilePaths.enumerate() {
             if !keepLoading {
@@ -314,16 +309,11 @@ class FileManager: NSObject {
         var headInfo: TDV_HEAD = TDV_HEAD()
         memset(&headInfo, 0x00, sizeof(TDV_HEAD))
         // メタ情報の設定
-        switch metadata.language.lowercaseString {
-        case Languages.ja.langString():
-            headInfo.VoiceGengo = Languages.ja.rawValue
-            break
-        case Languages.en_us.langString():
-            headInfo.VoiceGengo = Languages.en_us.rawValue
-            break
-        default:
-            break
+        headInfo.VoiceGengo = Constants.MetaLanguageDefaultId
+        if Constants.MetaLanguageId[metadata.language] != nil {
+            headInfo.VoiceGengo = Constants.MetaLanguageId[metadata.language]!
         }
+        Log(NSString(format: "lang:%d", headInfo.VoiceGengo))
         
         for (index,html) in htmlFilePaths.enumerate() {
             if !keepLoading {

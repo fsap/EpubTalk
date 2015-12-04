@@ -29,7 +29,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     var delegate: ShelfObjectListViewDelegate?
 
     // Service
-    let bookService: TTBookService = TTBookService.sharedInstance
+    let bookService: BookService = BookService.sharedInstance
     let purchaseService: PurchaseService = PurchaseService.sharedInstance
     // Alert View
     var alertController: TTAlertController = TTAlertController(nibName: nil, bundle: nil)
@@ -544,7 +544,7 @@ class ShelfObjectListViewController : UIViewController, UITableViewDelegate, UIT
     // MARK: LoadingViewDelegate
     //
     func cancelLoad() {
-        let bookService: TTBookService = TTBookService.sharedInstance
+        let bookService: BookService = BookService.sharedInstance
         bookService.cancelImport()
     }
     

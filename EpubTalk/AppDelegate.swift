@@ -80,7 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
         
-        let bookService = TTBookService.sharedInstance
+        let bookService = BookService.sharedInstance
         bookService.delegate?.importStarted()
         let ret = bookService.validate(url)
         

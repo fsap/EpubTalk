@@ -24,19 +24,6 @@ enum MetadataAttr: String {
     case Content = "content"
 }
 
-enum Languages: UInt8 {
-    case ja = 34
-    case en_us = 1
-    
-    func langString()->String {
-        switch self {
-        case .ja: return "ja"
-        case .en_us: return "en_us"
-        default: return ""
-        }
-    }
-}
-
 
 class Metadata: NSObject {
     

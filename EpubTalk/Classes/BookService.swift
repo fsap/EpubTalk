@@ -1,5 +1,5 @@
 //
-//  TTBookService.swift
+//  BookService.swift
 //  TdTalk2
 //
 //  Created by Fujiwara on 2015/07/13.
@@ -24,7 +24,7 @@ enum BookCommand: Int {
 //
 // ブックファイル管理クラス
 //
-class TTBookService {
+class BookService {
     
     var fileManager: FileManager = FileManager.sharedInstance
     var dataManager: DataManager = DataManager.sharedInstance
@@ -36,9 +36,9 @@ class TTBookService {
     
     private var keepLoading: Bool
     
-    class var sharedInstance : TTBookService {
+    class var sharedInstance : BookService {
         struct Static {
-            static let instance : TTBookService = TTBookService()
+            static let instance : BookService = BookService()
         }
         return Static.instance
     }
