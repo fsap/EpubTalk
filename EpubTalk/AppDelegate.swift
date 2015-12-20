@@ -21,6 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         LogM("lifecycle:launch")
         // Override point for customization after application launch.
+        PurchaseService.sharedInstance.startObserver()
+        
         if launchOptions != nil {
             var options = launchOptions!
             let url = options[UIApplicationLaunchOptionsURLKey] as! NSURL;
@@ -67,6 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
+        PurchaseService.sharedInstance.endObserver()
     }
 
     ///

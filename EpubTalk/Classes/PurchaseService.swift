@@ -53,6 +53,19 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
         
     }
     
+    //
+    // Observer
+    //
+    func startObserver() {
+        LogM("Start transaction observer.")
+        SKPaymentQueue.defaultQueue().addTransactionObserver(self)
+    }
+    
+    func endObserver() {
+        LogM("End transaction observer.")
+        SKPaymentQueue.defaultQueue().removeTransactionObserver(self)
+    }
+    
     // 課金済みステータスを取得する
     static func getPurchaseStatus()->PurchaseStatus {
         return PurchaseStatus(rawValue: PurchaseService.getStatus())!
@@ -111,6 +124,8 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
         
         SKPaymentQueue.defaultQueue().addTransactionObserver(self)
         for product: SKProduct in response.products {
+            Log(NSString(format: "product_id:%@", product.productIdentifier))
+            
             switch self.purchaseType {
             case .Payment:
                 SKPaymentQueue.defaultQueue().addPayment(SKPayment(product: product))
@@ -142,12 +157,18 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
                 if self.purchaseType == PurchaseType.Payment {
                     PurchaseService.saveStatus(PurchaseStatus.Purchased)
                     queue.finishTransaction(transaction)
+                    if self.didPurchaseSuccess != nil {
+                        self.didPurchaseSuccess!()
+                    }
                 }
                 break
                 
             case SKPaymentTransactionState.Failed:
                 LogE(NSString(format: "Failed to purchase. %@", transaction))
-                self.didPurchaseFailure!(errorCode: .CanceledToPurchase)
+                queue.finishTransaction(transaction)
+                if self.didPurchaseFailure != nil {
+                    self.didPurchaseFailure!(errorCode: .CanceledToPurchase)
+                }
                 return
                 
             case SKPaymentTransactionState.Restored:
@@ -163,10 +184,18 @@ class PurchaseService: NSObject, SKProductsRequestDelegate, SKPaymentTransaction
     }
     
     //
+    // トランザクション終了
+    //
+    func paymentQueue(queue: SKPaymentQueue, removedTransactions transactions: [SKPaymentTransaction]) {
+        Log(NSString(format: "Remove transactions.[%d]", transactions.count))
+    }
+    
+    //
     // リストア完了
     //
     func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
         LogM("Finish transaction.")
+        PurchaseService.saveStatus(PurchaseStatus.Purchased)
         didRestoreSuccess!()
     }
     
